@@ -3,23 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#4f46e5" />
+  <meta name="description" content="Academy Management System — Role-based roll number login, attendance, marks, fees, timetable & more." />
   <title>{% block title %}Academy Management System{% endblock %}</title>
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+
+  <!-- Styles -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
+<!-- Ambient background blobs (behind everything) -->
+<div class="ambient" aria-hidden="true">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+</div>
+
 {% if session.get('user_id') %}
 <nav class="navbar">
-  <div class="brand">🎓 Academy MS</div>
+  <a href="{{ url_for('index') }}" class="brand">
+    <span class="brand-mark">🎓</span>
+    <span>Academy MS</span>
+  </a>
+
+  <div class="nav-links">
+    {% if session.get('role') == 'super_admin' %}
+      <a href="{{ url_for('super_admin.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('super_admin.students') }}">Students</a>
+      <a href="{{ url_for('super_admin.teachers') }}">Teachers</a>
+      <a href="{{ url_for('super_admin.assignments') }}">Assignments</a>
+      <a href="{{ url_for('super_admin.fees') }}">Fees</a>
+    {% elif session.get('role') == 'principal' %}
+      <a href="{{ url_for('principal.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('principal.reports') }}">Reports</a>
+      <a href="{{ url_for('principal.notices') }}">Notices</a>
+    {% elif session.get('role') == 'teacher' %}
+      <a href="{{ url_for('teacher.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('teacher.timetable') }}">Timetable</a>
+    {% elif session.get('role') == 'student' %}
+      <a href="{{ url_for('student.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('student.timetable') }}">Timetable</a>
+      <a href="{{ url_for('student.attendance') }}">Attendance</a>
+      <a href="{{ url_for('student.result') }}">Result</a>
+      <a href="{{ url_for('student.fee') }}">Fees</a>
+    {% elif session.get('role') == 'parent' %}
+      <a href="{{ url_for('parent.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('parent.attendance') }}">Attendance</a>
+      <a href="{{ url_for('parent.result') }}">Result</a>
+      <a href="{{ url_for('parent.fee') }}">Fees</a>
+    {% endif %}
+  </div>
+
   <div class="nav-user">
     <span class="roll-badge">{{ session.get('roll_number') }}</span>
     <span class="role-badge role-{{ session.get('role') }}">
       {{ session.get('role') | replace('_', ' ') }}
     </span>
-    <span style="font-weight:600;font-size:.9rem;">{{ session.get('name') }}</span>
+    <span class="user-name">{{ session.get('name') }}</span>
     <a href="{{ url_for('auth.logout') }}" class="btn btn-sm btn-ghost">Logout</a>
   </div>
 </nav>
