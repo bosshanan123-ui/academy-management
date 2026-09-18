@@ -1,216 +1,301 @@
 /* ============================================================
-   ACADEMY MANAGEMENT SYSTEM — PROFESSIONAL EDITION
+   ACADEMY MANAGEMENT SYSTEM — VIP ULTRA PREMIUM EDITION
    ------------------------------------------------------------
-   Version: 4.0 (Refined / Enterprise Edition)
+   Version: 5.0 (VIP Luxury / Hollywood Grade)
    Design Language:
-     • Clean, confident, education-grade SaaS
-     • One disciplined brand color, used with intent
-     • Soft, believable shadows instead of neon glow
-     • Motion kept for feedback, not decoration
+     • Cinematic depth with multi-layer 3D transforms
+     • Luxury color palette: Obsidian, Champagne Gold, Royal Blue
+     • Advanced particle systems & floating 3D objects
+     • Premium glass morphism with dynamic lighting
+     • Motion choreography worthy of AAA products
    Palette:
-     Deep Blue (brand) • Slate (ink/surfaces) • Teal (secondary)
+     Obsidian Black • Champagne Gold • Electric Cyan • Royal Purple
    Typography:
-     Inter Variable + JetBrains Mono
+     Inter Variable + JetBrains Mono + Playfair Display
    ------------------------------------------------------------
-   Sections:
-     01. Design Tokens
-     02. Reset & Base
-     03. Ambient Background System
-     04. Aurora Layers
-     05. Typography System
-     06. Layout & Grid
-     07. Login / Auth Screen
-     08. Navbar (Floating)
-     09. Cards (Neumorphic + Glass)
-     10. Stat Cards (3D Tiles)
-     11. Charts Shell
-     12. Data Tables
-     13. Forms & Inputs
-     14. Buttons (3D Tactile)
-     15. Flash Messages
-     16. Badges & Pills
-     17. Schedules & Timetable
-     18. Quick-Link Tiles
-     19. Loading & Skeletons
-     20. Micro-interactions
-     21. Keyframe Library
-     22. Utility Classes
-     23. Responsive
-     24. Accessibility & Misc
-     25. Print
-   NOTE: every class name, id and CSS variable name from the
-   original stylesheet is preserved on purpose so this file is
-   a drop-in replacement — no HTML/JS changes required.
+   Sections: 100+ Premium Components
    ============================================================ */
 
 /* ============================================================
-   01. DESIGN TOKENS
+   01. DESIGN TOKENS - VIP LUXURY SYSTEM
    ============================================================ */
 :root {
-  /* ---------- Brand Spectrum (kept as named scales, values now
-     resolve to one disciplined blue instead of a rainbow) ---------- */
-  --indigo-50:  #eef2f9;
-  --indigo-100: #dde6f3;
-  --indigo-200: #b9c9e6;
-  --indigo-300: #8ea7d4;
-  --indigo-400: #5c80bd;
-  --indigo-500: #2f5aa3;
-  --indigo-600: #244a8b;
-  --indigo-700: #1c3b70;
-  --indigo-800: #162e58;
-  --indigo-900: #10233f;
-  --indigo-950: #0a1729;
+  /* ---------- VIP Luxury Brand Spectrum ---------- */
+  /* Champagne Gold Scale */
+  --gold-50:  #fefce8;
+  --gold-100: #fef9c3;
+  --gold-200: #fef08a;
+  --gold-300: #fde047;
+  --gold-400: #facc15;
+  --gold-500: #eab308;
+  --gold-600: #ca8a04;
+  --gold-700: #a16207;
+  --gold-800: #854d0e;
+  --gold-900: #713f12;
+  
+  /* Obsidian Black Scale */
+  --obsidian-50:  #f8fafc;
+  --obsidian-100: #f1f5f9;
+  --obsidian-200: #e2e8f0;
+  --obsidian-300: #cbd5e1;
+  --obsidian-400: #94a3b8;
+  --obsidian-500: #64748b;
+  --obsidian-600: #475569;
+  --obsidian-700: #334155;
+  --obsidian-800: #1e293b;
+  --obsidian-900: #0f172a;
+  --obsidian-950: #020617;
+  
+  /* Royal Blue Scale */
+  --royal-50:  #eff6ff;
+  --royal-100: #dbeafe;
+  --royal-200: #bfdbfe;
+  --royal-300: #93c5fd;
+  --royal-400: #60a5fa;
+  --royal-500: #3b82f6;
+  --royal-600: #2563eb;
+  --royal-700: #1d4ed8;
+  --royal-800: #1e40af;
+  --royal-900: #1e3a8a;
+  --royal-950: #172554;
+  
+  /* Electric Cyan Scale */
+  --cyan-50:  #ecfeff;
+  --cyan-100: #cffafe;
+  --cyan-200: #a5f3fc;
+  --cyan-300: #67e8f9;
+  --cyan-400: #22d3ee;
+  --cyan-500: #06b6d4;
+  --cyan-600: #0891b2;
+  --cyan-700: #0e7490;
+  --cyan-800: #155e75;
+  --cyan-900: #164e63;
+  
+  /* Royal Purple Scale */
+  --purple-50:  #faf5ff;
+  --purple-100: #f3e8ff;
+  --purple-200: #e9d5ff;
+  --purple-300: #d8b4fe;
+  --purple-400: #c084fc;
+  --purple-500: #a855f7;
+  --purple-600: #9333ea;
+  --purple-700: #7e22ce;
+  --purple-800: #6b21a8;
+  --purple-900: #581c87;
+  
+  /* Rose Gold Scale */
+  --rose-50:  #fff1f2;
+  --rose-100: #ffe4e6;
+  --rose-200: #fecdd3;
+  --rose-300: #fda4af;
+  --rose-400: #fb7185;
+  --rose-500: #f43f5e;
+  --rose-600: #e11d48;
+  --rose-700: #be123c;
+  --rose-800: #9f1239;
+  --rose-900: #881337;
+  
+  /* Emerald Scale */
+  --emerald-50:  #ecfdf5;
+  --emerald-100: #d1fae5;
+  --emerald-200: #a7f3d0;
+  --emerald-300: #6ee7b7;
+  --emerald-400: #34d399;
+  --emerald-500: #10b981;
+  --emerald-600: #059669;
+  --emerald-700: #047857;
+  --emerald-800: #065f46;
+  --emerald-900: #064e3b;
+  
+  /* Amber Scale */
+  --amber-50:  #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-200: #fde68a;
+  --amber-300: #fcd34d;
+  --amber-400: #fbbf24;
+  --amber-500: #f59e0b;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+  --amber-800: #92400e;
+  --amber-900: #78350f;
 
-  --violet-400: #7c8aab;
-  --violet-500: #5f6f95;
-  --violet-600: #4a5878;
-  --violet-700: #3a4560;
+  /* ---------- VIP Semantic Colors ---------- */
+  --success: #10b981;
+  --success-light: #34d399;
+  --success-dark: #059669;
+  --success-glow: rgba(16, 185, 129, 0.4);
+  --success-soft: #ecfdf5;
+  --success-ring: rgba(16, 185, 129, 0.25);
 
-  --cyan-400: #4fa9b8;
-  --cyan-500: #34889b;
-  --cyan-600: #276b7c;
+  --danger: #ef4444;
+  --danger-light: #f87171;
+  --danger-dark: #dc2626;
+  --danger-glow: rgba(239, 68, 68, 0.4);
+  --danger-soft: #fef2f2;
+  --danger-ring: rgba(239, 68, 68, 0.25);
 
-  --rose-400: #c97a7a;
-  --rose-500: #b6595c;
-  --rose-600: #984144;
+  --warning: #f59e0b;
+  --warning-light: #fbbf24;
+  --warning-dark: #d97706;
+  --warning-glow: rgba(245, 158, 11, 0.4);
+  --warning-soft: #fffbeb;
+  --warning-ring: rgba(245, 158, 11, 0.25);
 
-  --pink-500: #a95f8a;
-  --pink-600: #8a4a6f;
+  --info: #06b6d4;
+  --info-light: #22d3ee;
+  --info-dark: #0891b2;
+  --info-glow: rgba(6, 182, 212, 0.4);
+  --info-soft: #ecfeff;
+  --info-ring: rgba(6, 182, 212, 0.25);
 
-  --amber-400: #e3a83f;
-  --amber-500: #d4901c;
-  --amber-600: #b17414;
-
-  --emerald-400: #34b085;
-  --emerald-500: #1f9670;
-  --emerald-600: #17795a;
-
-  --sky-400: #5fa3c9;
-  --sky-500: #3d87b0;
-
-  /* ---------- Semantic ---------- */
-  --success: #1f9670;
-  --success-dark: #146149;
-  --success-soft: #eaf7f1;
-  --success-ring: rgba(31, 150, 112, 0.20);
-
-  --danger: #c0433f;
-  --danger-dark: #8f2f2c;
-  --danger-soft: #fbeeed;
-  --danger-ring: rgba(192, 67, 63, 0.20);
-
-  --warning: #b1791a;
-  --warning-dark: #7d5410;
-  --warning-soft: #fbf3e6;
-  --warning-ring: rgba(177, 121, 26, 0.20);
-
-  --info: #2f6fa3;
-  --info-soft: #eaf3fa;
-  --info-ring: rgba(47, 111, 163, 0.20);
-
-  /* ---------- Surfaces ---------- */
-  --bg-canvas: #f5f6f8;
+  /* ---------- VIP Surfaces ---------- */
+  --bg-canvas: #f8fafc;
   --bg-elevated: #ffffff;
-  --bg-recessed: #eef0f4;
-  --bg-glass: rgba(255, 255, 255, 0.82);
-  --bg-glass-strong: rgba(255, 255, 255, 0.92);
-  --bg-glass-dark: rgba(10, 23, 41, 0.60);
+  --bg-recessed: #f1f5f9;
+  --bg-dark: #0f172a;
+  --bg-darker: #020617;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --bg-glass-strong: rgba(255, 255, 255, 0.95);
+  --bg-glass-dark: rgba(15, 23, 42, 0.85);
+  --bg-glass-luxury: rgba(255, 255, 255, 0.08);
+  --bg-glass-luxury-strong: rgba(255, 255, 255, 0.12);
 
-  /* ---------- Text ---------- */
-  --ink-950: #0c1220;
-  --ink-900: #111827;
-  --ink-800: #1f2937;
-  --ink-700: #374151;
-  --ink-600: #4b5563;
-  --ink-500: #6b7280;
-  --ink-400: #98a1ac;
-  --ink-300: #cbd2da;
-  --ink-200: #e4e7ec;
-  --ink-100: #f2f3f5;
+  /* ---------- VIP Text ---------- */
+  --ink-950: #020617;
+  --ink-900: #0f172a;
+  --ink-800: #1e293b;
+  --ink-700: #334155;
+  --ink-600: #475569;
+  --ink-500: #64748b;
+  --ink-400: #94a3b8;
+  --ink-300: #cbd5e1;
+  --ink-200: #e2e8f0;
+  --ink-100: #f1f5f9;
+  --ink-50:  #f8fafc;
 
-  /* ---------- Borders ---------- */
-  --border-subtle: rgba(17, 24, 39, 0.07);
-  --border-soft:   rgba(17, 24, 39, 0.10);
-  --border-strong: rgba(17, 24, 39, 0.16);
+  /* ---------- VIP Borders ---------- */
+  --border-subtle: rgba(15, 23, 42, 0.06);
+  --border-soft:   rgba(15, 23, 42, 0.10);
+  --border-medium: rgba(15, 23, 42, 0.15);
+  --border-strong: rgba(15, 23, 42, 0.22);
+  --border-gold:   rgba(234, 179, 8, 0.35);
+  --border-glow:   rgba(59, 130, 246, 0.4);
 
-  /* ---------- Radii (slightly tighter — reads more "enterprise") ---------- */
-  --r-xs: 5px;
-  --r-sm: 8px;
-  --r-md: 10px;
-  --r-lg: 14px;
-  --r-xl: 18px;
-  --r-2xl: 22px;
-  --r-pill: 999px;
+  /* ---------- VIP Radii ---------- */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 18px;
+  --r-xl: 24px;
+  --r-2xl: 32px;
+  --r-3xl: 40px;
+  --r-pill: 9999px;
 
-  /* ---------- Shadows (soft, low-contrast, believable) ---------- */
-  --sh-0: 0 0 0 1px rgba(17, 24, 39, 0.04);
-  --sh-1:
-    0 1px 2px rgba(17, 24, 39, 0.05),
-    0 1px 1px rgba(17, 24, 39, 0.03);
-  --sh-2:
-    0 1px 2px rgba(17, 24, 39, 0.04),
-    0 3px 8px rgba(17, 24, 39, 0.05);
-  --sh-3:
-    0 2px 6px rgba(17, 24, 39, 0.05),
-    0 8px 20px rgba(17, 24, 39, 0.07);
-  --sh-4:
-    0 4px 10px rgba(17, 24, 39, 0.06),
-    0 16px 32px rgba(17, 24, 39, 0.08);
-  --sh-5:
-    0 8px 20px rgba(17, 24, 39, 0.08),
-    0 28px 56px rgba(17, 24, 39, 0.10);
+  /* ---------- VIP Shadows - Cinematic Depth ---------- */
+  --sh-0: 0 0 0 1px rgba(15, 23, 42, 0.04);
+  --sh-1: 
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 2px 4px rgba(15, 23, 42, 0.03);
+  --sh-2: 
+    0 2px 4px rgba(15, 23, 42, 0.04),
+    0 4px 8px rgba(15, 23, 42, 0.04),
+    0 8px 16px rgba(15, 23, 42, 0.03);
+  --sh-3: 
+    0 4px 8px rgba(15, 23, 42, 0.04),
+    0 8px 16px rgba(15, 23, 42, 0.05),
+    0 16px 32px rgba(15, 23, 42, 0.04);
+  --sh-4: 
+    0 6px 12px rgba(15, 23, 42, 0.05),
+    0 12px 24px rgba(15, 23, 42, 0.06),
+    0 24px 48px rgba(15, 23, 42, 0.05);
+  --sh-5: 
+    0 8px 16px rgba(15, 23, 42, 0.06),
+    0 16px 32px rgba(15, 23, 42, 0.08),
+    0 32px 64px rgba(15, 23, 42, 0.06);
+  --sh-6: 
+    0 12px 24px rgba(15, 23, 42, 0.08),
+    0 24px 48px rgba(15, 23, 42, 0.10),
+    0 48px 96px rgba(15, 23, 42, 0.08);
 
-  /* Colored shadows — now used sparingly, low opacity */
-  --sh-indigo: 0 8px 20px rgba(36, 74, 139, 0.18);
-  --sh-violet: 0 8px 20px rgba(74, 88, 120, 0.16);
-  --sh-cyan:   0 8px 20px rgba(39, 107, 124, 0.16);
-  --sh-rose:   0 8px 20px rgba(152, 65, 68, 0.16);
-  --sh-emerald: 0 8px 20px rgba(23, 121, 90, 0.16);
-  --sh-amber:  0 8px 20px rgba(177, 116, 20, 0.16);
+  /* VIP Colored Shadows - For emphasis */
+  --sh-gold: 0 8px 32px rgba(234, 179, 8, 0.25);
+  --sh-royal: 0 8px 32px rgba(37, 99, 235, 0.25);
+  --sh-cyan: 0 8px 32px rgba(6, 182, 212, 0.25);
+  --sh-purple: 0 8px 32px rgba(168, 85, 247, 0.25);
+  --sh-emerald: 0 8px 32px rgba(16, 185, 129, 0.25);
+  --sh-rose: 0 8px 32px rgba(244, 63, 94, 0.25);
 
-  /* Inner highlights (neumorphism) */
-  --in-light: inset 0 1px 0 rgba(255, 255, 255, 0.75);
-  --in-dark:  inset 0 -1px 0 rgba(17, 24, 39, 0.04);
+  /* VIP Inner Shadows - Neumorphism */
+  --in-light: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  --in-light-strong: inset 0 2px 4px rgba(255, 255, 255, 0.9);
+  --in-dark: inset 0 -1px 0 rgba(15, 23, 42, 0.04);
+  --in-dark-strong: inset 0 -2px 4px rgba(15, 23, 42, 0.06);
+  --in-pressed: inset 0 2px 4px rgba(15, 23, 42, 0.08);
 
-  /* Focus ring */
-  --ring: 0 0 0 3px rgba(47, 90, 163, 0.30);
-  --ring-strong: 0 0 0 3px rgba(47, 90, 163, 0.40);
+  /* VIP Focus Rings */
+  --ring: 0 0 0 3px rgba(37, 99, 235, 0.25);
+  --ring-strong: 0 0 0 4px rgba(37, 99, 235, 0.35);
+  --ring-gold: 0 0 0 3px rgba(234, 179, 8, 0.3);
+  --ring-glow: 0 0 0 4px rgba(37, 99, 235, 0.2), 0 0 20px rgba(37, 99, 235, 0.3);
 
-  /* ---------- Gradients (one restrained brand gradient, used with intent) ---------- */
-  --grad-brand:    linear-gradient(135deg, #244a8b 0%, #2f5aa3 55%, #34889b 100%);
-  --grad-brand-2:  linear-gradient(135deg, #1c3b70 0%, #2f5aa3 100%);
-  --grad-brand-3:  linear-gradient(135deg, #1c3b70, #276b7c);
-  --grad-sunset:   linear-gradient(135deg, #b6595c 0%, #d4901c 100%);
-  --grad-ocean:    linear-gradient(135deg, #3d87b0 0%, #4fa9b8 100%);
-  --grad-forest:   linear-gradient(135deg, #17795a 0%, #34b085 100%);
-  --grad-candy:    linear-gradient(135deg, #8a4a6f 0%, #4a5878 100%);
-  --grad-royal:    linear-gradient(135deg, #1c3b70 0%, #8a4a6f 100%);
-  --grad-glass:    linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,255,255,0.65));
+  /* ---------- VIP Gradients - Luxury Materials ---------- */
+  --grad-gold: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+  --grad-gold-shine: linear-gradient(135deg, #fef3c7 0%, #fbbf24 25%, #f59e0b 50%, #d97706 75%, #b45309 100%);
+  --grad-royal: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+  --grad-royal-deep: linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #172554 100%);
+  --grad-cyan: linear-gradient(135deg, #22d3ee 0%, #06b6d4 50%, #0891b2 100%);
+  --grad-purple: linear-gradient(135deg, #c084fc 0%, #a855f7 50%, #9333ea 100%);
+  --grad-emerald: linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%);
+  --grad-rose: linear-gradient(135deg, #fb7185 0%, #f43f5e 50%, #e11d48 100%);
+  --grad-sunset: linear-gradient(135deg, #f43f5e 0%, #f59e0b 100%);
+  --grad-ocean: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+  --grad-forest: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --grad-luxury: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  --grad-luxury-gold: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #f59e0b 100%);
+  --grad-mesh: 
+    radial-gradient(at 40% 20%, rgba(251, 191, 36, 0.15) 0%, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+    radial-gradient(at 80% 50%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+    radial-gradient(at 80% 100%, rgba(244, 63, 94, 0.15) 0%, transparent 50%);
+  --grad-glass: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.75));
+  --grad-glass-dark: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(15,23,42,0.7));
+  --grad-button: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 50%, rgba(0,0,0,0.05) 100%);
 
-  /* Aurora — quieter, fewer competing hues */
-  --aurora-1: radial-gradient(circle at 20% 30%, rgba(36, 74, 139, 0.22), transparent 55%);
-  --aurora-2: radial-gradient(circle at 80% 70%, rgba(39, 107, 124, 0.16), transparent 55%);
-  --aurora-3: radial-gradient(circle at 55% 90%, rgba(47, 90, 163, 0.14), transparent 55%);
+  /* VIP Aurora Effects */
+  --aurora-1: radial-gradient(ellipse at 20% 20%, rgba(251, 191, 36, 0.25), transparent 50%);
+  --aurora-2: radial-gradient(ellipse at 80% 30%, rgba(59, 130, 246, 0.25), transparent 50%);
+  --aurora-3: radial-gradient(ellipse at 50% 80%, rgba(168, 85, 247, 0.25), transparent 50%);
+  --aurora-4: radial-gradient(ellipse at 10% 70%, rgba(6, 182, 212, 0.2), transparent 50%);
+  --aurora-5: radial-gradient(ellipse at 90% 90%, rgba(244, 63, 94, 0.2), transparent 50%);
 
-  /* ---------- Type ---------- */
+  /* ---------- VIP Typography ---------- */
   --font-sans: "Inter", "Inter Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Playfair Display", Georgia, "Times New Roman", serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
 
-  /* ---------- Motion ---------- */
-  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  /* ---------- VIP Motion - Choreographed ---------- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
   --ease-spring: cubic-bezier(0.34, 1.2, 0.64, 1);
+  --ease-spring-strong: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
-  --t-fast: 140ms;
-  --t-base: 220ms;
-  --t-slow: 380ms;
-  --t-slower: 640ms;
+  --t-instant: 80ms;
+  --t-fast: 150ms;
+  --t-base: 250ms;
+  --t-slow: 400ms;
+  --t-slower: 600ms;
+  --t-slowest: 900ms;
 }
 
-
 /* ============================================================
-   02. RESET & BASE
+   02. RESET & BASE - FOUNDATION
    ============================================================ */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -223,109 +308,185 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-rendering: optimizeLegibility;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01", "ss02";
 }
 
-html, body { min-height: 100%; }
+html, body { 
+  min-height: 100%;
+  min-height: 100dvh;
+}
 
 body {
   font-family: var(--font-sans);
   font-size: 15px;
-  line-height: 1.55;
+  line-height: 1.6;
   color: var(--ink-900);
   background: var(--bg-canvas);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   font-weight: 440;
+  position: relative;
 }
 
-img, svg, video, canvas { display: block; max-width: 100%; }
-a { color: var(--indigo-600); text-decoration: none; transition: color var(--t-base) var(--ease-out); }
-a:hover { color: var(--indigo-700); }
-button, input, select, textarea { font: inherit; color: inherit; }
-button { border: none; background: none; cursor: pointer; }
+img, svg, video, canvas { 
+  display: block; 
+  max-width: 100%; 
+}
+
+a { 
+  color: var(--royal-600); 
+  text-decoration: none; 
+  transition: all var(--t-base) var(--ease-out-expo);
+  position: relative;
+}
+
+a:hover { 
+  color: var(--royal-700); 
+}
+
+button, input, select, textarea { 
+  font: inherit; 
+  color: inherit; 
+}
+
+button { 
+  border: none; 
+  background: none; 
+  cursor: pointer; 
+}
+
 ul, ol { list-style: none; }
 
-
 /* ============================================================
-   03. AMBIENT BACKGROUND SYSTEM
-   Kept, but toned down considerably: one quiet wash instead of
-   three competing color pools, and no moving blobs on the main
-   app screens (motion is reserved for the auth screen only).
+   03. AMBIENT BACKGROUND SYSTEM - CINEMATIC LAYERS
    ============================================================ */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: -3;
+  z-index: -5;
   background:
-    radial-gradient(1200px 800px at 8% -10%, rgba(36, 74, 139, 0.06), transparent 60%),
-    radial-gradient(1000px 700px at 108% 5%, rgba(39, 107, 124, 0.05), transparent 60%),
-    linear-gradient(180deg, #f8f9fb 0%, #f5f6f8 40%, #f2f3f6 100%);
+    radial-gradient(ellipse 80% 50% at 20% -20%, rgba(251, 191, 36, 0.08), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 0%, rgba(59, 130, 246, 0.08), transparent),
+    radial-gradient(ellipse 70% 50% at 50% 100%, rgba(168, 85, 247, 0.06), transparent),
+    linear-gradient(180deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
   pointer-events: none;
 }
 
-/* Fine grid mesh — kept, very subtle */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: -2;
+  z-index: -4;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(17, 24, 39, 0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(17, 24, 39, 0.015) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse at 50% 0%, #000 30%, transparent 75%);
-  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 30%, transparent 75%);
+    linear-gradient(rgba(15, 23, 42, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.02) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 100% 80% at 50% 0%, #000 20%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 100% 80% at 50% 0%, #000 20%, transparent 80%);
 }
 
-/* Ambient blobs — disabled by default on app screens (no motion, no bulk).
-   Left in place and inert so nothing breaks if the markup still includes
-   .ambient/.blob; add .ambient--on if you ever want them back. */
+/* Floating Particles System */
 .ambient {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: -3;
   pointer-events: none;
   overflow: hidden;
-  display: none;
 }
-.ambient--on { display: block; }
+
+.ambient .particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.4;
+  will-change: transform, opacity;
+}
+
+.ambient .particle.p1 {
+  width: 8px; height: 8px;
+  background: var(--gold-400);
+  top: 10%; left: 15%;
+  animation: floatParticle1 20s ease-in-out infinite;
+  box-shadow: 0 0 20px var(--gold-400);
+}
+
+.ambient .particle.p2 {
+  width: 6px; height: 6px;
+  background: var(--royal-400);
+  top: 30%; right: 20%;
+  animation: floatParticle2 25s ease-in-out infinite;
+  box-shadow: 0 0 15px var(--royal-400);
+}
+
+.ambient .particle.p3 {
+  width: 10px; height: 10px;
+  background: var(--purple-400);
+  bottom: 20%; left: 40%;
+  animation: floatParticle3 22s ease-in-out infinite;
+  box-shadow: 0 0 25px var(--purple-400);
+}
+
+.ambient .particle.p4 {
+  width: 5px; height: 5px;
+  background: var(--cyan-400);
+  top: 60%; left: 70%;
+  animation: floatParticle1 18s ease-in-out infinite reverse;
+  box-shadow: 0 0 12px var(--cyan-400);
+}
+
+.ambient .particle.p5 {
+  width: 7px; height: 7px;
+  background: var(--emerald-400);
+  top: 80%; left: 25%;
+  animation: floatParticle2 24s ease-in-out infinite;
+  box-shadow: 0 0 18px var(--emerald-400);
+}
+
+/* Floating 3D Blobs */
 .ambient .blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(90px);
-  opacity: 0.25;
+  filter: blur(100px);
+  opacity: 0.35;
   will-change: transform;
-}
-.ambient .blob.b1 {
-  width: 460px; height: 460px;
-  top: -120px; left: -120px;
-  background: radial-gradient(circle, var(--indigo-400), transparent 65%);
-  animation: driftA 30s var(--ease-in-out) infinite;
-}
-.ambient .blob.b2 {
-  width: 380px; height: 380px;
-  top: 35%; right: -100px;
-  background: radial-gradient(circle, var(--cyan-400), transparent 65%);
-  animation: driftB 34s var(--ease-in-out) infinite;
-  animation-delay: -6s;
-}
-.ambient .blob.b3 {
-  width: 420px; height: 420px;
-  bottom: -140px; left: 30%;
-  background: radial-gradient(circle, var(--violet-400), transparent 65%);
-  animation: driftC 38s var(--ease-in-out) infinite;
-  animation-delay: -12s;
+  mix-blend-mode: multiply;
 }
 
+.ambient .blob.b1 {
+  width: 500px; height: 500px;
+  top: -150px; left: -150px;
+  background: radial-gradient(circle, var(--gold-300), transparent 70%);
+  animation: driftBlob1 35s ease-in-out infinite;
+}
+
+.ambient .blob.b2 {
+  width: 400px; height: 400px;
+  top: 30%; right: -120px;
+  background: radial-gradient(circle, var(--royal-300), transparent 70%);
+  animation: driftBlob2 40s ease-in-out infinite;
+  animation-delay: -8s;
+}
+
+.ambient .blob.b3 {
+  width: 450px; height: 450px;
+  bottom: -180px; left: 25%;
+  background: radial-gradient(circle, var(--purple-300), transparent 70%);
+  animation: driftBlob3 45s ease-in-out infinite;
+  animation-delay: -15s;
+}
+
+.ambient .blob.b4 {
+  width: 350px; height: 350px;
+  top: 50%; left: 50%;
+  background: radial-gradient(circle, var(--cyan-300), transparent 70%);
+  animation: driftBlob1 38s ease-in-out infinite;
+  animation-delay: -20s;
+}
 
 /* ============================================================
-   04. AURORA LAYERS (for login / hero areas)
-   Still present for the auth screen, but as a slow, quiet wash
-   rather than a spinning rainbow conic gradient.
+   04. AURORA LAYERS - PREMIUM AUTH SCREEN EFFECTS
    ============================================================ */
 .aurora {
   position: absolute;
@@ -333,156 +494,359 @@ body::after {
   overflow: hidden;
   pointer-events: none;
 }
-.aurora::before,
+
+.aurora::before {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(251, 191, 36, 0.4), transparent 50%),
+    radial-gradient(ellipse at 80% 30%, rgba(59, 130, 246, 0.4), transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(168, 85, 247, 0.35), transparent 50%),
+    radial-gradient(ellipse at 10% 70%, rgba(6, 182, 212, 0.35), transparent 50%);
+  filter: blur(100px);
+  opacity: 0.7;
+  animation: auroraRotate 80s linear infinite;
+}
+
 .aurora::after {
   content: "";
   position: absolute;
-  inset: -20%;
+  inset: -25%;
   background:
-    radial-gradient(closest-side, rgba(36, 74, 139, 0.35), transparent 70%) 15% 20%/60% 60% no-repeat,
-    radial-gradient(closest-side, rgba(39, 107, 124, 0.28), transparent 70%) 80% 75%/55% 55% no-repeat;
-  filter: blur(90px);
-  opacity: 0.6;
-  animation: auroraSpin 70s linear infinite;
-}
-.aurora::after {
-  animation-duration: 100s;
-  animation-direction: reverse;
-  opacity: 0.35;
-  filter: blur(110px);
+    radial-gradient(ellipse at 70% 20%, rgba(244, 63, 94, 0.3), transparent 50%),
+    radial-gradient(ellipse at 30% 70%, rgba(16, 185, 129, 0.3), transparent 50%),
+    radial-gradient(ellipse at 90% 60%, rgba(234, 179, 8, 0.35), transparent 50%);
+  filter: blur(120px);
+  opacity: 0.5;
+  animation: auroraRotate 100s linear infinite reverse;
 }
 
+/* Aurora Waves */
+.aurora-waves {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.aurora-waves .wave {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  background: 
+    radial-gradient(ellipse at 50% 50%, rgba(251, 191, 36, 0.1), transparent 70%),
+    radial-gradient(ellipse at 30% 70%, rgba(59, 130, 246, 0.1), transparent 70%);
+  animation: waveRotate 60s linear infinite;
+}
+
+.aurora-waves .wave:nth-child(2) {
+  animation-duration: 80s;
+  animation-direction: reverse;
+  opacity: 0.6;
+}
+
+.aurora-waves .wave:nth-child(3) {
+  animation-duration: 100s;
+  opacity: 0.4;
+}
 
 /* ============================================================
-   05. TYPOGRAPHY SYSTEM
+   05. TYPOGRAPHY SYSTEM - LUXURY HIERARCHY
    ============================================================ */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 750;
-  letter-spacing: -0.018em;
-  line-height: 1.18;
+  letter-spacing: -0.022em;
+  line-height: 1.15;
   color: var(--ink-950);
 }
 
-h1 { font-size: clamp(1.55rem, 2.2vw, 2.05rem); }
-h2 { font-size: clamp(1.2rem, 1.6vw, 1.45rem); }
-h3 { font-size: 1.05rem; }
-h4 { font-size: 0.94rem; }
+h1 { 
+  font-size: clamp(1.75rem, 2.5vw, 2.5rem); 
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
 
-p { color: var(--ink-600); }
+h2 { 
+  font-size: clamp(1.35rem, 1.8vw, 1.75rem); 
+  font-weight: 750;
+}
+
+h3 { 
+  font-size: 1.15rem; 
+  font-weight: 700;
+}
+
+h4 { 
+  font-size: 1rem; 
+  font-weight: 700;
+}
+
+h5 { 
+  font-size: 0.9rem; 
+  font-weight: 650;
+}
+
+p { 
+  color: var(--ink-600); 
+  line-height: 1.65;
+}
 
 .display {
-  font-size: clamp(1.9rem, 3.4vw, 2.7rem);
-  font-weight: 800;
-  letter-spacing: -0.025em;
-  line-height: 1.08;
+  font-family: var(--font-serif);
+  font-size: clamp(2.25rem, 4vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--ink-950);
 }
 
 .gradient-text {
-  background: var(--grad-brand-2);
+  background: var(--grad-royal);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
 
-/* Shimmer kept but calmer — slower sweep, narrower hue range,
-   and reserved for one-off emphasis rather than headline default. */
-.text-shimmer {
-  background: linear-gradient(90deg,
-    var(--indigo-600) 0%,
-    var(--cyan-600) 50%,
-    var(--indigo-600) 100%);
-  background-size: 220% auto;
+.gradient-text-gold {
+  background: var(--grad-gold-shine);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  animation: shimmer 6s linear infinite;
+}
+
+.text-shimmer {
+  background: linear-gradient(90deg,
+    var(--gold-500) 0%,
+    var(--gold-300) 25%,
+    var(--gold-500) 50%,
+    var(--gold-300) 75%,
+    var(--gold-500) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shimmerText 4s linear infinite;
+}
+
+.text-glow {
+  text-shadow: 
+    0 0 20px rgba(251, 191, 36, 0.5),
+    0 0 40px rgba(251, 191, 36, 0.3),
+    0 0 60px rgba(251, 191, 36, 0.2);
 }
 
 .text-muted { color: var(--ink-500); }
 .text-subtle { color: var(--ink-400); }
 .text-center { text-align: center; }
 .text-right { text-align: right; }
-.text-uppercase { text-transform: uppercase; letter-spacing: 0.08em; }
-.mono { font-family: var(--font-mono); font-feature-settings: "zero", "ss01"; }
-.text-xs { font-size: 0.72rem; }
-.text-sm { font-size: 0.84rem; }
-.text-lg { font-size: 1.05rem; }
+.text-left { text-align: left; }
+.text-uppercase { text-transform: uppercase; letter-spacing: 0.1em; }
+.text-capitalize { text-transform: capitalize; }
+.text-lowercase { text-transform: lowercase; }
+
+.mono { 
+  font-family: var(--font-mono); 
+  font-feature-settings: "zero", "ss01"; 
+}
+
+.serif { font-family: var(--font-serif); }
+
+.text-xs { font-size: 0.7rem; }
+.text-sm { font-size: 0.82rem; }
+.text-base { font-size: 0.94rem; }
+.text-lg { font-size: 1.08rem; }
+.text-xl { font-size: 1.25rem; }
+.text-2xl { font-size: 1.5rem; }
+.text-3xl { font-size: 1.875rem; }
+
+.font-light { font-weight: 300; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.font-extrabold { font-weight: 800; }
+.font-black { font-weight: 900; }
+
+.leading-tight { line-height: 1.2; }
+.leading-normal { line-height: 1.5; }
+.leading-relaxed { line-height: 1.7; }
+.leading-loose { line-height: 2; }
+
+.tracking-tight { letter-spacing: -0.025em; }
+.tracking-normal { letter-spacing: 0; }
+.tracking-wide { letter-spacing: 0.025em; }
+.tracking-wider { letter-spacing: 0.05em; }
+.tracking-widest { letter-spacing: 0.1em; }
 
 .section-title {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 1rem;
+  gap: 14px;
+  font-size: 1.05rem;
   font-weight: 750;
   color: var(--ink-950);
-  letter-spacing: -0.008em;
-  margin-bottom: 18px;
+  letter-spacing: -0.01em;
+  margin-bottom: 22px;
 }
+
 .section-title::before {
   content: "";
-  width: 4px;
-  height: 20px;
+  width: 5px;
+  height: 22px;
   border-radius: 3px;
-  background: var(--indigo-600);
+  background: var(--grad-gold);
+  box-shadow: 0 2px 8px rgba(234, 179, 8, 0.4);
 }
 
+.section-title-gold::before {
+  background: var(--grad-gold);
+}
+
+.section-title-royal::before {
+  background: var(--grad-royal);
+}
+
+.section-title-emerald::before {
+  background: var(--grad-emerald);
+}
 
 /* ============================================================
-   06. LAYOUT & GRID
+   06. LAYOUT & GRID - STRUCTURED FOUNDATION
    ============================================================ */
 .container {
-  max-width: 1320px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 32px 22px 72px;
+  padding: 36px 24px 80px;
   position: relative;
+  z-index: 1;
+}
+
+.container-fluid {
+  width: 100%;
+  padding: 36px 24px 80px;
+  position: relative;
+  z-index: 1;
 }
 
 .page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
+  gap: 20px;
   flex-wrap: wrap;
-  margin-bottom: 30px;
+  margin-bottom: 36px;
+  position: relative;
 }
 
 .page-header h1 {
   margin: 0;
   position: relative;
 }
+
 .page-header h1::after {
   content: "";
   display: block;
-  width: 36px;
-  height: 3px;
-  border-radius: 3px;
-  background: var(--indigo-600);
-  margin-top: 8px;
+  width: 48px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--grad-gold);
+  margin-top: 12px;
+  box-shadow: 0 2px 8px rgba(234, 179, 8, 0.3);
 }
 
-/* Grids */
-.stat-grid, .dashboard-grid, .charts-grid, .form-grid, .timetable-grid {
+/* Grid Systems */
+.stat-grid, 
+.dashboard-grid, 
+.charts-grid, 
+.form-grid, 
+.timetable-grid {
   display: grid;
-  gap: 20px;
+  gap: 24px;
 }
-.stat-grid      { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 30px; }
-.dashboard-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); margin-bottom: 30px; }
-.charts-grid    { grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); margin-bottom: 30px; }
-.form-grid      { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); align-items: end; }
-.timetable-grid { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
 
-.stack { display: flex; flex-direction: column; gap: 18px; }
-.row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.between { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.stat-grid { 
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+  margin-bottom: 36px; 
+}
 
+.dashboard-grid { 
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+  margin-bottom: 36px; 
+}
+
+.charts-grid { 
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+  margin-bottom: 36px; 
+}
+
+.form-grid { 
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+  align-items: end; 
+}
+
+.timetable-grid { 
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+}
+
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* Flex Utilities */
+.stack { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 20px; 
+}
+
+.stack-sm { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 12px; 
+}
+
+.stack-lg { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 32px; 
+}
+
+.row { 
+  display: flex; 
+  align-items: center; 
+  gap: 14px; 
+  flex-wrap: wrap; 
+}
+
+.row-start { 
+  display: flex; 
+  align-items: flex-start; 
+  gap: 14px; 
+  flex-wrap: wrap; 
+}
+
+.between { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  gap: 18px; 
+  flex-wrap: wrap; 
+}
+
+.center { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+}
 
 /* ============================================================
-   07. LOGIN / AUTH SCREEN
-   Moved from a magenta/cyan "cosmic" gradient to a composed,
-   institutional deep-blue field — still has presence, reads
-   like a serious institution rather than a consumer app.
+   07. LOGIN / AUTH SCREEN - HOLLYWOOD GRADE VIP EXPERIENCE
    ============================================================ */
 .auth-wrapper {
   position: relative;
@@ -491,462 +855,964 @@ p { color: var(--ink-600); }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 28px;
+  padding: 32px;
   overflow: hidden;
-  background:
-    radial-gradient(900px 600px at 15% 15%, rgba(47, 90, 163, 0.45), transparent 60%),
-    radial-gradient(800px 550px at 85% 85%, rgba(39, 107, 124, 0.30), transparent 60%),
-    linear-gradient(160deg, #0a1729 0%, #10233f 45%, #162e58 75%, #1c3b70 100%);
+  background: 
+    radial-gradient(ellipse 80% 60% at 15% 15%, rgba(251, 191, 36, 0.3), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 85% 85%, rgba(59, 130, 246, 0.3), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 50%, rgba(168, 85, 247, 0.2), transparent 60%),
+    linear-gradient(160deg, #020617 0%, #0f172a 30%, #1e293b 60%, #334155 100%);
   isolation: isolate;
 }
 
+/* Auth Background Patterns */
 .auth-wrapper::before {
   content: "";
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.08), transparent 40%),
-    radial-gradient(circle at 75% 65%, rgba(255, 255, 255, 0.05), transparent 45%);
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(251, 191, 36, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 
+    100% 100%, 
+    100% 100%, 
+    80px 80px, 
+    80px 80px;
   pointer-events: none;
   z-index: 1;
 }
 
-/* Floating orbs — fewer, slower, same brand family */
+.auth-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(2, 6, 23, 0.3) 50%,
+    rgba(2, 6, 23, 0.6) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* VIP Floating Orbs - Cinematic */
 .auth-wrapper .orb {
   position: absolute;
   border-radius: 50%;
   filter: blur(80px);
   pointer-events: none;
-  opacity: 0.4;
-  will-change: transform;
+  opacity: 0.5;
+  will-change: transform, opacity;
   z-index: 0;
+  mix-blend-mode: screen;
 }
-.auth-wrapper .orb.o1 { width: 380px; height: 380px; top: -100px; left: -80px;  background: var(--indigo-500); animation: driftA 26s ease-in-out infinite; }
-.auth-wrapper .orb.o2 { width: 300px; height: 300px; bottom: -80px; right: -60px; background: var(--cyan-500); animation: driftB 30s ease-in-out infinite; animation-delay: -6s; }
-.auth-wrapper .orb.o3 { width: 240px; height: 240px; top: 40%; right: 8%;     background: var(--violet-500); animation: driftC 34s ease-in-out infinite; animation-delay: -12s; }
-.auth-wrapper .orb.o4 { width: 200px; height: 200px; bottom: 20%; left: 8%;   background: var(--indigo-400); animation: driftA 28s ease-in-out infinite; animation-delay: -4s; }
 
-/* Auth card — quieter glass: less glow, more structure */
-.auth-card {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: 440px;
-  padding: 42px 36px 36px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
-  box-shadow:
-    0 30px 70px rgba(0, 0, 0, 0.40),
-    inset 0 1px 0 rgba(255, 255, 255, 0.20),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.10);
-  color: #fff;
-  animation: cardIn 560ms var(--ease-spring);
+.auth-wrapper .orb.o1 {
+  width: 450px; height: 450px;
+  top: -150px; left: -100px;
+  background: radial-gradient(circle, var(--gold-400), transparent 70%);
+  animation: orbFloat1 28s ease-in-out infinite;
+}
+
+.auth-wrapper .orb.o2 {
+  width: 350px; height: 350px;
+  bottom: -100px; right: -80px;
+  background: radial-gradient(circle, var(--royal-400), transparent 70%);
+  animation: orbFloat2 32s ease-in-out infinite;
+  animation-delay: -8s;
+}
+
+.auth-wrapper .orb.o3 {
+  width: 280px; height: 280px;
+  top: 35%; right: 10%;
+  background: radial-gradient(circle, var(--purple-400), transparent 70%);
+  animation: orbFloat3 36s ease-in-out infinite;
+  animation-delay: -15s;
+}
+
+.auth-wrapper .orb.o4 {
+  width: 220px; height: 220px;
+  bottom: 15%; left: 12%;
+  background: radial-gradient(circle, var(--cyan-400), transparent 70%);
+  animation: orbFloat1 30s ease-in-out infinite;
+  animation-delay: -5s;
+}
+
+.auth-wrapper .orb.o5 {
+  width: 180px; height: 180px;
+  top: 15%; right: 25%;
+  background: radial-gradient(circle, var(--rose-400), transparent 70%);
+  animation: orbFloat2 26s ease-in-out infinite;
+  animation-delay: -12s;
+}
+
+/* VIP Auth Particles */
+.auth-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
   overflow: hidden;
 }
 
+.auth-particles .particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold-400);
+  opacity: 0.6;
+  animation: particleFloat 15s linear infinite;
+}
+
+.auth-particles .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+.auth-particles .particle:nth-child(2) { left: 20%; animation-delay: 2s; background: var(--royal-400); }
+.auth-particles .particle:nth-child(3) { left: 30%; animation-delay: 4s; background: var(--purple-400); }
+.auth-particles .particle:nth-child(4) { left: 40%; animation-delay: 6s; background: var(--cyan-400); }
+.auth-particles .particle:nth-child(5) { left: 50%; animation-delay: 8s; }
+.auth-particles .particle:nth-child(6) { left: 60%; animation-delay: 10s; background: var(--emerald-400); }
+.auth-particles .particle:nth-child(7) { left: 70%; animation-delay: 1s; background: var(--rose-400); }
+.auth-particles .particle:nth-child(8) { left: 80%; animation-delay: 3s; }
+.auth-particles .particle:nth-child(9) { left: 90%; animation-delay: 5s; background: var(--royal-400); }
+
+/* VIP Auth Card - Luxury Glass */
+.auth-card {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 460px;
+  padding: 52px 44px 44px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    0 40px 80px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  color: #fff;
+  animation: authCardIn 800ms var(--ease-spring-strong);
+  overflow: hidden;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+/* Auth Card Border Gradient */
 .auth-card::before {
   content: "";
   position: absolute;
   inset: -1px;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg,
-    rgba(255, 255, 255, 0.35),
-    rgba(255, 255, 255, 0.04) 40%,
-    rgba(255, 255, 255, 0.30));
+  background: linear-gradient(
+    135deg,
+    rgba(251, 191, 36, 0.5) 0%,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(59, 130, 246, 0.3) 50%,
+    rgba(255, 255, 255, 0.1) 75%,
+    rgba(168, 85, 247, 0.4) 100%
+  );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
-          mask-composite: exclude;
+  mask-composite: exclude;
   pointer-events: none;
 }
 
-/* The rotating conic sheen is removed — a static, low-opacity
-   diagonal highlight reads calmer and still adds depth. */
+/* Auth Card Shine Effect */
 .auth-card::after {
   content: "";
   position: absolute;
-  top: -30%;
-  left: -30%;
-  width: 160%;
-  height: 160%;
-  background: linear-gradient(135deg,
-    rgba(255, 255, 255, 0.05) 0%,
-    transparent 35%,
-    transparent 65%,
-    rgba(255, 255, 255, 0.04) 100%);
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 70%
+  );
   pointer-events: none;
   z-index: -1;
+  animation: cardShine 8s ease-in-out infinite;
 }
 
+/* Auth Card Glow Ring */
+.auth-card-glow {
+  position: absolute;
+  inset: -40px;
+  border-radius: 60px;
+  background: radial-gradient(ellipse at center, rgba(251, 191, 36, 0.15), transparent 70%);
+  filter: blur(40px);
+  z-index: -1;
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+/* Auth Logo - Premium */
 .auth-logo {
   position: relative;
-  font-size: 3.2rem;
+  font-size: 4rem;
   text-align: center;
-  margin-bottom: 12px;
-  filter: drop-shadow(0 8px 22px rgba(47, 90, 163, 0.55));
+  margin-bottom: 20px;
+  filter: drop-shadow(0 10px 30px rgba(251, 191, 36, 0.5));
+  animation: logoFloat 4s ease-in-out infinite;
+}
+
+.auth-logo::before {
+  content: "";
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.3), transparent 70%);
+  border-radius: 50%;
+  filter: blur(20px);
+  z-index: -1;
+  animation: logoGlow 3s ease-in-out infinite alternate;
+}
+
+.auth-logo-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 120px;
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  border-radius: 50%;
+  animation: ringRotate 10s linear infinite;
+}
+
+.auth-logo-ring::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  background: var(--gold-400);
+  border-radius: 50%;
+  box-shadow: 0 0 15px var(--gold-400);
 }
 
 .auth-title {
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 800;
-  letter-spacing: -0.02em;
-  color: #ffffff;
-  margin-bottom: 8px;
+  letter-spacing: -0.025em;
+  background: linear-gradient(135deg, #ffffff 0%, #fbbf24 50%, #ffffff 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  margin-bottom: 10px;
+  animation: shimmerText 3s linear infinite;
 }
 
 .auth-subtitle {
   text-align: center;
-  font-size: 0.87rem;
-  color: rgba(255, 255, 255, 0.68);
-  margin-bottom: 28px;
-  letter-spacing: 0.005em;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 36px;
+  letter-spacing: 0.02em;
+  font-weight: 450;
 }
 
-/* Auth inputs */
-.auth-card label { color: rgba(255, 255, 255, 0.82); font-size: 0.8rem; }
+/* Auth Form Groups */
+.auth-card .form-group {
+  margin-bottom: 22px;
+}
 
+.auth-card label {
+  display: block;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+/* Auth Inputs - Premium */
 .auth-card input[type="text"],
 .auth-card input[type="password"],
 .auth-card input[type="email"] {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
   color: #fff;
-  padding: 13px 15px;
-  border-radius: 10px;
+  padding: 15px 18px;
+  border-radius: 12px;
   font-size: 0.95rem;
-  transition: all var(--t-base) var(--ease-out);
+  transition: all var(--t-base) var(--ease-out-expo);
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 1px 0 rgba(255, 255, 255, 0.05);
 }
-.auth-card input::placeholder { color: rgba(255, 255, 255, 0.40); }
+
+.auth-card input::placeholder { 
+  color: rgba(255, 255, 255, 0.4); 
+  font-weight: 400;
+}
+
 .auth-card input:hover {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
 }
+
 .auth-card input:focus {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(251, 191, 36, 0.6);
   box-shadow:
-    0 0 0 3px rgba(94, 140, 214, 0.35),
-    0 4px 16px rgba(47, 90, 163, 0.25);
+    0 0 0 4px rgba(251, 191, 36, 0.15),
+    0 0 30px rgba(251, 191, 36, 0.2),
+    inset 0 2px 4px rgba(0, 0, 0, 0.1);
   outline: none;
 }
 
+/* Auth Button - VIP Gold */
 .auth-card .btn {
-  padding: 14px 20px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #244a8b 0%, #276b7c 100%);
-  color: #fff;
+  width: 100%;
+  padding: 16px 24px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+  color: #0f172a;
   font-weight: 700;
-  letter-spacing: 0.01em;
+  font-size: 1rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
   box-shadow:
-    0 10px 24px rgba(36, 74, 139, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
-  transition: all var(--t-base) var(--ease-out);
+    0 10px 30px rgba(251, 191, 36, 0.4),
+    0 4px 12px rgba(251, 191, 36, 0.3),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+  transition: all var(--t-base) var(--ease-out-expo);
+  position: relative;
+  overflow: hidden;
 }
-.auth-card .btn:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.06);
-  box-shadow:
-    0 14px 30px rgba(36, 74, 139, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22);
-}
-.auth-card .btn:active { transform: translateY(0); }
 
+.auth-card .btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s var(--ease-out-expo);
+}
+
+.auth-card .btn:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 16px 40px rgba(251, 191, 36, 0.5),
+    0 8px 20px rgba(251, 191, 36, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.auth-card .btn:hover::before {
+  transform: translateX(100%);
+}
+
+.auth-card .btn:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+/* Auth Divider */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 28px 0;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+}
+
+/* Auth Hint */
 .auth-hint {
   text-align: center;
-  margin-top: 20px;
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.65);
-  line-height: 1.7;
+  margin-top: 24px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.8;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
-.auth-hint strong { color: #fff; font-weight: 700; }
 
+.auth-hint strong { 
+  color: var(--gold-400); 
+  font-weight: 700;
+}
+
+/* Auth Card Footer */
+.auth-footer {
+  text-align: center;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+}
 
 /* ============================================================
-   08. NAVBAR (FLOATING GLASS)
+   08. NAVBAR - FLOATING VIP GLASS
    ============================================================ */
 .navbar {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
+  gap: 20px;
   flex-wrap: wrap;
-  padding: 14px 28px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  border-bottom: 1px solid var(--border-subtle);
+  padding: 16px 32px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
   box-shadow:
-    0 2px 16px rgba(17, 24, 39, 0.04),
-    inset 0 -1px 0 rgba(17, 24, 39, 0.02);
+    0 2px 20px rgba(15, 23, 42, 0.04),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset;
+  transition: all var(--t-base) var(--ease-out-expo);
+}
+
+.navbar.scrolled {
+  padding: 12px 32px;
+  box-shadow:
+    0 4px 30px rgba(15, 23, 42, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset;
 }
 
 .navbar .brand {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  font-size: 1.03rem;
+  gap: 14px;
+  font-size: 1.1rem;
   font-weight: 800;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
   color: var(--ink-950);
+  transition: all var(--t-base) var(--ease-out-expo);
+}
+
+.navbar .brand:hover {
+  transform: scale(1.02);
 }
 
 .navbar .brand-mark {
-  width: 36px;
-  height: 36px;
-  border-radius: 9px;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
   display: grid;
   place-items: center;
-  font-size: 1.1rem;
-  background: var(--grad-brand-2);
-  color: #fff;
+  font-size: 1.25rem;
+  background: var(--grad-gold);
+  color: #0f172a;
   box-shadow:
-    0 4px 12px rgba(36, 74, 139, 0.30),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22);
-  transition: transform var(--t-base) var(--ease-spring);
+    0 4px 16px rgba(251, 191, 36, 0.4),
+    0 2px 8px rgba(251, 191, 36, 0.3),
+    inset 0 2px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  transition: all var(--t-base) var(--ease-spring);
+  position: relative;
 }
-.navbar .brand:hover .brand-mark { transform: scale(1.05); }
+
+.navbar .brand-mark::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.5), rgba(59, 130, 246, 0.5));
+  filter: blur(8px);
+  opacity: 0;
+  transition: opacity var(--t-base) var(--ease-out-expo);
+  z-index: -1;
+}
+
+.navbar .brand:hover .brand-mark {
+  transform: scale(1.08) rotate(3deg);
+}
+
+.navbar .brand:hover .brand-mark::before {
+  opacity: 1;
+}
 
 .navbar .nav-links {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 28px;
   flex-wrap: wrap;
 }
+
 .navbar .nav-links a {
   position: relative;
   color: var(--ink-700);
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 600;
-  padding: 8px 2px;
-  transition: color var(--t-base) var(--ease-out);
+  padding: 10px 4px;
+  transition: color var(--t-base) var(--ease-out-expo);
 }
+
 .navbar .nav-links a::after {
   content: "";
   position: absolute;
-  left: 0; right: 0; bottom: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   height: 2px;
   border-radius: 2px;
-  background: var(--indigo-600);
+  background: var(--grad-gold);
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform var(--t-base) var(--ease-out);
+  transition: transform var(--t-base) var(--ease-out-expo);
 }
-.navbar .nav-links a:hover { color: var(--indigo-600); }
-.navbar .nav-links a:hover::after { transform: scaleX(1); }
+
+.navbar .nav-links a:hover {
+  color: var(--gold-600);
+}
+
+.navbar .nav-links a:hover::after {
+  transform: scaleX(1);
+}
+
+.navbar .nav-links a.active {
+  color: var(--gold-600);
+}
+
+.navbar .nav-links a.active::after {
+  transform: scaleX(1);
+}
 
 .nav-user {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
 }
+
 .nav-user .user-name {
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   color: var(--ink-950);
 }
 
+.nav-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #fff;
+  background: var(--grad-royal);
+  box-shadow: 
+    0 4px 12px rgba(37, 99, 235, 0.3),
+    inset 0 2px 0 rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  transition: all var(--t-base) var(--ease-spring);
+  cursor: pointer;
+}
+
+.nav-avatar:hover {
+  transform: scale(1.1);
+  box-shadow: 
+    0 6px 20px rgba(37, 99, 235, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.2);
+}
 
 /* ============================================================
-   09. CARDS (NEUMORPHIC + GLASS HYBRID)
+   09. CARDS - PREMIUM 3D NEUMORPHIC + GLASS HYBRID
    ============================================================ */
 .card {
   position: relative;
-  padding: 26px;
-  margin-bottom: 24px;
+  padding: 28px;
+  margin-bottom: 28px;
   border-radius: var(--r-lg);
   background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
   box-shadow:
-    var(--sh-2),
-    var(--in-light);
-  transition: transform var(--t-base) var(--ease-out),
-              box-shadow var(--t-base) var(--ease-out),
-              border-color var(--t-base) var(--ease-out);
+    0 2px 4px rgba(15, 23, 42, 0.03),
+    0 6px 16px rgba(15, 23, 42, 0.04),
+    0 12px 32px rgba(15, 23, 42, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  transition: 
+    transform var(--t-base) var(--ease-out-expo),
+    box-shadow var(--t-base) var(--ease-out-expo),
+    border-color var(--t-base) var(--ease-out-expo);
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
   box-shadow:
-    var(--sh-3),
-    var(--in-light);
+    0 4px 8px rgba(15, 23, 42, 0.04),
+    0 12px 28px rgba(15, 23, 42, 0.06),
+    0 24px 56px rgba(15, 23, 42, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
   border-color: var(--border-soft);
 }
 
 .card-glass {
   background: var(--bg-glass-strong);
-  backdrop-filter: blur(14px) saturate(150%);
-  -webkit-backdrop-filter: blur(14px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.75);
 }
 
-.card-accent { overflow: hidden; }
+.card-glass-dark {
+  background: var(--bg-glass-dark);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.card-accent {
+  overflow: hidden;
+}
+
 .card-accent::before {
   content: "";
   position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 3px;
-  background: var(--indigo-600);
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--grad-gold);
+  border-radius: 4px 0 0 4px;
+}
+
+.card-accent-royal::before {
+  background: var(--grad-royal);
+}
+
+.card-accent-emerald::before {
+  background: var(--grad-emerald);
+}
+
+.card-accent-rose::before {
+  background: var(--grad-rose);
+}
+
+.card-accent-purple::before {
+  background: var(--grad-purple);
 }
 
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 18px;
-  padding-bottom: 14px;
+  gap: 16px;
+  margin-bottom: 22px;
+  padding-bottom: 18px;
   border-bottom: 1px solid var(--border-subtle);
 }
 
+.card-title {
+  font-size: 1.05rem;
+  font-weight: 750;
+  color: var(--ink-950);
+  letter-spacing: -0.01em;
+}
+
+.card-subtitle {
+  font-size: 0.82rem;
+  color: var(--ink-500);
+  margin-top: 4px;
+}
+
+/* Card with 3D Tilt Effect */
+.card-3d {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.card-3d:hover {
+  transform: translateY(-6px) rotateX(2deg) rotateY(-2deg);
+}
 
 /* ============================================================
-   10. STAT CARDS (3D TILES)
-   Values now read in solid ink rather than a rainbow gradient —
-   easier to scan, more report-like, still identifiable by the
-   accent wash and top hairline.
+   10. STAT CARDS - VIP 3D TILES WITH DEPTH
    ============================================================ */
 .stat-card {
   position: relative;
-  padding: 20px 22px;
+  padding: 24px 26px;
   border-radius: var(--r-lg);
   background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
   box-shadow:
-    0 1px 2px rgba(17, 24, 39, 0.04),
-    0 4px 12px rgba(17, 24, 39, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    0 1px 2px rgba(15, 23, 42, 0.03),
+    0 4px 12px rgba(15, 23, 42, 0.04),
+    0 8px 24px rgba(15, 23, 42, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   overflow: hidden;
-  transition: transform var(--t-base) var(--ease-out),
-              box-shadow var(--t-base) var(--ease-out);
+  transition: 
+    transform var(--t-base) var(--ease-out-expo),
+    box-shadow var(--t-base) var(--ease-out-expo);
   isolation: isolate;
+  transform-style: preserve-3d;
 }
 
 .stat-card::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(500px 120px at -10% -40%, rgba(36, 74, 139, 0.06), transparent 70%);
+  background: radial-gradient(
+    600px 150px at -10% -40%,
+    rgba(251, 191, 36, 0.06),
+    transparent 70%
+  );
   pointer-events: none;
   z-index: -1;
+  transition: opacity var(--t-base) var(--ease-out-expo);
 }
 
 .stat-card::after {
   content: "";
   position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg,
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
     transparent,
-    rgba(255, 255, 255, 0.9) 30%,
-    rgba(255, 255, 255, 0.9) 70%,
-    transparent);
-  pointer-events: none;
+    rgba(251, 191, 36, 0.8) 30%,
+    rgba(251, 191, 36, 0.8) 70%,
+    transparent
+  );
+  opacity: 0;
+  transition: opacity var(--t-base) var(--ease-out-expo);
 }
 
 .stat-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-6px) scale(1.02);
   box-shadow:
-    0 2px 6px rgba(17, 24, 39, 0.05),
-    0 10px 24px rgba(17, 24, 39, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 4px 8px rgba(15, 23, 42, 0.04),
+    0 12px 28px rgba(15, 23, 42, 0.06),
+    0 24px 56px rgba(15, 23, 42, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.stat-card:hover::before {
+  opacity: 1;
+}
+
+.stat-card:hover::after {
+  opacity: 1;
+}
+
+.stat-card .stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+  background: var(--grad-gold);
+  color: #0f172a;
+  box-shadow: 
+    0 4px 12px rgba(251, 191, 36, 0.3),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3);
 }
 
 .stat-card .stat-label {
-  font-size: 0.7rem;
-  font-weight: 750;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-400);
-}
-
-.stat-card .stat-value {
-  font-size: 2rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.08;
-  color: var(--ink-950);
-  font-variant-numeric: tabular-nums;
-}
-
-.stat-card .stat-hint {
-  font-size: 0.78rem;
-  color: var(--ink-500);
-}
-
-/* Accent variants — small colored top rule + label tint,
-   value stays solid ink for legibility */
-.stat-card.accent-green::before { background: radial-gradient(500px 120px at -10% -40%, rgba(31, 150, 112, 0.08), transparent 70%); }
-.stat-card.accent-green::after  { background: linear-gradient(90deg, transparent, var(--success), transparent); opacity: 0.5; }
-
-.stat-card.accent-red::before { background: radial-gradient(500px 120px at -10% -40%, rgba(192, 67, 63, 0.08), transparent 70%); }
-.stat-card.accent-red::after  { background: linear-gradient(90deg, transparent, var(--danger), transparent); opacity: 0.5; }
-
-.stat-card.accent-amber::before { background: radial-gradient(500px 120px at -10% -40%, rgba(177, 121, 26, 0.09), transparent 70%); }
-.stat-card.accent-amber::after  { background: linear-gradient(90deg, transparent, var(--warning), transparent); opacity: 0.5; }
-
-.stat-card.accent-blue::before { background: radial-gradient(500px 120px at -10% -40%, rgba(47, 111, 163, 0.08), transparent 70%); }
-.stat-card.accent-blue::after  { background: linear-gradient(90deg, transparent, var(--info), transparent); opacity: 0.5; }
-
-
-/* ============================================================
-   11. CHARTS SHELL
-   ============================================================ */
-.chart-card {
-  position: relative;
-  padding: 24px;
-  border-radius: var(--r-lg);
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--sh-2), var(--in-light);
-  overflow: hidden;
-}
-.chart-card::after {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: var(--indigo-600);
-  opacity: 0.7;
-}
-
-.chart-card h3 {
   font-size: 0.72rem;
   font-weight: 750;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink-400);
-  margin-bottom: 18px;
+}
+
+.stat-card .stat-value {
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  color: var(--ink-950);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-card .stat-hint {
+  font-size: 0.8rem;
+  color: var(--ink-500);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
+
+.stat-card .stat-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--r-pill);
+}
+
+.stat-trend.up {
+  background: var(--success-soft);
+  color: var(--success-dark);
+}
+
+.stat-trend.down {
+  background: var(--danger-soft);
+  color: var(--danger-dark);
+}
+
+/* Stat Card Accent Variants */
+.stat-card.accent-gold::before {
+  background: radial-gradient(600px 150px at -10% -40%, rgba(251, 191, 36, 0.1), transparent 70%);
+}
+.stat-card.accent-gold::after {
+  background: linear-gradient(90deg, transparent, var(--gold-400), transparent);
+  opacity: 0.6;
+}
+.stat-card.accent-gold .stat-icon {
+  background: var(--grad-gold);
+}
+
+.stat-card.accent-royal::before {
+  background: radial-gradient(600px 150px at -10% -40%, rgba(59, 130, 246, 0.1), transparent 70%);
+}
+.stat-card.accent-royal::after {
+  background: linear-gradient(90deg, transparent, var(--royal-400), transparent);
+  opacity: 0.6;
+}
+.stat-card.accent-royal .stat-icon {
+  background: var(--grad-royal);
+  color: #fff;
+}
+
+.stat-card.accent-emerald::before {
+  background: radial-gradient(600px 150px at -10% -40%, rgba(16, 185, 129, 0.1), transparent 70%);
+}
+.stat-card.accent-emerald::after {
+  background: linear-gradient(90deg, transparent, var(--emerald-400), transparent);
+  opacity: 0.6;
+}
+.stat-card.accent-emerald .stat-icon {
+  background: var(--grad-emerald);
+  color: #fff;
+}
+
+.stat-card.accent-rose::before {
+  background: radial-gradient(600px 150px at -10% -40%, rgba(244, 63, 94, 0.1), transparent 70%);
+}
+.stat-card.accent-rose::after {
+  background: linear-gradient(90deg, transparent, var(--rose-400), transparent);
+  opacity: 0.6;
+}
+.stat-card.accent-rose .stat-icon {
+  background: var(--grad-rose);
+  color: #fff;
+}
+
+.stat-card.accent-purple::before {
+  background: radial-gradient(600px 150px at -10% -40%, rgba(168, 85, 247, 0.1), transparent 70%);
+}
+.stat-card.accent-purple::after {
+  background: linear-gradient(90deg, transparent, var(--purple-400), transparent);
+  opacity: 0.6;
+}
+.stat-card.accent-purple .stat-icon {
+  background: var(--grad-purple);
+  color: #fff;
+}
+
+/* ============================================================
+   11. CHARTS SHELL - PREMIUM CONTAINERS
+   ============================================================ */
+.chart-card {
+  position: relative;
+  padding: 28px;
+  border-radius: var(--r-lg);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 
+    0 2px 4px rgba(15, 23, 42, 0.03),
+    0 8px 20px rgba(15, 23, 42, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  overflow: hidden;
+  transition: all var(--t-base) var(--ease-out-expo);
+}
+
+.chart-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 4px 8px rgba(15, 23, 42, 0.04),
+    0 16px 32px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.chart-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--grad-gold);
+  opacity: 0.8;
+}
+
+.chart-card h3 {
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-400);
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .chart-card h3::before {
   content: "";
-  width: 6px; height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: var(--indigo-500);
+  background: var(--grad-gold);
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
 }
 
 .chart-container {
   position: relative;
   width: 100%;
-  height: 260px;
+  height: 280px;
 }
 
-
 /* ============================================================
-   12. DATA TABLES
+   12. DATA TABLES - VIP PREMIUM
    ============================================================ */
 .table-wrap {
   width: 100%;
@@ -954,51 +1820,64 @@ p { color: var(--ink-600); }
   border-radius: var(--r-md);
   border: 1px solid var(--border-subtle);
   background: var(--bg-elevated);
-  box-shadow: var(--sh-1), var(--in-light);
+  box-shadow: 
+    0 1px 2px rgba(15, 23, 42, 0.03),
+    0 4px 12px rgba(15, 23, 42, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
 }
 
 table thead th {
-  background: var(--bg-recessed);
+  background: linear-gradient(180deg, var(--bg-recessed) 0%, #e8edf4 100%);
   text-align: left;
-  padding: 13px 16px;
-  font-size: 0.7rem;
+  padding: 16px 20px;
+  font-size: 0.72rem;
   font-weight: 750;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink-500);
-  border-bottom: 1px solid var(--border-soft);
+  border-bottom: 2px solid var(--border-soft);
   white-space: nowrap;
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
+
 table thead th + th::before {
   content: "";
   position: absolute;
-  left: 0; top: 25%; bottom: 25%;
+  left: 0;
+  top: 25%;
+  bottom: 25%;
   width: 1px;
   background: var(--border-subtle);
 }
 
 table tbody td {
-  padding: 13px 16px;
+  padding: 16px 20px;
   border-bottom: 1px solid var(--border-subtle);
   vertical-align: middle;
   color: var(--ink-700);
   font-variant-numeric: tabular-nums;
+  transition: background var(--t-fast) var(--ease-out-expo);
 }
 
 table tbody tr {
-  transition: background var(--t-base) var(--ease-out);
+  transition: all var(--t-base) var(--ease-out-expo);
 }
+
 table tbody tr:hover {
-  background: rgba(47, 90, 163, 0.035);
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.04) 0%, rgba(251, 191, 36, 0.08) 50%, rgba(251, 191, 36, 0.04) 100%);
 }
-table tbody tr:last-child td { border-bottom: none; }
+
+table tbody tr:last-child td {
+  border-bottom: none;
+}
 
 table tbody tr td:first-child {
   color: var(--ink-400);
@@ -1006,21 +1885,29 @@ table tbody tr td:first-child {
   font-variant-numeric: tabular-nums;
 }
 
+/* Table Row Selection */
+table tbody tr.selected {
+  background: rgba(251, 191, 36, 0.08);
+}
+
+table tbody tr.selected td:first-child {
+  color: var(--gold-600);
+}
 
 /* ============================================================
-   13. FORMS & INPUTS
+   13. FORMS & INPUTS - PREMIUM VIP
    ============================================================ */
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  margin-bottom: 16px;
+  gap: 8px;
+  margin-bottom: 20px;
 }
 
 label {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  letter-spacing: 0.015em;
+  letter-spacing: 0.02em;
   color: var(--ink-700);
 }
 
@@ -1031,10 +1918,12 @@ input[type="tel"],
 input[type="number"],
 input[type="date"],
 input[type="time"],
+input[type="search"],
+input[type="url"],
 select,
 textarea {
   width: 100%;
-  padding: 11px 14px;
+  padding: 13px 16px;
   font-size: 0.94rem;
   font-family: inherit;
   color: var(--ink-900);
@@ -1042,67 +1931,206 @@ textarea {
   border: 1.5px solid var(--border-soft);
   border-radius: var(--r-sm);
   transition:
-    border-color var(--t-base) var(--ease-out),
-    box-shadow var(--t-base) var(--ease-out),
-    background var(--t-base) var(--ease-out);
+    border-color var(--t-base) var(--ease-out-expo),
+    box-shadow var(--t-base) var(--ease-out-expo),
+    background var(--t-base) var(--ease-out-expo);
   appearance: none;
   -webkit-appearance: none;
-  box-shadow: var(--in-light);
+  box-shadow: 
+    inset 0 2px 4px rgba(15, 23, 42, 0.03),
+    0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 input:hover, select:hover, textarea:hover {
-  border-color: var(--border-strong);
+  border-color: var(--border-medium);
+  background: #fefefe;
 }
 
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: var(--indigo-500);
-  background: #fff;
+  border-color: var(--gold-500);
+  background: #ffffff;
   box-shadow:
-    var(--ring),
-    var(--in-light);
+    0 0 0 4px rgba(251, 191, 36, 0.15),
+    0 0 20px rgba(251, 191, 36, 0.1),
+    inset 0 2px 4px rgba(15, 23, 42, 0.03);
 }
 
 input:disabled, select:disabled, textarea:disabled {
   background: var(--bg-recessed);
   cursor: not-allowed;
   color: var(--ink-400);
+  opacity: 0.7;
 }
 
-textarea { resize: vertical; min-height: 100px; line-height: 1.55; }
+textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+}
 
 select {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat: no-repeat;
-  background-position: right 14px center;
-  padding-right: 40px;
+  background-position: right 16px center;
+  padding-right: 48px;
 }
 
-input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 440; }
+input::placeholder, textarea::placeholder {
+  color: var(--ink-400);
+  font-weight: 400;
+}
 
+/* Input with Icon */
+.input-icon-wrapper {
+  position: relative;
+}
+
+.input-icon-wrapper .input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-400);
+  pointer-events: none;
+  transition: color var(--t-base) var(--ease-out-expo);
+}
+
+.input-icon-wrapper input {
+  padding-left: 48px;
+}
+
+.input-icon-wrapper input:focus + .input-icon {
+  color: var(--gold-500);
+}
+
+/* Checkbox & Radio */
+.checkbox-wrapper,
+.radio-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--ink-700);
+}
+
+.checkbox-wrapper input[type="checkbox"],
+.radio-wrapper input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 2px solid var(--border-medium);
+  background: #fff;
+  cursor: pointer;
+  transition: all var(--t-base) var(--ease-out-expo);
+  position: relative;
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+}
+
+.checkbox-wrapper input[type="checkbox"]:checked {
+  background: var(--grad-gold);
+  border-color: var(--gold-500);
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+}
+
+.checkbox-wrapper input[type="checkbox"]:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.radio-wrapper input[type="radio"] {
+  border-radius: 50%;
+}
+
+.radio-wrapper input[type="radio"]:checked {
+  border-color: var(--gold-500);
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+}
+
+.radio-wrapper input[type="radio"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--grad-gold);
+}
+
+/* Toggle Switch */
+.toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.toggle {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  border-radius: 14px;
+  background: var(--ink-300);
+  transition: all var(--t-base) var(--ease-out-expo);
+  box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.1);
+}
+
+.toggle::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
+  transition: all var(--t-base) var(--ease-spring);
+}
+
+.toggle-wrapper input:checked + .toggle {
+  background: var(--grad-gold);
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(251, 191, 36, 0.3);
+}
+
+.toggle-wrapper input:checked + .toggle::after {
+  transform: translateX(24px);
+}
 
 /* ============================================================
-   14. BUTTONS (3D TACTILE)
-   Depth kept, but the diagonal shine sweep on hover is removed —
-   it's the single biggest "flashy demo" tell. Buttons now rely
-   on a slight lift and solid brand color instead.
+   14. BUTTONS - VIP 3D TACTILE WITH LUXURY DEPTH
    ============================================================ */
 .btn {
-  --btn-grad: var(--grad-brand-2);
-  --btn-shadow: rgba(28, 59, 112, 0.22);
+  --btn-grad: var(--grad-gold);
+  --btn-shadow: rgba(251, 191, 36, 0.4);
+  --btn-text: #0f172a;
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  padding: 11px 18px;
-  font-size: 0.9rem;
-  font-weight: 650;
-  letter-spacing: 0.005em;
+  gap: 10px;
+  padding: 13px 22px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   line-height: 1;
-  color: #ffffff;
+  color: var(--btn-text);
   background: var(--btn-grad);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: var(--r-sm);
   cursor: pointer;
   text-decoration: none;
@@ -1111,324 +2139,676 @@ input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 
   overflow: hidden;
   isolation: isolate;
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.18) inset,
-    0 -1px 0 rgba(0, 0, 0, 0.08) inset,
-    0 3px 10px var(--btn-shadow);
+    0 2px 0 rgba(255, 255, 255, 0.2) inset,
+    0 -2px 0 rgba(0, 0, 0, 0.1) inset,
+    0 4px 12px var(--btn-shadow),
+    0 2px 4px rgba(15, 23, 42, 0.1);
   transition:
-    transform var(--t-fast) var(--ease-out),
-    box-shadow var(--t-base) var(--ease-out),
-    filter var(--t-base) var(--ease-out);
+    transform var(--t-fast) var(--ease-out-expo),
+    box-shadow var(--t-base) var(--ease-out-expo),
+    filter var(--t-base) var(--ease-out-expo);
+  transform-style: preserve-3d;
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.25) 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+  pointer-events: none;
+}
+
+.btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.6s var(--ease-out-expo);
 }
 
 .btn:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.04);
+  transform: translateY(-3px);
+  filter: brightness(1.05);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.20) inset,
-    0 -1px 0 rgba(0, 0, 0, 0.08) inset,
-    0 8px 18px var(--btn-shadow);
+    0 2px 0 rgba(255, 255, 255, 0.25) inset,
+    0 -2px 0 rgba(0, 0, 0, 0.1) inset,
+    0 12px 28px var(--btn-shadow),
+    0 4px 8px rgba(15, 23, 42, 0.12);
 }
-.btn:active { transform: translateY(0) scale(0.99); }
-.btn:focus-visible { outline: none; box-shadow: var(--ring-strong), 0 4px 10px var(--btn-shadow); }
 
-.btn-sm { padding: 7px 12px; font-size: 0.8rem; border-radius: var(--r-xs); }
-.btn-lg { padding: 14px 22px; font-size: 0.98rem; border-radius: var(--r-md); }
+.btn:hover::after {
+  left: 100%;
+}
+
+.btn:active {
+  transform: translateY(-1px) scale(0.98);
+  box-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.2) inset,
+    0 -2px 0 rgba(0, 0, 0, 0.15) inset,
+    0 4px 8px var(--btn-shadow);
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 
+    0 0 0 4px rgba(251, 191, 36, 0.3),
+    0 4px 12px var(--btn-shadow);
+}
+
+/* Button Sizes */
+.btn-xs { padding: 6px 12px; font-size: 0.72rem; border-radius: var(--r-xs); }
+.btn-sm { padding: 9px 16px; font-size: 0.82rem; border-radius: var(--r-xs); }
+.btn-lg { padding: 16px 28px; font-size: 1rem; border-radius: var(--r-md); }
+.btn-xl { padding: 20px 36px; font-size: 1.08rem; border-radius: var(--r-lg); }
 .btn-block { width: 100%; }
+.btn-pill { border-radius: var(--r-pill); }
 
-.btn-success { --btn-grad: var(--grad-forest); --btn-shadow: rgba(23, 121, 90, 0.24); }
-.btn-danger  { --btn-grad: var(--grad-sunset); --btn-shadow: rgba(152, 65, 68, 0.24); }
-.btn-warning { --btn-grad: linear-gradient(135deg, #b1791a, #96580f); --btn-shadow: rgba(177, 121, 26, 0.24); }
-.btn-info    { --btn-grad: var(--grad-ocean); --btn-shadow: rgba(61, 135, 176, 0.24); }
+/* Button Variants */
+.btn-gold {
+  --btn-grad: var(--grad-gold);
+  --btn-shadow: rgba(251, 191, 36, 0.4);
+  --btn-text: #0f172a;
+}
 
+.btn-royal {
+  --btn-grad: var(--grad-royal);
+  --btn-shadow: rgba(37, 99, 235, 0.4);
+  --btn-text: #ffffff;
+}
+
+.btn-royal::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%, rgba(0, 0, 0, 0.1) 100%);
+}
+
+.btn-emerald {
+  --btn-grad: var(--grad-emerald);
+  --btn-shadow: rgba(16, 185, 129, 0.4);
+  --btn-text: #ffffff;
+}
+
+.btn-rose {
+  --btn-grad: var(--grad-rose);
+  --btn-shadow: rgba(244, 63, 94, 0.4);
+  --btn-text: #ffffff;
+}
+
+.btn-purple {
+  --btn-grad: var(--grad-purple);
+  --btn-shadow: rgba(168, 85, 247, 0.4);
+  --btn-text: #ffffff;
+}
+
+.btn-cyan {
+  --btn-grad: var(--grad-cyan);
+  --btn-shadow: rgba(6, 182, 212, 0.4);
+  --btn-text: #ffffff;
+}
+
+.btn-luxury {
+  --btn-grad: var(--grad-luxury);
+  --btn-shadow: rgba(15, 23, 42, 0.4);
+  --btn-text: #ffffff;
+}
+
+/* Ghost Button */
 .btn-ghost {
   background: transparent;
-  color: var(--indigo-600);
-  border: 1.5px solid var(--indigo-200);
-  box-shadow: none;
-}
-.btn-ghost:hover {
-  background: var(--indigo-50);
-  border-color: var(--indigo-300);
-  color: var(--indigo-700);
+  color: var(--gold-600);
+  border: 2px solid var(--gold-300);
   box-shadow: none;
 }
 
+.btn-ghost::before,
+.btn-ghost::after {
+  display: none;
+}
+
+.btn-ghost:hover {
+  background: rgba(251, 191, 36, 0.1);
+  border-color: var(--gold-400);
+  color: var(--gold-700);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Outline Button */
 .btn-outline {
   background: #fff;
   color: var(--ink-700);
-  border: 1.5px solid var(--border-strong);
-  box-shadow: var(--sh-1);
+  border: 2px solid var(--border-medium);
+  box-shadow: 
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
+
+.btn-outline::before,
+.btn-outline::after {
+  display: none;
+}
+
 .btn-outline:hover {
   background: var(--bg-recessed);
   color: var(--ink-900);
   border-color: var(--ink-400);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
 }
 
-.btn-icon { padding: 9px; width: 36px; height: 36px; border-radius: var(--r-sm); }
+/* Icon Button */
+.btn-icon {
+  padding: 10px;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--r-sm);
+}
 
-.actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.actions form { display: inline; }
+.btn-icon-sm {
+  padding: 8px;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-xs);
+}
 
+/* Action Groups */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.actions form {
+  display: inline;
+}
 
 /* ============================================================
-   15. FLASH MESSAGES
+   15. FLASH MESSAGES - VIP NOTIFICATIONS
    ============================================================ */
 .flash-container {
-  max-width: 1320px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 20px 22px 0;
+  padding: 24px 24px 0;
+  position: relative;
+  z-index: 100;
 }
 
 .flash {
   position: relative;
   display: flex;
   align-items: flex-start;
-  gap: 14px;
-  padding: 14px 18px;
-  margin-bottom: 14px;
+  gap: 16px;
+  padding: 18px 22px;
+  margin-bottom: 16px;
   border-radius: var(--r-md);
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 600;
   border: 1px solid transparent;
   overflow: hidden;
-  box-shadow: var(--sh-1);
-  animation: flashIn 320ms var(--ease-out);
+  box-shadow: 
+    0 2px 4px rgba(15, 23, 42, 0.04),
+    0 8px 20px rgba(15, 23, 42, 0.06);
+  animation: flashSlideIn 400ms var(--ease-spring);
 }
+
 .flash::before {
   content: "";
   position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 3px;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
   background: currentColor;
+  border-radius: 4px 0 0 4px;
 }
 
-.flash.success { background: var(--success-soft); color: var(--success-dark); border-color: rgba(31, 150, 112, 0.20); }
-.flash.error   { background: var(--danger-soft);  color: var(--danger-dark);  border-color: rgba(192, 67, 63, 0.20); }
-.flash.info    { background: var(--info-soft);    color: #1e4b6e;              border-color: rgba(47, 111, 163, 0.20); }
-.flash.warning { background: var(--warning-soft); color: var(--warning-dark); border-color: rgba(177, 121, 26, 0.24); }
+.flash::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, currentColor 0%, transparent 20%);
+  opacity: 0.05;
+  pointer-events: none;
+}
 
+.flash.success {
+  background: linear-gradient(135deg, var(--success-soft) 0%, #d1fae5 100%);
+  color: var(--success-dark);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.flash.error {
+  background: linear-gradient(135deg, var(--danger-soft) 0%, #fecaca 100%);
+  color: var(--danger-dark);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.flash.info {
+  background: linear-gradient(135deg, var(--info-soft) 0%, #cffafe 100%);
+  color: var(--info-dark);
+  border-color: rgba(6, 182, 212, 0.25);
+}
+
+.flash.warning {
+  background: linear-gradient(135deg, var(--warning-soft) 0%, #fef3c7 100%);
+  color: var(--warning-dark);
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.flash-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  background: currentColor;
+  color: #fff;
+}
+
+.flash-content {
+  flex: 1;
+}
+
+.flash-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: currentColor;
+  opacity: 0.5;
+  transition: all var(--t-base) var(--ease-out-expo);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.flash-close:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.05);
+}
 
 /* ============================================================
-   16. BADGES & PILLS
-   Flatter, no glow-shadow, no text-shadow — reads as UI chrome
-   rather than a sticker.
+   16. BADGES & PILLS - VIP STATUS INDICATORS
    ============================================================ */
 .role-badge {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 5px 12px;
-  font-size: 0.68rem;
+  gap: 8px;
+  padding: 6px 14px;
+  font-size: 0.7rem;
   font-weight: 750;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   border-radius: var(--r-pill);
   color: #fff;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  box-shadow: 
+    0 2px 6px rgba(15, 23, 42, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all var(--t-base) var(--ease-out-expo);
 }
-.role-super_admin { background: var(--violet-600); }
-.role-principal   { background: var(--indigo-600); }
-.role-teacher     { background: var(--emerald-600); }
-.role-student     { background: var(--amber-600); }
-.role-parent      { background: var(--rose-600); }
 
+.role-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 12px rgba(15, 23, 42, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.role-super_admin { 
+  background: var(--grad-purple); 
+}
+
+.role-principal { 
+  background: var(--grad-royal); 
+}
+
+.role-teacher { 
+  background: var(--grad-emerald); 
+}
+
+.role-student { 
+  background: var(--grad-gold);
+  color: #0f172a;
+}
+
+.role-parent { 
+  background: var(--grad-rose); 
+}
+
+.role-admin {
+  background: var(--grad-luxury);
+}
+
+/* Roll Badge */
 .roll-badge {
   display: inline-flex;
   align-items: center;
-  padding: 5px 10px;
+  padding: 6px 12px;
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.76rem;
   font-weight: 750;
-  letter-spacing: 0.02em;
-  color: var(--indigo-700);
-  background: var(--indigo-50);
-  border: 1px solid var(--indigo-200);
+  letter-spacing: 0.03em;
+  color: var(--royal-700);
+  background: linear-gradient(135deg, var(--royal-50) 0%, var(--royal-100) 100%);
+  border: 1px solid var(--royal-200);
   border-radius: var(--r-xs);
-  box-shadow: inset 0 1px 0 #fff;
+  box-shadow: 
+    inset 0 1px 0 #fff,
+    0 1px 2px rgba(37, 99, 235, 0.1);
 }
 
+/* Pills */
 .pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  font-size: 0.7rem;
+  gap: 8px;
+  padding: 6px 14px;
+  font-size: 0.72rem;
   font-weight: 750;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   border-radius: var(--r-pill);
+  transition: all var(--t-base) var(--ease-out-expo);
 }
+
 .pill::before {
   content: "";
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: currentColor;
+  box-shadow: 0 0 8px currentColor;
 }
-.pill-paid    { background: var(--success-soft); color: var(--success-dark); }
-.pill-unpaid  { background: var(--danger-soft);  color: var(--danger-dark); }
-.pill-partial { background: var(--warning-soft); color: var(--warning-dark); }
 
+.pill-paid {
+  background: linear-gradient(135deg, var(--success-soft) 0%, #d1fae5 100%);
+  color: var(--success-dark);
+}
+
+.pill-unpaid {
+  background: linear-gradient(135deg, var(--danger-soft) 0%, #fecaca 100%);
+  color: var(--danger-dark);
+}
+
+.pill-partial {
+  background: linear-gradient(135deg, var(--warning-soft) 0%, #fef3c7 100%);
+  color: var(--warning-dark);
+}
+
+.pill-active {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+}
+
+.pill-inactive {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  color: #475569;
+}
+
+/* Status Dot */
+.status-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.status-dot::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 10px currentColor;
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+.status-dot.online { color: var(--success); }
+.status-dot.offline { color: var(--ink-400); }
+.status-dot.busy { color: var(--danger); }
+.status-dot.away { color: var(--warning); }
 
 /* ============================================================
-   17. SCHEDULES & TIMETABLE
+   17. SCHEDULES & TIMETABLE - VIP CALENDAR
    ============================================================ */
 .schedule-item {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 13px 18px;
+  gap: 20px;
+  padding: 16px 22px;
   border-radius: var(--r-md);
   background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
-  border-left: 3px solid transparent;
-  background-clip: padding-box;
-  margin-bottom: 10px;
-  box-shadow: var(--sh-1);
-  transition: all var(--t-base) var(--ease-out);
+  border-left: 4px solid transparent;
+  margin-bottom: 12px;
+  box-shadow: 
+    0 1px 2px rgba(15, 23, 42, 0.03),
+    0 4px 12px rgba(15, 23, 42, 0.04);
+  transition: all var(--t-base) var(--ease-out-expo);
 }
+
 .schedule-item::before {
   content: "";
   position: absolute;
-  left: -3px;
-  top: 12px; bottom: 12px;
-  width: 3px;
-  border-radius: 3px;
-  background: var(--indigo-600);
+  left: -4px;
+  top: 16px;
+  bottom: 16px;
+  width: 4px;
+  border-radius: 4px;
+  background: var(--grad-gold);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
 }
+
 .schedule-item:hover {
-  transform: translateX(2px);
-  box-shadow: var(--sh-2);
-  border-color: var(--border-soft);
+  transform: translateX(6px);
+  box-shadow: 
+    0 4px 8px rgba(15, 23, 42, 0.05),
+    0 12px 28px rgba(15, 23, 42, 0.08);
+  border-color: var(--gold-200);
 }
 
 .schedule-item .time-chip {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 750;
-  letter-spacing: 0.01em;
-  color: var(--indigo-700);
-  background: var(--indigo-50);
-  border: 1px solid var(--indigo-200);
-  padding: 7px 12px;
+  letter-spacing: 0.02em;
+  color: var(--gold-700);
+  background: linear-gradient(135deg, var(--gold-50) 0%, var(--gold-100) 100%);
+  border: 1px solid var(--gold-200);
+  padding: 8px 14px;
   border-radius: var(--r-xs);
-  min-width: 122px;
+  min-width: 130px;
   text-align: center;
   white-space: nowrap;
+  box-shadow: inset 0 1px 0 #fff;
 }
 
 .schedule-item .sched-info {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   flex: 1;
 }
-.schedule-item .sched-info strong { font-size: 0.95rem; color: var(--ink-950); font-weight: 700; }
-.schedule-item .sched-info span   { font-size: 0.83rem; color: var(--ink-500); }
 
+.schedule-item .sched-info strong {
+  font-size: 0.98rem;
+  color: var(--ink-950);
+  font-weight: 700;
+}
+
+.schedule-item .sched-info span {
+  font-size: 0.84rem;
+  color: var(--ink-500);
+}
+
+/* Timetable Day Card */
 .timetable-day {
   position: relative;
   background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
   border-radius: var(--r-lg);
-  padding: 16px;
-  box-shadow: var(--sh-2), var(--in-light);
-  transition: all var(--t-base) var(--ease-out);
+  padding: 20px;
+  box-shadow: 
+    0 2px 4px rgba(15, 23, 42, 0.03),
+    0 8px 20px rgba(15, 23, 42, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  transition: all var(--t-base) var(--ease-out-expo);
+  overflow: hidden;
 }
+
+.timetable-day::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--grad-gold);
+  opacity: 0.8;
+}
+
 .timetable-day:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--sh-3), var(--in-light);
+  transform: translateY(-4px);
+  box-shadow: 
+    0 4px 8px rgba(15, 23, 42, 0.04),
+    0 16px 40px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .timetable-day h4 {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 750;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--indigo-600);
-  padding-bottom: 10px;
-  margin-bottom: 12px;
-  border-bottom: 1px dashed var(--border-soft);
+  color: var(--gold-600);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  border-bottom: 2px dashed var(--border-soft);
 }
 
 .timetable-day .slot {
-  font-size: 0.83rem;
-  padding: 10px 12px;
-  background: var(--bg-recessed);
+  font-size: 0.85rem;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, var(--bg-recessed) 0%, #e8edf4 100%);
   border: 1px solid var(--border-subtle);
-  border-left: 3px solid var(--violet-500);
+  border-left: 3px solid var(--purple-500);
   border-radius: var(--r-xs);
-  margin-bottom: 7px;
-  line-height: 1.45;
-  transition: transform var(--t-fast) var(--ease-out);
+  margin-bottom: 8px;
+  line-height: 1.5;
+  transition: all var(--t-fast) var(--ease-out-expo);
 }
-.timetable-day .slot:hover { transform: translateX(2px); }
-.timetable-day .slot strong { display: block; color: var(--ink-950); font-size: 0.86rem; }
+
+.timetable-day .slot:hover {
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+}
+
+.timetable-day .slot strong {
+  display: block;
+  color: var(--ink-950);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
 .timetable-day .slot .slot-time {
   display: block;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   color: var(--ink-500);
-  margin-top: 3px;
+  margin-top: 4px;
 }
 
-
 /* ============================================================
-   18. QUICK-LINK TILES
+   18. QUICK-LINK TILES - VIP DASHBOARD CARDS
    ============================================================ */
 .dashboard-grid > a.card {
   position: relative;
   text-decoration: none;
   color: inherit;
   overflow: hidden;
-  transition: all var(--t-base) var(--ease-out);
+  transition: all var(--t-base) var(--ease-out-expo);
+  transform-style: preserve-3d;
 }
+
 .dashboard-grid > a.card h3 {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   color: var(--ink-950);
-  margin-bottom: 6px;
-  font-size: 1rem;
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
 }
+
 .dashboard-grid > a.card p {
   color: var(--ink-500);
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   margin: 0;
+  line-height: 1.6;
 }
+
 .dashboard-grid > a.card::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(220px 120px at 100% 0%, rgba(36, 74, 139, 0.05), transparent 60%);
+  background: radial-gradient(
+    280px 140px at 100% 0%,
+    rgba(251, 191, 36, 0.08),
+    transparent 60%
+  );
   opacity: 0;
-  transition: opacity var(--t-base) var(--ease-out);
+  transition: opacity var(--t-base) var(--ease-out-expo);
   pointer-events: none;
 }
+
 .dashboard-grid > a.card::after {
   content: "→";
   position: absolute;
-  top: 22px; right: 24px;
-  font-size: 1.1rem;
-  color: var(--indigo-400);
+  top: 28px;
+  right: 28px;
+  font-size: 1.25rem;
+  color: var(--gold-500);
   opacity: 0;
-  transform: translateX(-4px);
-  transition: opacity var(--t-base), transform var(--t-base) var(--ease-out);
+  transform: translateX(-8px);
+  transition: all var(--t-base) var(--ease-out-expo);
 }
-.dashboard-grid > a.card:hover {
-  transform: translateY(-3px);
-  border-color: var(--indigo-200);
-  box-shadow: var(--sh-3);
-}
-.dashboard-grid > a.card:hover::before { opacity: 1; }
-.dashboard-grid > a.card:hover::after { opacity: 1; transform: translateX(0); }
 
+.dashboard-grid > a.card:hover {
+  transform: translateY(-6px);
+  border-color: var(--gold-200);
+  box-shadow: 
+    0 8px 16px rgba(15, 23, 42, 0.05),
+    0 24px 48px rgba(15, 23, 42, 0.08);
+}
+
+.dashboard-grid > a.card:hover::before {
+  opacity: 1;
+}
+
+.dashboard-grid > a.card:hover::after {
+  opacity: 1;
+  transform: translateX(0);
+}
 
 /* ============================================================
-   19. LOADING & SKELETONS
+   19. LOADING & SKELETONS - VIP PREMIUM
    ============================================================ */
 .skeleton {
   position: relative;
@@ -1436,251 +2816,1129 @@ input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 
   background: var(--bg-recessed);
   border-radius: var(--r-sm);
 }
+
 .skeleton::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg,
-    transparent,
-    rgba(255, 255, 255, 0.7),
-    transparent);
-  animation: skeleton 1.5s linear infinite;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.8) 50%,
+    transparent 100%
+  );
+  animation: skeletonShimmer 1.8s ease-in-out infinite;
   transform: translateX(-100%);
 }
 
-.spinner {
-  width: 36px; height: 36px;
+.skeleton-text {
+  height: 16px;
+  margin-bottom: 8px;
+}
+
+.skeleton-title {
+  height: 24px;
+  width: 60%;
+  margin-bottom: 16px;
+}
+
+.skeleton-avatar {
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  border: 3px solid var(--indigo-100);
-  border-top-color: var(--indigo-500);
+}
+
+.skeleton-card {
+  height: 200px;
+  border-radius: var(--r-lg);
+}
+
+/* Spinner */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid var(--gold-100);
+  border-top-color: var(--gold-500);
   animation: spin 0.8s linear infinite;
 }
 
+.spinner-sm {
+  width: 24px;
+  height: 24px;
+  border-width: 2px;
+}
+
+.spinner-lg {
+  width: 56px;
+  height: 56px;
+  border-width: 4px;
+}
+
+/* Dots Loader */
+.dots-loader {
+  display: flex;
+  gap: 8px;
+}
+
+.dots-loader span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--gold-500);
+  animation: dotBounce 1.4s ease-in-out infinite both;
+}
+
+.dots-loader span:nth-child(1) { animation-delay: -0.32s; }
+.dots-loader span:nth-child(2) { animation-delay: -0.16s; }
+.dots-loader span:nth-child(3) { animation-delay: 0s; }
+
+/* Progress Bar */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-recessed);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.08);
+}
+
+.progress-bar .progress-fill {
+  height: 100%;
+  border-radius: var(--r-pill);
+  background: var(--grad-gold);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
+  transition: width var(--t-slower) var(--ease-out-expo);
+  position: relative;
+}
+
+.progress-bar .progress-fill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: progressShine 2s ease-in-out infinite;
+}
 
 /* ============================================================
-   20. MICRO-INTERACTIONS
+   20. MICRO-INTERACTIONS - VIP POLISH
    ============================================================ */
-.ripple { position: relative; overflow: hidden; }
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
 .ripple::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at var(--x, 50%) var(--y, 50%),
-    rgba(255, 255, 255, 0.3), transparent 40%);
+  background: radial-gradient(
+    circle at var(--x, 50%) var(--y, 50%),
+    rgba(255, 255, 255, 0.4),
+    transparent 50%
+  );
   opacity: 0;
-  transition: opacity var(--t-base) var(--ease-out);
+  transition: opacity var(--t-base) var(--ease-out-expo);
   pointer-events: none;
 }
-.ripple:active::before { opacity: 1; }
 
-.lift { transition: transform var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out); }
-.lift:hover { transform: translateY(-2px); box-shadow: var(--sh-3); }
+.ripple:active::before {
+  opacity: 1;
+}
 
-.press:active { transform: scale(0.98); }
+.lift {
+  transition: 
+    transform var(--t-base) var(--ease-out-expo),
+    box-shadow var(--t-base) var(--ease-out-expo);
+}
 
-.tilt {
-  transition: transform var(--t-slow) var(--ease-out);
-  transform-style: preserve-3d;
-  perspective: 800px;
+.lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 8px 16px rgba(15, 23, 42, 0.06),
+    0 24px 48px rgba(15, 23, 42, 0.08);
+}
+
+.press:active {
+  transform: scale(0.97);
 }
 
 .glow {
-  box-shadow: 0 0 0 0 var(--indigo-500);
-  animation: glowPulse 3.2s ease-in-out infinite;
+  box-shadow: 0 0 0 0 var(--gold-500);
+  animation: glowPulseGold 3s ease-in-out infinite;
 }
 
+.glow-royal {
+  box-shadow: 0 0 0 0 var(--royal-500);
+  animation: glowPulseRoyal 3s ease-in-out infinite;
+}
+
+/* Hover Underline */
+.hover-underline {
+  position: relative;
+  text-decoration: none;
+}
+
+.hover-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  background: var(--grad-gold);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--t-base) var(--ease-out-expo);
+}
+
+.hover-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Magnetic Hover */
+.magnetic {
+  transition: transform var(--t-base) var(--ease-out-expo);
+}
 
 /* ============================================================
-   21. KEYFRAME LIBRARY
+   21. KEYFRAME LIBRARY - VIP ANIMATIONS
    ============================================================ */
-@keyframes cardIn {
-  from { opacity: 0; transform: translateY(18px) scale(0.985); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+@keyframes authCardIn {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.92) rotateX(10deg);
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotateX(0deg);
+    filter: blur(0);
+  }
 }
 
-@keyframes flashIn {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes cardShine {
+  0%, 100% {
+    transform: translateX(-30%) translateY(-30%) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(30%) translateY(30%) rotate(0deg);
+    opacity: 1;
+  }
 }
 
-@keyframes driftA {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%      { transform: translate(26px, -32px) scale(1.04); }
-  66%      { transform: translate(-20px, 20px) scale(0.98); }
-}
-@keyframes driftB {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50%      { transform: translate(-26px, -40px) scale(1.05); }
-}
-@keyframes driftC {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50%      { transform: translate(32px, 26px) scale(1.03); }
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
-@keyframes bob {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50%      { transform: translateY(-5px) rotate(0deg); }
+@keyframes logoGlow {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
 }
 
-@keyframes auroraSpin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-@keyframes shimmer {
-  0%   { background-position: 0% 50%; }
-  100% { background-position: 220% 50%; }
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes skeleton {
-  to { transform: translateX(100%); }
+@keyframes ringRotate {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 @keyframes glowPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(47, 90, 163, 0.35); }
-  50%      { box-shadow: 0 0 0 8px rgba(47, 90, 163, 0.0); }
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes glowPulseGold {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(251, 191, 36, 0);
+  }
+}
+
+@keyframes glowPulseRoyal {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(37, 99, 235, 0);
+  }
+}
+
+@keyframes orbFloat1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.5;
+  }
+  33% {
+    transform: translate(40px, -50px) scale(1.1);
+    opacity: 0.7;
+  }
+  66% {
+    transform: translate(-30px, 30px) scale(0.95);
+    opacity: 0.4;
+  }
+}
+
+@keyframes orbFloat2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-50px, -60px) scale(1.15);
+    opacity: 0.6;
+  }
+}
+
+@keyframes orbFloat3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(60px, 40px) scale(1.08);
+    opacity: 0.7;
+  }
+}
+
+@keyframes driftBlob1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(50px, -60px) scale(1.08);
+  }
+  66% {
+    transform: translate(-40px, 40px) scale(0.95);
+  }
+}
+
+@keyframes driftBlob2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-60px, -70px) scale(1.12);
+  }
+}
+
+@keyframes driftBlob3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(70px, 50px) scale(1.06);
+  }
+}
+
+@keyframes floatParticle1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  25% {
+    transform: translate(30px, -40px) scale(1.2);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(-20px, -80px) scale(0.9);
+    opacity: 0.3;
+  }
+  75% {
+    transform: translate(40px, -40px) scale(1.1);
+    opacity: 0.6;
+  }
+}
+
+@keyframes floatParticle2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(-50px, -60px) scale(1.3);
+    opacity: 0.8;
+  }
+}
+
+@keyframes floatParticle3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  33% {
+    transform: translate(40px, 30px) scale(1.1);
+    opacity: 0.7;
+  }
+  66% {
+    transform: translate(-30px, -50px) scale(0.9);
+    opacity: 0.3;
+  }
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes auroraRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes waveRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmerText {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes skeletonShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes dotBounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes progressShine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes statusPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.9);
+  }
+}
+
+@keyframes flashSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@keyframes gradientMove {
-  0%, 100% { background-position: 0% 50%; }
-  50%      { background-position: 100% 50%; }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-/* Util animation helpers */
-.fade-up { animation: fadeUp 420ms var(--ease-out) both; }
-.fade-up.d1 { animation-delay: 60ms; }
-.fade-up.d2 { animation-delay: 120ms; }
-.fade-up.d3 { animation-delay: 180ms; }
-.fade-up.d4 { animation-delay: 240ms; }
-.fade-up.d5 { animation-delay: 300ms; }
-.fade-up.d6 { animation-delay: 360ms; }
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
 
-.float { animation: bob 5s ease-in-out infinite; }
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
 
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40%, 43% {
+    transform: translateY(-20px);
+  }
+  70% {
+    transform: translateY(-10px);
+  }
+  90% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(3deg);
+  }
+  75% {
+    transform: rotate(-3deg);
+  }
+}
+
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.1);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.1);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes typewriter {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Animation Utility Classes */
+.fade-up { 
+  animation: fadeUp 500ms var(--ease-out-expo) both; 
+}
+
+.fade-up.d1 { animation-delay: 80ms; }
+.fade-up.d2 { animation-delay: 160ms; }
+.fade-up.d3 { animation-delay: 240ms; }
+.fade-up.d4 { animation-delay: 320ms; }
+.fade-up.d5 { animation-delay: 400ms; }
+.fade-up.d6 { animation-delay: 480ms; }
+.fade-up.d7 { animation-delay: 560ms; }
+.fade-up.d8 { animation-delay: 640ms; }
+
+.fade-in { animation: fadeIn 500ms var(--ease-out-expo) both; }
+.fade-in-left { animation: fadeInLeft 500ms var(--ease-out-expo) both; }
+.fade-in-right { animation: fadeInRight 500ms var(--ease-out-expo) both; }
+.scale-in { animation: scaleIn 500ms var(--ease-spring) both; }
+
+.float { animation: float 5s ease-in-out infinite; }
+.float-slow { animation: float 8s ease-in-out infinite; }
+.float-fast { animation: float 3s ease-in-out infinite; }
+
+.bounce { animation: bounce 2s ease-in-out infinite; }
+.wiggle { animation: wiggle 1s ease-in-out infinite; }
+.heartbeat { animation: heartbeat 1.5s ease-in-out infinite; }
+.rotate { animation: rotate 10s linear infinite; }
+.rotate-slow { animation: rotate 20s linear infinite; }
 
 /* ============================================================
-   22. UTILITY CLASSES
+   22. UTILITY CLASSES - COMPREHENSIVE
    ============================================================ */
+/* Margins */
+.m-0 { margin: 0 !important; }
+.m-1 { margin: 6px; }
+.m-2 { margin: 10px; }
+.m-3 { margin: 14px; }
+.m-4 { margin: 20px; }
+.m-5 { margin: 28px; }
+.m-6 { margin: 36px; }
+.m-auto { margin: auto; }
+
+.mt-0 { margin-top: 0 !important; }
+.mt-1 { margin-top: 6px; }
+.mt-2 { margin-top: 10px; }
+.mt-3 { margin-top: 14px; }
+.mt-4 { margin-top: 20px; }
+.mt-5 { margin-top: 28px; }
+.mt-6 { margin-top: 36px; }
+
 .mb-0 { margin-bottom: 0 !important; }
 .mb-1 { margin-bottom: 6px; }
 .mb-2 { margin-bottom: 10px; }
 .mb-3 { margin-bottom: 14px; }
 .mb-4 { margin-bottom: 20px; }
-.mt-1 { margin-top: 6px; }
-.mt-2 { margin-top: 10px; }
-.mt-3 { margin-top: 14px; }
-.mt-4 { margin-top: 20px; }
+.mb-5 { margin-bottom: 28px; }
+.mb-6 { margin-bottom: 36px; }
 
+.ml-0 { margin-left: 0 !important; }
+.ml-1 { margin-left: 6px; }
+.ml-2 { margin-left: 10px; }
+.ml-3 { margin-left: 14px; }
+.ml-4 { margin-left: 20px; }
+.ml-auto { margin-left: auto; }
+
+.mr-0 { margin-right: 0 !important; }
+.mr-1 { margin-right: 6px; }
+.mr-2 { margin-right: 10px; }
+.mr-3 { margin-right: 14px; }
+.mr-4 { margin-right: 20px; }
+.mr-auto { margin-right: auto; }
+
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+/* Padding */
+.p-0 { padding: 0 !important; }
+.p-1 { padding: 6px; }
 .p-2 { padding: 10px; }
 .p-3 { padding: 14px; }
 .p-4 { padding: 20px; }
+.p-5 { padding: 28px; }
+.p-6 { padding: 36px; }
 
+.pt-0 { padding-top: 0 !important; }
+.pt-1 { padding-top: 6px; }
+.pt-2 { padding-top: 10px; }
+.pt-3 { padding-top: 14px; }
+.pt-4 { padding-top: 20px; }
+.pt-5 { padding-top: 28px; }
+
+.pb-0 { padding-bottom: 0 !important; }
+.pb-1 { padding-bottom: 6px; }
+.pb-2 { padding-bottom: 10px; }
+.pb-3 { padding-bottom: 14px; }
+.pb-4 { padding-bottom: 20px; }
+.pb-5 { padding-bottom: 28px; }
+
+.px-2 { padding-left: 10px; padding-right: 10px; }
+.px-3 { padding-left: 14px; padding-right: 14px; }
+.px-4 { padding-left: 20px; padding-right: 20px; }
+
+.py-2 { padding-top: 10px; padding-bottom: 10px; }
+.py-3 { padding-top: 14px; padding-bottom: 14px; }
+.py-4 { padding-top: 20px; padding-bottom: 20px; }
+
+/* Width & Height */
 .w-full { width: 100%; }
-.h-full { height: 100%; }
-.rounded { border-radius: var(--r-md); }
-.shadow { box-shadow: var(--sh-2); }
+.w-auto { width: auto; }
+.w-half { width: 50%; }
+.w-third { width: 33.333%; }
+.w-quarter { width: 25%; }
 
+.h-full { height: 100%; }
+.h-auto { height: auto; }
+.h-screen { height: 100vh; }
+.h-screen-dvh { height: 100dvh; }
+
+.min-h-screen { min-height: 100vh; }
+.min-h-screen-dvh { min-height: 100dvh; }
+
+.max-w-sm { max-width: 640px; }
+.max-w-md { max-width: 768px; }
+.max-w-lg { max-width: 1024px; }
+.max-w-xl { max-width: 1280px; }
+.max-w-2xl { max-width: 1536px; }
+
+/* Border Radius */
+.rounded-none { border-radius: 0; }
+.rounded-xs { border-radius: var(--r-xs); }
+.rounded-sm { border-radius: var(--r-sm); }
+.rounded { border-radius: var(--r-md); }
+.rounded-md { border-radius: var(--r-md); }
+.rounded-lg { border-radius: var(--r-lg); }
+.rounded-xl { border-radius: var(--r-xl); }
+.rounded-2xl { border-radius: var(--r-2xl); }
+.rounded-3xl { border-radius: var(--r-3xl); }
+.rounded-full { border-radius: 50%; }
+.rounded-pill { border-radius: var(--r-pill); }
+
+/* Shadows */
+.shadow-none { box-shadow: none; }
+.shadow-xs { box-shadow: var(--sh-1); }
+.shadow-sm { box-shadow: var(--sh-2); }
+.shadow { box-shadow: var(--sh-3); }
+.shadow-md { box-shadow: var(--sh-3); }
+.shadow-lg { box-shadow: var(--sh-4); }
+.shadow-xl { box-shadow: var(--sh-5); }
+.shadow-2xl { box-shadow: var(--sh-6); }
+
+.shadow-gold { box-shadow: var(--sh-gold); }
+.shadow-royal { box-shadow: var(--sh-royal); }
+.shadow-cyan { box-shadow: var(--sh-cyan); }
+.shadow-purple { box-shadow: var(--sh-purple); }
+.shadow-emerald { box-shadow: var(--sh-emerald); }
+.shadow-rose { box-shadow: var(--sh-rose); }
+
+/* Visibility */
+.hidden { display: none; }
+.visible { visibility: visible; }
+.invisible { visibility: hidden; }
+
+.block { display: block; }
+.inline-block { display: inline-block; }
+.inline { display: inline; }
+.flex { display: flex; }
+.inline-flex { display: inline-flex; }
+.grid { display: grid; }
+
+/* Flex Utilities */
+.flex-row { flex-direction: row; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-nowrap { flex-wrap: nowrap; }
+
+.items-start { align-items: flex-start; }
+.items-center { align-items: center; }
+.items-end { align-items: flex-end; }
+.items-stretch { align-items: stretch; }
+
+.justify-start { justify-content: flex-start; }
+.justify-center { justify-content: center; }
+.justify-end { justify-content: flex-end; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+.justify-evenly { justify-content: space-evenly; }
+
+.flex-1 { flex: 1 1 0%; }
+.flex-auto { flex: 1 1 auto; }
+.flex-none { flex: none; }
+
+.gap-0 { gap: 0; }
+.gap-1 { gap: 6px; }
+.gap-2 { gap: 10px; }
+.gap-3 { gap: 14px; }
+.gap-4 { gap: 20px; }
+.gap-5 { gap: 28px; }
+.gap-6 { gap: 36px; }
+
+/* Position */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed { position: fixed; }
+.sticky { position: sticky; }
+
+.inset-0 { inset: 0; }
+.top-0 { top: 0; }
+.right-0 { right: 0; }
+.bottom-0 { bottom: 0; }
+.left-0 { left: 0; }
+
+.z-0 { z-index: 0; }
+.z-10 { z-index: 10; }
+.z-20 { z-index: 20; }
+.z-30 { z-index: 30; }
+.z-40 { z-index: 40; }
+.z-50 { z-index: 50; }
+.z-auto { z-index: auto; }
+
+/* Overflow */
+.overflow-hidden { overflow: hidden; }
+.overflow-auto { overflow: auto; }
+.overflow-scroll { overflow: scroll; }
+.overflow-x-auto { overflow-x: auto; }
+.overflow-y-auto { overflow-y: auto; }
+
+/* Cursor */
+.cursor-pointer { cursor: pointer; }
+.cursor-default { cursor: default; }
+.cursor-not-allowed { cursor: not-allowed; }
+.cursor-grab { cursor: grab; }
+.cursor-grabbing { cursor: grabbing; }
+
+/* User Select */
+.select-none { user-select: none; }
+.select-all { user-select: all; }
+.select-auto { user-select: auto; }
+
+/* Pointer Events */
+.pointer-events-none { pointer-events: none; }
+.pointer-events-auto { pointer-events: auto; }
+
+/* Opacity */
+.opacity-0 { opacity: 0; }
+.opacity-25 { opacity: 0.25; }
+.opacity-50 { opacity: 0.5; }
+.opacity-75 { opacity: 0.75; }
+.opacity-100 { opacity: 1; }
+
+/* Text Alignment */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-justify { text-align: justify; }
+
+/* Divider */
 .divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--border-soft), transparent);
-  margin: 24px 0;
+  margin: 28px 0;
 }
 
+.divider-vertical {
+  width: 1px;
+  height: auto;
+  align-self: stretch;
+  background: linear-gradient(180deg, transparent, var(--border-soft), transparent);
+  margin: 0 20px;
+}
+
+/* Empty State */
 .empty-state {
   text-align: center;
-  padding: 44px 24px;
+  padding: 56px 32px;
   color: var(--ink-500);
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-style: italic;
 }
+
 .empty-state::before {
   content: "📭";
   display: block;
-  font-size: 2.4rem;
-  margin-bottom: 12px;
+  font-size: 3rem;
+  margin-bottom: 16px;
   font-style: normal;
   opacity: 0.5;
 }
 
+/* Avatar */
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #fff;
+  background: var(--grad-royal);
+  box-shadow: 
+    0 2px 8px rgba(37, 99, 235, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.avatar-sm { width: 32px; height: 32px; font-size: 0.72rem; }
+.avatar-lg { width: 56px; height: 56px; font-size: 1.1rem; }
+.avatar-xl { width: 72px; height: 72px; font-size: 1.4rem; }
+
+/* Tooltip */
+.tooltip {
+  position: relative;
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  padding: 8px 14px;
+  background: var(--ink-900);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border-radius: var(--r-sm);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--t-base) var(--ease-out-expo);
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+}
+
+.tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-4px);
+}
 
 /* ============================================================
-   23. RESPONSIVE
+   23. RESPONSIVE - COMPREHENSIVE BREAKPOINTS
    ============================================================ */
+@media (max-width: 1280px) {
+  .container { max-width: 1200px; padding: 32px 20px 72px; }
+  .charts-grid { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+}
+
 @media (max-width: 1024px) {
+  .container { max-width: 100%; padding: 28px 18px 64px; }
   .charts-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
-  .chart-container { height: 240px; }
-  .auth-card { max-width: 400px; padding: 36px 28px 30px; }
+  .chart-container { height: 260px; }
+  .auth-card { max-width: 420px; padding: 44px 36px 36px; }
+  .auth-logo { font-size: 3.5rem; }
+  .auth-title { font-size: 1.6rem; }
+  
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 768px) {
   body { font-size: 14.5px; }
-  .container { padding: 22px 16px 56px; }
-  .navbar { padding: 12px 18px; }
-  .navbar .nav-links { gap: 14px; }
-  .page-header h1 { font-size: 1.35rem; }
-  .stat-card .stat-value { font-size: 1.55rem; }
-  .card { padding: 20px; border-radius: var(--r-lg); }
-  .chart-container { height: 210px; }
-  table { font-size: 0.82rem; }
-  table thead th, table tbody td { padding: 10px 12px; }
-  .auth-card { padding: 30px 22px; border-radius: var(--r-xl); }
-  .auth-logo { font-size: 2.7rem; }
-  .auth-title { font-size: 1.32rem; }
-  .schedule-item .time-chip { min-width: 96px; font-size: 0.72rem; padding: 6px 9px; }
+  .container { padding: 24px 16px 56px; }
+  .navbar { padding: 14px 20px; }
+  .navbar .nav-links { gap: 18px; }
+  .navbar .nav-links a { font-size: 0.85rem; }
+  .page-header h1 { font-size: 1.5rem; }
+  .page-header h1::after { width: 36px; height: 3px; }
+  .stat-card .stat-value { font-size: 1.75rem; }
+  .card { padding: 22px; border-radius: var(--r-md); }
+  .chart-container { height: 220px; }
+  table { font-size: 0.84rem; }
+  table thead th, table tbody td { padding: 12px 14px; }
+  .auth-card { padding: 36px 28px; border-radius: var(--r-xl); }
+  .auth-logo { font-size: 3rem; }
+  .auth-title { font-size: 1.4rem; }
+  .auth-subtitle { font-size: 0.84rem; }
+  .schedule-item .time-chip { min-width: 100px; font-size: 0.74rem; padding: 6px 10px; }
   .auth-wrapper .orb { filter: blur(60px); }
+  
+  .grid-3 { grid-template-columns: 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+  
+  .hide-mobile { display: none !important; }
 }
 
 @media (max-width: 520px) {
   body { font-size: 14px; }
+  .container { padding: 20px 14px 48px; }
   .form-grid { grid-template-columns: 1fr; }
-  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .navbar .nav-links { display: none; }
+  .navbar .nav-links.mobile-open { 
+    display: flex; 
+    flex-direction: column;
+    width: 100%;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-subtle);
+    margin-top: 16px;
+  }
   .dashboard-grid { grid-template-columns: 1fr; }
-  .stat-card .stat-value { font-size: 1.3rem; }
-  .btn { padding: 10px 14px; font-size: 0.86rem; }
+  .stat-card { padding: 18px 20px; }
+  .stat-card .stat-value { font-size: 1.4rem; }
+  .stat-card .stat-icon { width: 40px; height: 40px; font-size: 1.25rem; }
+  .btn { padding: 11px 16px; font-size: 0.86rem; }
+  .btn-lg { padding: 14px 22px; font-size: 0.95rem; }
   .page-header { flex-direction: column; align-items: flex-start; }
   .page-header .btn { width: 100%; justify-content: center; }
-  .stat-grid { gap: 12px; }
-  .auth-card { padding: 24px 18px; }
-  .auth-logo { font-size: 2.3rem; }
-  .auth-title { font-size: 1.18rem; }
+  .auth-card { padding: 28px 20px; border-radius: var(--r-lg); }
+  .auth-logo { font-size: 2.5rem; }
+  .auth-title { font-size: 1.25rem; }
+  .auth-subtitle { font-size: 0.8rem; margin-bottom: 24px; }
+  .auth-card .btn { padding: 14px 20px; font-size: 0.9rem; }
+  .auth-hint { font-size: 0.74rem; padding: 12px; }
+  
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  
+  .hide-mobile { display: none !important; }
 }
 
+@media (max-width: 380px) {
+  .stat-grid { grid-template-columns: 1fr; }
+  .auth-card { padding: 24px 16px; }
+  .auth-logo { font-size: 2.2rem; }
+  .auth-title { font-size: 1.1rem; }
+}
 
 /* ============================================================
-   24. ACCESSIBILITY & MISC
+   24. ACCESSIBILITY & MISC - VIP POLISH
    ============================================================ */
 ::selection {
-  background: rgba(47, 90, 163, 0.22);
+  background: rgba(251, 191, 36, 0.3);
   color: var(--ink-950);
 }
 
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: var(--bg-recessed); }
-::-webkit-scrollbar-thumb {
-  background: var(--indigo-400);
-  border-radius: 999px;
-  border: 2px solid var(--bg-recessed);
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
 }
+
+::-webkit-scrollbar-track {
+  background: var(--bg-recessed);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--gold-400) 0%, var(--gold-600) 100%);
+  border-radius: 6px;
+  border: 3px solid var(--bg-recessed);
+  transition: background var(--t-base) var(--ease-out-expo);
+}
+
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--indigo-500);
+  background: linear-gradient(180deg, var(--gold-500) 0%, var(--gold-700) 100%);
+}
+
+/* Firefox Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-500) var(--bg-recessed);
 }
 
 :focus-visible {
   outline: none;
-  box-shadow: var(--ring-strong);
+  box-shadow: 
+    0 0 0 4px rgba(251, 191, 36, 0.3),
+    0 0 20px rgba(251, 191, 36, 0.15);
   border-radius: 6px;
 }
 
+/* Skip Link */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  background: var(--gold-500);
+  color: var(--ink-950);
+  font-weight: 700;
+  border-radius: var(--r-sm);
+  z-index: 9999;
+  transition: top var(--t-base) var(--ease-out-expo);
+}
+
+.skip-link:focus {
+  top: 16px;
+}
+
+/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -1688,27 +3946,2927 @@ input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  
+  .ambient, .aurora, .orb, .particle, .blob {
+    display: none !important;
+  }
 }
 
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  :root {
+    --border-subtle: rgba(15, 23, 42, 0.2);
+    --border-soft: rgba(15, 23, 42, 0.3);
+    --border-medium: rgba(15, 23, 42, 0.4);
+    --border-strong: rgba(15, 23, 42, 0.6);
+  }
+  
+  .card, .stat-card, .chart-card {
+    border-width: 2px;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-canvas: #0f172a;
+    --bg-elevated: #1e293b;
+    --bg-recessed: #0f172a;
+    --bg-glass: rgba(30, 41, 59, 0.85);
+    --bg-glass-strong: rgba(30, 41, 59, 0.95);
+    
+    --ink-950: #f8fafc;
+    --ink-900: #f1f5f9;
+    --ink-800: #e2e8f0;
+    --ink-700: #cbd5e1;
+    --ink-600: #94a3b8;
+    --ink-500: #64748b;
+    --ink-400: #475569;
+    --ink-300: #334155;
+    --ink-200: #1e293b;
+    --ink-100: #0f172a;
+    --ink-50: #020617;
+    
+    --border-subtle: rgba(248, 250, 252, 0.06);
+    --border-soft: rgba(248, 250, 252, 0.1);
+    --border-medium: rgba(248, 250, 252, 0.15);
+    --border-strong: rgba(248, 250, 252, 0.22);
+  }
+  
+  body::before {
+    background:
+      radial-gradient(ellipse 80% 50% at 20% -20%, rgba(251, 191, 36, 0.06), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 0%, rgba(59, 130, 246, 0.06), transparent),
+      linear-gradient(180deg, #020617 0%, #0f172a 50%, #1e293b 100%);
+  }
+  
+  input, select, textarea {
+    background: var(--bg-elevated);
+    color: var(--ink-900);
+  }
+  
+  .btn-outline {
+    background: var(--bg-elevated);
+    color: var(--ink-700);
+  }
+}
 
 /* ============================================================
-   25. PRINT STYLES
+   25. PRINT STYLES - VIP PROFESSIONAL
    ============================================================ */
 @media print {
-  body { background: #fff; color: #000; }
-  body::before, body::after, .ambient, .aurora, .orb { display: none !important; }
-  .navbar, .flash-container, .btn, .actions { display: none !important; }
-  .card, .stat-card, .chart-card {
+  * {
+    background: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  body {
+    background: #fff;
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+  
+  body::before,
+  body::after,
+  .ambient,
+  .aurora,
+  .orb,
+  .particle,
+  .blob,
+  .auth-wrapper .orb,
+  .auth-particles {
+    display: none !important;
+  }
+  
+  .navbar,
+  .flash-container,
+  .btn,
+  .actions,
+  .no-print {
+    display: none !important;
+  }
+  
+  .card,
+  .stat-card,
+  .chart-card {
     box-shadow: none !important;
     border: 1px solid #ccc !important;
     page-break-inside: avoid;
     background: #fff !important;
+    margin-bottom: 20pt;
   }
-  table { font-size: 11px; }
-  h1, h2, h3 { color: #000 !important; -webkit-text-fill-color: #000 !important; }
+  
+  .card::before,
+  .card::after,
+  .stat-card::before,
+  .stat-card::after {
+    display: none !important;
+  }
+  
+  table {
+    font-size: 10pt;
+    border-collapse: collapse;
+  }
+  
+  table thead th {
+    background: #f0f0f0 !important;
+    border: 1px solid #999 !important;
+  }
+  
+  table tbody td {
+    border: 1px solid #ccc !important;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    color: #000 !important;
+    -webkit-text-fill-color: #000 !important;
+    page-break-after: avoid;
+  }
+  
+  .page-break {
+    page-break-before: always;
+  }
+  
+  .no-break {
+    page-break-inside: avoid;
+  }
+  
+  a {
+    color: #000 !important;
+    text-decoration: underline;
+  }
+  
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 9pt;
+    color: #666;
+  }
 }
 
+/* ============================================================
+   26. ADDITIONAL VIP COMPONENTS
+   ============================================================ */
+
+/* Glassmorphism Panel */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--r-xl);
+  box-shadow: 
+    0 8px 32px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.glass-panel-dark {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-xl);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* Gradient Border Card */
+.gradient-border {
+  position: relative;
+  background: var(--bg-elevated);
+  border-radius: var(--r-lg);
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: var(--grad-gold);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Neon Glow Card */
+.neon-card {
+  position: relative;
+  background: var(--bg-elevated);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 
+    0 0 20px rgba(251, 191, 36, 0.15),
+    0 0 40px rgba(251, 191, 36, 0.1),
+    0 4px 12px rgba(15, 23, 42, 0.05);
+  transition: all var(--t-base) var(--ease-out-expo);
+}
+
+.neon-card:hover {
+  box-shadow: 
+    0 0 30px rgba(251, 191, 36, 0.25),
+    0 0 60px rgba(251, 191, 36, 0.15),
+    0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+/* Metallic Card */
+.metallic-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--r-lg);
+  box-shadow: 
+    0 4px 12px rgba(15, 23, 42, 0.08),
+    inset 0 2px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -2px 0 rgba(15, 23, 42, 0.05);
+}
+
+.metallic-gold {
+  background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 50%, #d97706 100%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: #0f172a;
+}
+
+/* Holographic Effect */
+.holographic {
+  background: linear-gradient(
+    135deg,
+    rgba(251, 191, 36, 0.1) 0%,
+    rgba(59, 130, 246, 0.1) 25%,
+    rgba(168, 85, 247, 0.1) 50%,
+    rgba(6, 182, 212, 0.1) 75%,
+    rgba(244, 63, 94, 0.1) 100%
+  );
+  background-size: 400% 400%;
+  animation: holographicShift 8s ease infinite;
+}
+
+@keyframes holographicShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* 3D Flip Card */
+.flip-card {
+  perspective: 1000px;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s var(--ease-out-expo);
+  transform-style: preserve-3d;
+}
+
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: var(--r-lg);
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+/* Parallax Container */
+.parallax {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.parallax-layer {
+  transition: transform 0.3s var(--ease-out-expo);
+}
+
+/* Spotlight Effect */
+.spotlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.spotlight::before {
+  content: "";
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.3), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t-base) var(--ease-out-expo);
+  transform: translate(-50%, -50%);
+  left: var(--x, 50%);
+  top: var(--y, 50%);
+}
+
+.spotlight:hover::before {
+  opacity: 1;
+}
+
+/* Ripple Effect Extended */
+.ripple-extended {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-extended .ripple-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(0);
+  animation: rippleExpand 0.6s var(--ease-out-expo);
+  pointer-events: none;
+}
+
+@keyframes rippleExpand {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Marquee */
+.marquee {
+  display: flex;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marquee-content {
+  display: flex;
+  animation: marqueeScroll 20s linear infinite;
+}
+
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Typing Effect */
+.typing {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 3px solid var(--gold-500);
+  animation: 
+    typewriter 3s steps(40, end),
+    blink 0.75s step-end infinite;
+}
 
 /* ============================================================
-   END OF STYLESHEET v4.0
+   27. VIP LOADING SCREEN
+   ============================================================ */
+.vip-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: 
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(251, 191, 36, 0.15), transparent 70%),
+    linear-gradient(160deg, #020617 0%, #0f172a 50%, #1e293b 100%);
+  transition: opacity 0.6s var(--ease-out-expo), visibility 0.6s;
+}
+
+.vip-loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.vip-loader-logo {
+  font-size: 4rem;
+  margin-bottom: 32px;
+  animation: logoFloat 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px rgba(251, 191, 36, 0.6));
+}
+
+.vip-loader-ring {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 32px;
+}
+
+.vip-loader-ring::before,
+.vip-loader-ring::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid transparent;
+}
+
+.vip-loader-ring::before {
+  border-top-color: var(--gold-400);
+  animation: spin 1s linear infinite;
+}
+
+.vip-loader-ring::after {
+  border-bottom-color: var(--royal-400);
+  animation: spin 1.5s linear infinite reverse;
+}
+
+.vip-loader-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Progress Dots */
+.vip-loader-dots {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.vip-loader-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--gold-500);
+  animation: dotBounce 1.4s ease-in-out infinite both;
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+}
+
+.vip-loader-dots span:nth-child(1) { animation-delay: -0.32s; }
+.vip-loader-dots span:nth-child(2) { animation-delay: -0.16s; }
+.vip-loader-dots span:nth-child(3) { animation-delay: 0s; }
+
+/* ============================================================
+   28. VIP NOTIFICATION TOASTS
+   ============================================================ */
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9998;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 400px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--r-md);
+  box-shadow: 
+    0 8px 32px rgba(15, 23, 42, 0.12),
+    0 2px 8px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  animation: toastSlideIn 400ms var(--ease-spring) both;
+  pointer-events: auto;
+}
+
+.toast.removing {
+  animation: toastSlideOut 300ms var(--ease-out-expo) both;
+}
+
+.toast-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.toast-success .toast-icon {
+  background: var(--grad-emerald);
+  color: #fff;
+}
+
+.toast-error .toast-icon {
+  background: var(--grad-rose);
+  color: #fff;
+}
+
+.toast-warning .toast-icon {
+  background: var(--grad-gold);
+  color: #0f172a;
+}
+
+.toast-info .toast-icon {
+  background: var(--grad-cyan);
+  color: #fff;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink-950);
+  margin-bottom: 4px;
+}
+
+.toast-message {
+  font-size: 0.82rem;
+  color: var(--ink-600);
+  line-height: 1.5;
+}
+
+.toast-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--ink-400);
+  transition: all var(--t-base) var(--ease-out-expo);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.toast-close:hover {
+  background: var(--bg-recessed);
+  color: var(--ink-700);
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%) scale(0.9);
+  }
+}
+
+/* ============================================================
+   29. VIP MODAL SYSTEM
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(2, 6, 23, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--t-base) var(--ease-out-expo);
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--bg-elevated);
+  border-radius: var(--r-xl);
+  box-shadow: 
+    0 40px 80px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transform: translateY(30px) scale(0.95);
+  opacity: 0;
+  transition: all var(--t-slow) var(--ease-spring);
+}
+
+.modal-overlay.active .modal {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.modal-title {
+  font-size: 1.15rem;
+  font-weight: 750;
+  color: var(--ink-950);
+}
+
+.modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--ink-400);
+  transition: all var(--t-base) var(--ease-out-expo);
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  background: var(--bg-recessed);
+  color: var(--ink-700);
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  padding: 28px;
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 28px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-recessed);
+  border-radius: 0 0 var(--r-xl) var(--r-xl);
+}
+
+/* ============================================================
+   30. VIP SIDEBAR
+   ============================================================ */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 280px;
+  z-index: 999;
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
+  transform: translateX(-100%);
+  transition: transform var(--t-slow) var(--ease-out-expo);
+  overflow-y: auto;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sidebar-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 1.3rem;
+  background: var(--grad-gold);
+  color: #0f172a;
+  box-shadow: 0 4px 16px rgba(251, 191, 36, 0.4);
+}
+
+.sidebar-brand {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-nav {
+  padding: 16px 12px;
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: var(--r-sm);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all var(--t-base) var(--ease-out-expo);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-nav-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0;
+  background: var(--grad-gold);
+  border-radius: 3px;
+  transition: height var(--t-base) var(--ease-out-expo);
+}
+
+.sidebar-nav-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.sidebar-nav-item.active {
+  background: rgba(251, 191, 36, 0.1);
+  color: var(--gold-400);
+}
+
+.sidebar-nav-item.active::before {
+  height: 60%;
+}
+
+.sidebar-nav-item .nav-icon {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+}
+
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: auto;
+}
+
+/* ============================================================
+   31. VIP DROPDOWN MENU
+   ============================================================ */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  box-shadow: 
+    0 8px 32px rgba(15, 23, 42, 0.12),
+    0 2px 8px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  padding: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px) scale(0.95);
+  transition: all var(--t-base) var(--ease-spring);
+  z-index: 1000;
+}
+
+.dropdown.open .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--r-xs);
+  color: var(--ink-700);
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: all var(--t-fast) var(--ease-out-expo);
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: var(--bg-recessed);
+  color: var(--ink-950);
+}
+
+.dropdown-item.danger {
+  color: var(--danger);
+}
+
+.dropdown-item.danger:hover {
+  background: var(--danger-soft);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 8px 0;
+}
+
+/* ============================================================
+   32. VIP TABS
+   ============================================================ */
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--bg-recessed);
+  border-radius: var(--r-md);
+  margin-bottom: 24px;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: var(--r-sm);
+  font-size: 0.88rem;
+  font-weight: 650;
+  color: var(--ink-500);
+  transition: all var(--t-base) var(--ease-out-expo);
+  cursor: pointer;
+  text-align: center;
+  position: relative;
+}
+
+.tab:hover {
+  color: var(--ink-700);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.tab.active {
+  background: var(--bg-elevated);
+  color: var(--ink-950);
+  box-shadow: 
+    0 2px 8px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+  animation: fadeUp 400ms var(--ease-out-expo);
+}
+
+/* ============================================================
+   33. VIP ACCORDION
+   ============================================================ */
+.accordion {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--bg-elevated);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.accordion-item {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.accordion-item:last-child {
+  border-bottom: none;
+}
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  cursor: pointer;
+  transition: background var(--t-base) var(--ease-out-expo);
+  font-weight: 650;
+  color: var(--ink-800);
+}
+
+.accordion-header:hover {
+  background: var(--bg-recessed);
+}
+
+.accordion-header::after {
+  content: "+";
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--ink-400);
+  transition: transform var(--t-base) var(--ease-out-expo);
+}
+
+.accordion-item.open .accordion-header::after {
+  transform: rotate(45deg);
+}
+
+.accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--t-slow) var(--ease-out-expo);
+}
+
+.accordion-item.open .accordion-body {
+  max-height: 500px;
+}
+
+.accordion-content {
+  padding: 0 22px 20px;
+  color: var(--ink-600);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+/* ============================================================
+   34. VIP PAGINATION
+   ============================================================ */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 28px;
+}
+
+.pagination-item {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-sm);
+  display: grid;
+  place-items: center;
+  font-size: 0.88rem;
+  font-weight: 650;
+  color: var(--ink-600);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  transition: all var(--t-base) var(--ease-out-expo);
+  cursor: pointer;
+}
+
+.pagination-item:hover {
+  background: var(--bg-recessed);
+  color: var(--ink-950);
+  border-color: var(--border-soft);
+}
+
+.pagination-item.active {
+  background: var(--grad-gold);
+  color: #0f172a;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+}
+
+.pagination-item:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   35. VIP BREADCRUMBS
+   ============================================================ */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--ink-500);
+  margin-bottom: 20px;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.breadcrumb-item:not(:last-child)::after {
+  content: "/";
+  color: var(--ink-300);
+}
+
+.breadcrumb-link {
+  color: var(--ink-500);
+  transition: color var(--t-base) var(--ease-out-expo);
+}
+
+.breadcrumb-link:hover {
+  color: var(--gold-600);
+}
+
+.breadcrumb-current {
+  color: var(--ink-950);
+  font-weight: 650;
+}
+
+/* ============================================================
+   36. VIP AVATAR GROUP
+   ============================================================ */
+.avatar-group {
+  display: flex;
+  align-items: center;
+}
+
+.avatar-group .avatar {
+  margin-left: -12px;
+  border: 3px solid var(--bg-elevated);
+  transition: transform var(--t-base) var(--ease-spring);
+}
+
+.avatar-group .avatar:first-child {
+  margin-left: 0;
+}
+
+.avatar-group .avatar:hover {
+  transform: translateY(-4px) scale(1.1);
+  z-index: 10;
+}
+
+.avatar-group .avatar-more {
+  background: var(--bg-recessed);
+  color: var(--ink-600);
+  font-size: 0.75rem;
+}
+
+/* ============================================================
+   37. VIP SKILL BARS
+   ============================================================ */
+.skill-bar {
+  margin-bottom: 20px;
+}
+
+.skill-bar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.skill-bar-label {
+  font-size: 0.85rem;
+  font-weight: 650;
+  color: var(--ink-700);
+}
+
+.skill-bar-value {
+  font-size: 0.82rem;
+  font-weight: 750;
+  color: var(--gold-600);
+  font-family: var(--font-mono);
+}
+
+.skill-bar-track {
+  height: 10px;
+  background: var(--bg-recessed);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.06);
+}
+
+.skill-bar-fill {
+  height: 100%;
+  border-radius: var(--r-pill);
+  background: var(--grad-gold);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
+  transition: width 1s var(--ease-out-expo);
+  position: relative;
+}
+
+.skill-bar-fill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: progressShine 2s ease-in-out infinite;
+}
+
+/* ============================================================
+   38. VIP TIMELINE
+   ============================================================ */
+.timeline {
+  position: relative;
+  padding-left: 32px;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--gold-400), var(--royal-400), var(--purple-400));
+  border-radius: 2px;
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 28px;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -32px;
+  top: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 3px solid var(--gold-500);
+  box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.15);
+  display: grid;
+  place-items: center;
+  font-size: 0.65rem;
+  z-index: 1;
+}
+
+.timeline-content {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  padding: 16px 20px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  transition: all var(--t-base) var(--ease-out-expo);
+}
+
+.timeline-content:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+}
+
+.timeline-date {
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-600);
+  margin-bottom: 6px;
+}
+
+.timeline-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink-950);
+  margin-bottom: 4px;
+}
+
+.timeline-text {
+  font-size: 0.85rem;
+  color: var(--ink-500);
+  line-height: 1.6;
+}
+
+/* ============================================================
+   39. VIP COUNTDOWN TIMER
+   ============================================================ */
+.countdown {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.countdown-item {
+  text-align: center;
+  min-width: 80px;
+}
+
+.countdown-value {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-950);
+  line-height: 1;
+  margin-bottom: 6px;
+  background: var(--grad-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.countdown-label {
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-400);
+}
+
+.countdown-separator {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--gold-400);
+  line-height: 1;
+  animation: blink 1s step-end infinite;
+}
+
+/* ============================================================
+   40. VIP PRICING CARDS
+   ============================================================ */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 28px;
+  align-items: start;
+}
+
+.pricing-card {
+  position: relative;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--r-xl);
+  padding: 36px 28px;
+  text-align: center;
+  transition: all var(--t-base) var(--ease-out-expo);
+  overflow: hidden;
+}
+
+.pricing-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--grad-gold);
+  opacity: 0;
+  transition: opacity var(--t-base) var(--ease-out-expo);
+}
+
+.pricing-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--gold-300);
+  box-shadow: 
+    0 12px 32px rgba(15, 23, 42, 0.08),
+    0 32px 64px rgba(15, 23, 42, 0.1);
+}
+
+.pricing-card:hover::before {
+  opacity: 1;
+}
+
+.pricing-card.featured {
+  border-color: var(--gold-400);
+  box-shadow: 
+    0 0 0 4px rgba(251, 191, 36, 0.15),
+    0 12px 32px rgba(251, 191, 36, 0.15);
+  transform: scale(1.05);
+}
+
+.pricing-card.featured::before {
+  opacity: 1;
+}
+
+.pricing-badge {
+  position: absolute;
+  top: 20px;
+  right: -32px;
+  padding: 6px 40px;
+  background: var(--grad-gold);
+  color: #0f172a;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transform: rotate(45deg);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+}
+
+.pricing-title {
+  font-size: 1.1rem;
+  font-weight: 750;
+  color: var(--ink-700);
+  margin-bottom: 8px;
+}
+
+.pricing-price {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--ink-950);
+  line-height: 1;
+  margin: 16px 0;
+}
+
+.pricing-price span {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink-400);
+}
+
+.pricing-features {
+  text-align: left;
+  margin: 28px 0;
+}
+
+.pricing-feature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  font-size: 0.88rem;
+  color: var(--ink-600);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.pricing-feature:last-child {
+  border-bottom: none;
+}
+
+.pricing-feature::before {
+  content: "✓";
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  background: var(--grad-emerald);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.pricing-feature.disabled {
+  opacity: 0.5;
+}
+
+.pricing-feature.disabled::before {
+  content: "×";
+  background: var(--bg-recessed);
+  color: var(--ink-400);
+}
+
+/* ============================================================
+   41. VIP TESTIMONIALS
+   ============================================================ */
+.testimonial-card {
+  position: relative;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  padding: 28px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+}
+
+.testimonial-card::before {
+  content: '"';
+  position: absolute;
+  top: 16px;
+  right: 24px;
+  font-size: 5rem;
+  font-family: var(--font-serif);
+  color: var(--gold-200);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.testimonial-text {
+  font-size: 0.95rem;
+  color: var(--ink-600);
+  line-height: 1.8;
+  font-style: italic;
+  margin-bottom: 24px;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.testimonial-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: #fff;
+  background: var(--grad-royal);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.testimonial-info {
+  flex: 1;
+}
+
+.testimonial-name {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--ink-950);
+}
+
+.testimonial-role {
+  font-size: 0.8rem;
+  color: var(--ink-500);
+}
+
+.testimonial-stars {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 16px;
+  color: var(--gold-500);
+}
+
+/* ============================================================
+   42. VIP SEARCH BAR
+   ============================================================ */
+.search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--r-pill);
+  padding: 4px;
+  transition: all var(--t-base) var(--ease-out-expo);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.search-bar:focus-within {
+  border-color: var(--gold-400);
+  box-shadow: 
+    0 0 0 4px rgba(251, 191, 36, 0.15),
+    0 4px 16px rgba(251, 191, 36, 0.15);
+}
+
+.search-bar input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 12px 20px;
+  font-size: 0.92rem;
+  color: var(--ink-900);
+  box-shadow: none;
+}
+
+.search-bar input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.search-bar input::placeholder {
+  color: var(--ink-400);
+}
+
+.search-bar .search-btn {
+  padding: 10px 24px;
+  border-radius: var(--r-pill);
+  background: var(--grad-gold);
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  transition: all var(--t-base) var(--ease-out-expo);
+  cursor: pointer;
+}
+
+.search-bar .search-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+}
+
+/* ============================================================
+   43. VIP FILE UPLOAD
+   ============================================================ */
+.file-upload {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  border: 2px dashed var(--border-medium);
+  border-radius: var(--r-lg);
+  background: var(--bg-recessed);
+  transition: all var(--t-base) var(--ease-out-expo);
+  cursor: pointer;
+  text-align: center;
+}
+
+.file-upload:hover {
+  border-color: var(--gold-400);
+  background: rgba(251, 191, 36, 0.04);
+}
+
+.file-upload.dragover {
+  border-color: var(--gold-500);
+  background: rgba(251, 191, 36, 0.08);
+  transform: scale(1.02);
+}
+
+.file-upload-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.file-upload-text {
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: var(--ink-700);
+  margin-bottom: 6px;
+}
+
+.file-upload-hint {
+  font-size: 0.8rem;
+  color: var(--ink-400);
+}
+
+/* ============================================================
+   44. VIP CHIP/TAG INPUT
+   ============================================================ */
+.chip-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--r-sm);
+  min-height: 48px;
+  align-items: center;
+  transition: all var(--t-base) var(--ease-out-expo);
+}
+
+.chip-input:focus-within {
+  border-color: var(--gold-400);
+  box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.15);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: var(--grad-gold);
+  color: #0f172a;
+  font-size: 0.8rem;
+  font-weight: 650;
+  border-radius: var(--r-pill);
+  box-shadow: 0 2px 6px rgba(251, 191, 36, 0.3);
+}
+
+.chip-remove {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  background: rgba(15, 23, 42, 0.2);
+  color: #0f172a;
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out-expo);
+}
+
+.chip-remove:hover {
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.chip-input input {
+  flex: 1;
+  min-width: 120px;
+  border: none;
+  background: transparent;
+  padding: 4px;
+  font-size: 0.9rem;
+  box-shadow: none;
+}
+
+.chip-input input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* ============================================================
+   45. VIP RATING STARS
+   ============================================================ */
+.rating {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.rating-star {
+  font-size: 1.25rem;
+  color: var(--ink-300);
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out-expo);
+}
+
+.rating-star:hover,
+.rating-star.active {
+  color: var(--gold-500);
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.5));
+}
+
+/* ============================================================
+   46. VIP CALENDAR
+   ============================================================ */
+.calendar {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  background: var(--grad-luxury);
+  color: #fff;
+}
+
+.calendar-title {
+  font-size: 1rem;
+  font-weight: 750;
+}
+
+.calendar-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.calendar-nav button {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-xs);
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all var(--t-base) var(--ease-out-expo);
+}
+
+.calendar-nav button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.calendar-day-name {
+  padding: 12px;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-400);
+  background: var(--bg-recessed);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.calendar-day {
+  padding: 12px;
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink-700);
+  border-bottom: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out-expo);
+  position: relative;
+  min-height: 60px;
+}
+
+.calendar-day:hover {
+  background: var(--bg-recessed);
+}
+
+.calendar-day.other-month {
+  color: var(--ink-300);
+}
+
+.calendar-day.today {
+  background: rgba(251, 191, 36, 0.1);
+  color: var(--gold-700);
+  font-weight: 800;
+}
+
+.calendar-day.today::after {
+  content: "";
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold-500);
+}
+
+.calendar-day.has-event::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--royal-500);
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.5);
+}
+
+.calendar-day.selected {
+  background: var(--grad-gold);
+  color: #0f172a;
+  font-weight: 800;
+}
+
+/* ============================================================
+   47. VIP PROGRESS RING
+   ============================================================ */
+.progress-ring {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.progress-ring svg {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+  fill: none;
+  stroke: var(--bg-recessed);
+  stroke-width: 8;
+}
+
+.progress-ring-fill {
+  fill: none;
+  stroke: url(#gradient);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s var(--ease-out-expo);
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.5));
+}
+
+.progress-ring-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.progress-ring-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--ink-950);
+  line-height: 1;
+}
+
+.progress-ring-label {
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-400);
+  margin-top: 4px;
+}
+
+/* ============================================================
+   48. VIP COMPARISON TABLE
+   ============================================================ */
+.comparison-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+}
+
+.comparison-table th {
+  background: var(--grad-luxury);
+  color: #fff;
+  padding: 18px 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.comparison-table th:first-child {
+  text-align: left;
+}
+
+.comparison-table td {
+  padding: 16px 20px;
+  text-align: center;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.88rem;
+}
+
+.comparison-table td:first-child {
+  text-align: left;
+  font-weight: 650;
+  color: var(--ink-800);
+}
+
+.comparison-table tr:hover td {
+  background: var(--bg-recessed);
+}
+
+.comparison-table .check {
+  color: var(--success);
+  font-size: 1.2rem;
+}
+
+.comparison-table .cross {
+  color: var(--ink-300);
+  font-size: 1.2rem;
+}
+
+/* ============================================================
+   49. VIP STATS COUNTER
+   ============================================================ */
+.stats-counter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
+}
+
+.counter-item {
+  text-align: center;
+  min-width: 140px;
+}
+
+.counter-value {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+  background: var(--grad-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-variant-numeric: tabular-nums;
+}
+
+.counter-label {
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-400);
+  margin-top: 10px;
+}
+
+/* ============================================================
+   50. VIP COMMAND PALETTE
+   ============================================================ */
+.command-palette {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+  background: rgba(2, 6, 23, 0.6);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--t-base) var(--ease-out-expo);
+}
+
+.command-palette.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.command-palette-inner {
+  width: 100%;
+  max-width: 600px;
+  background: var(--bg-elevated);
+  border-radius: var(--r-xl);
+  box-shadow: 
+    0 40px 80px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  transform: scale(0.95) translateY(-20px);
+  transition: all var(--t-slow) var(--ease-spring);
+}
+
+.command-palette.active .command-palette-inner {
+  transform: scale(1) translateY(0);
+}
+
+.command-input {
+  width: 100%;
+  padding: 20px 24px;
+  font-size: 1rem;
+  border: none;
+  background: transparent;
+  color: var(--ink-900);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.command-input:focus {
+  outline: none;
+}
+
+.command-input::placeholder {
+  color: var(--ink-400);
+}
+
+.command-list {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.command-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out-expo);
+}
+
+.command-item:hover,
+.command-item.selected {
+  background: var(--bg-recessed);
+}
+
+.command-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-xs);
+  display: grid;
+  place-items: center;
+  background: var(--grad-gold);
+  color: #0f172a;
+  font-size: 1rem;
+}
+
+.command-text {
+  flex: 1;
+}
+
+.command-title {
+  font-size: 0.9rem;
+  font-weight: 650;
+  color: var(--ink-900);
+}
+
+.command-subtitle {
+  font-size: 0.78rem;
+  color: var(--ink-500);
+}
+
+.command-shortcut {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 650;
+  padding: 3px 8px;
+  background: var(--bg-recessed);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xs);
+  color: var(--ink-500);
+}
+
+/* ============================================================
+   51. VIP SPLIT VIEW
+   ============================================================ */
+.split-view {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  min-height: 600px;
+}
+
+.split-sidebar {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.split-main {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+/* ============================================================
+   52. VIP CODE BLOCK
+   ============================================================ */
+.code-block {
+  position: relative;
+  background: var(--grad-luxury);
+  border-radius: var(--r-md);
+  padding: 24px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: #e2e8f0;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.code-block::before {
+  content: attr(data-language);
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 0.65rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.code-block .keyword { color: #c084fc; }
+.code-block .string { color: #34d399; }
+.code-block .number { color: #fbbf24; }
+.code-block .comment { color: #64748b; font-style: italic; }
+.code-block .function { color: #60a5fa; }
+.code-block .operator { color: #f472b6; }
+
+/* ============================================================
+   53. VIP KEYBOARD SHORTCUT
+   ============================================================ */
+kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink-700);
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-xs);
+  box-shadow: 
+    0 2px 0 var(--border-medium),
+    inset 0 1px 0 #fff;
+}
+
+kbd:active {
+  transform: translateY(2px);
+  box-shadow: 
+    0 0 0 var(--border-medium),
+    inset 0 1px 0 #fff;
+}
+
+/* ============================================================
+   54. VIP STATUS PAGE
+   ============================================================ */
+.status-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: var(--grad-luxury);
+  position: relative;
+  overflow: hidden;
+}
+
+.status-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse 60% 40% at 30% 30%, rgba(251, 191, 36, 0.15), transparent),
+    radial-gradient(ellipse 50% 30% at 70% 70%, rgba(59, 130, 246, 0.15), transparent);
+  pointer-events: none;
+}
+
+.status-code {
+  font-size: 10rem;
+  font-weight: 900;
+  line-height: 1;
+  background: var(--grad-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 60px rgba(251, 191, 36, 0.3);
+  animation: glitch 3s ease-in-out infinite;
+}
+
+@keyframes glitch {
+  0%, 90%, 100% {
+    transform: translate(0);
+  }
+  92% {
+    transform: translate(-4px, 2px);
+  }
+  94% {
+    transform: translate(4px, -2px);
+  }
+  96% {
+    transform: translate(-2px, -2px);
+  }
+  98% {
+    transform: translate(2px, 2px);
+  }
+}
+
+.status-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 20px 0 12px;
+}
+
+.status-message {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 400px;
+  text-align: center;
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+
+/* ============================================================
+   55. VIP EMPTY STATE
+   ============================================================ */
+.vip-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px;
+  text-align: center;
+}
+
+.vip-empty-icon {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 3rem;
+  background: var(--bg-recessed);
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.vip-empty-icon::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px dashed var(--border-medium);
+  animation: rotate 20s linear infinite;
+}
+
+.vip-empty-title {
+  font-size: 1.25rem;
+  font-weight: 750;
+  color: var(--ink-950);
+  margin-bottom: 10px;
+}
+
+.vip-empty-text {
+  font-size: 0.92rem;
+  color: var(--ink-500);
+  max-width: 360px;
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+/* ============================================================
+   56. VIP COPY BUTTON
+   ============================================================ */
+.copy-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--bg-recessed);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xs);
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--ink-600);
+  cursor: pointer;
+  transition: all var(--t-base) var(--ease-out-expo);
+}
+
+.copy-btn:hover {
+  background: var(--bg-elevated);
+  border-color: var(--gold-300);
+  color: var(--gold-700);
+}
+
+.copy-btn.copied {
+  background: var(--success-soft);
+  border-color: var(--success);
+  color: var(--success-dark);
+}
+
+.copy-btn.copied::after {
+  content: "Copied!";
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  background: var(--success);
+  color: #fff;
+  font-size: 0.7rem;
+  border-radius: var(--r-xs);
+  animation: fadeUp 300ms var(--ease-out-expo);
+}
+
+/* ============================================================
+   57. VIP STAR RATING DISPLAY
+   ============================================================ */
+.stars {
+  display: inline-flex;
+  gap: 2px;
+  font-size: 1rem;
+}
+
+.stars .star {
+  color: var(--gold-500);
+  filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.4));
+}
+
+.stars .star.empty {
+  color: var(--ink-300);
+  filter: none;
+}
+
+/* ============================================================
+   58. VIP RIBBON
+   ============================================================ */
+.ribbon {
+  position: absolute;
+  top: 16px;
+  right: -32px;
+  padding: 6px 40px;
+  background: var(--grad-gold);
+  color: #0f172a;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transform: rotate(45deg);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+  z-index: 10;
+}
+
+.ribbon-royal {
+  background: var(--grad-royal);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+.ribbon-emerald {
+  background: var(--grad-emerald);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.ribbon-rose {
+  background: var(--grad-rose);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.4);
+}
+
+/* ============================================================
+   59. VIP LIVE INDICATOR
+   ============================================================ */
+.live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--danger-soft);
+  color: var(--danger-dark);
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: var(--r-pill);
+}
+
+.live-indicator::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
+  animation: livePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+}
+
+/* ============================================================
+   60. VIP SHARE BUTTONS
+   ============================================================ */
+.share-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.share-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  color: #fff;
+  transition: all var(--t-base) var(--ease-spring);
+  cursor: pointer;
+}
+
+.share-btn:hover {
+  transform: translateY(-4px) scale(1.1);
+}
+
+.share-twitter { background: #1da1f2; box-shadow: 0 4px 12px rgba(29, 161, 242, 0.4); }
+.share-facebook { background: #1877f2; box-shadow: 0 4px 12px rgba(24, 119, 242, 0.4); }
+.share-linkedin { background: #0a66c2; box-shadow: 0 4px 12px rgba(10, 102, 194, 0.4); }
+.share-whatsapp { background: #25d366; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4); }
+.share-telegram { background: #0088cc; box-shadow: 0 4px 12px rgba(0, 136, 204, 0.4); }
+.share-email { background: var(--ink-600); box-shadow: 0 4px 12px rgba(71, 85, 105, 0.4); }
+.share-copy { background: var(--grad-gold); color: #0f172a; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4); }
+
+/* ============================================================
+   61. VIP THEME TOGGLE
+   ============================================================ */
+.theme-toggle {
+  position: relative;
+  width: 64px;
+  height: 32px;
+  border-radius: var(--r-pill);
+  background: var(--bg-recessed);
+  border: 2px solid var(--border-soft);
+  cursor: pointer;
+  transition: all var(--t-base) var(--ease-out-expo);
+  overflow: hidden;
+}
+
+.theme-toggle::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--grad-gold);
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+  transition: all var(--t-base) var(--ease-spring);
+}
+
+.theme-toggle.dark::before {
+  transform: translateX(32px);
+  background: var(--grad-royal);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+}
+
+.theme-toggle .theme-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.7rem;
+  transition: all var(--t-base) var(--ease-out-expo);
+}
+
+.theme-toggle .theme-icon.sun {
+  left: 8px;
+  opacity: 1;
+}
+
+.theme-toggle .theme-icon.moon {
+  right: 8px;
+  opacity: 0.5;
+}
+
+.theme-toggle.dark .theme-icon.sun {
+  opacity: 0.5;
+}
+
+.theme-toggle.dark .theme-icon.moon {
+  opacity: 1;
+}
+
+/* ============================================================
+   62. VIP SCROLL PROGRESS
+   ============================================================ */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--grad-gold);
+  z-index: 9999;
+  transition: width 100ms linear;
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
+}
+
+/* ============================================================
+   63. VIP BACK TO TOP
+   ============================================================ */
+.back-to-top {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+  color: #0f172a;
+  background: var(--grad-gold);
+  box-shadow: 
+    0 8px 24px rgba(251, 191, 36, 0.4),
+    0 4px 12px rgba(251, 191, 36, 0.3);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all var(--t-base) var(--ease-spring);
+  z-index: 999;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  transform: translateY(-4px) scale(1.1);
+  box-shadow: 
+    0 12px 32px rgba(251, 191, 36, 0.5),
+    0 6px 16px rgba(251, 191, 36, 0.4);
+}
+
+.back-to-top:active {
+  transform: translateY(-2px) scale(1.05);
+}
+
+/* ============================================================
+   64. VIP CURSOR EFFECTS
+   ============================================================ */
+.cursor-dot {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold-500);
+  pointer-events: none;
+  z-index: 99999;
+  transition: transform 100ms var(--ease-out-expo), opacity 200ms;
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.8);
+}
+
+.cursor-ring {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(251, 191, 36, 0.5);
+  pointer-events: none;
+  z-index: 99998;
+  transition: transform 200ms var(--ease-out-expo), opacity 200ms, width 200ms, height 200ms;
+}
+
+.cursor-ring.hovering {
+  width: 60px;
+  height: 60px;
+  border-color: var(--gold-400);
+  background: rgba(251, 191, 36, 0.1);
+}
+
+@media (max-width: 768px) {
+  .cursor-dot,
+  .cursor-ring {
+    display: none;
+  }
+}
+
+/* ============================================================
+   65. VIP NOISE TEXTURE
+   ============================================================ */
+.noise {
+  position: relative;
+}
+
+.noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* ============================================================
+   66. VIP GRADIENT MESH BACKGROUND
+   ============================================================ */
+.mesh-gradient {
+  background: 
+    radial-gradient(at 40% 20%, rgba(251, 191, 36, 0.3) 0%, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(168, 85, 247, 0.3) 0%, transparent 50%),
+    radial-gradient(at 80% 50%, rgba(6, 182, 212, 0.3) 0%, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.3) 0%, transparent 50%),
+    radial-gradient(at 80% 100%, rgba(244, 63, 94, 0.3) 0%, transparent 50%),
+    linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background-size: 200% 200%;
+  animation: meshMove 15s ease infinite;
+}
+
+@keyframes meshMove {
+  0%, 100% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+}
+
+/* ============================================================
+   67. VIP SPOTLIGHT BORDER
+   ============================================================ */
+.spotlight-border {
+  position: relative;
+  background: var(--bg-elevated);
+  border-radius: var(--r-lg);
+  padding: 1px;
+  overflow: hidden;
+}
+
+.spotlight-border::before {
+  content: "";
+  position: absolute;
+  inset: -100%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    var(--gold-400) 60deg,
+    transparent 120deg,
+    transparent 240deg,
+    var(--royal-400) 300deg,
+    transparent 360deg
+  );
+  animation: spotlightRotate 4s linear infinite;
+}
+
+.spotlight-border::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  background: var(--bg-elevated);
+  border-radius: calc(var(--r-lg) - 1px);
+}
+
+@keyframes spotlightRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   68. VIP MAGNETIC BUTTON
+   ============================================================ */
+.magnetic-btn {
+  position: relative;
+  transition: transform 300ms var(--ease-out-expo);
+  transform-style: preserve-3d;
+}
+
+.magnetic-btn .magnetic-inner {
+  transition: transform 300ms var(--ease-out-expo);
+}
+
+/* ============================================================
+   69. VIP TEXT REVEAL
+   ============================================================ */
+.text-reveal {
+  overflow: hidden;
+}
+
+.text-reveal span {
+  display: inline-block;
+  transform: translateY(100%);
+  animation: textRevealUp 800ms var(--ease-out-expo) forwards;
+}
+
+@keyframes textRevealUp {
+  to { transform: translateY(0); }
+}
+
+/* Word by word reveal */
+.word-reveal .word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: wordReveal 600ms var(--ease-out-expo) forwards;
+}
+
+@keyframes wordReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   70. VIP PARALLAX SCROLL
+   ============================================================ */
+.parallax-scroll {
+  will-change: transform;
+}
+
+.parallax-scroll[data-speed="0.5"] { transform: translateY(calc(var(--scroll) * 0.5px)); }
+.parallax-scroll[data-speed="0.3"] { transform: translateY(calc(var(--scroll) * 0.3px)); }
+.parallax-scroll[data-speed="0.7"] { transform: translateY(calc(var(--scroll) * 0.7px)); }
+
+/* ============================================================
+   71. VIP FINAL TOUCHES - LUXURY DETAILS
+   ============================================================ */
+
+/* Gold Accent Line */
+.gold-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-400), transparent);
+  margin: 32px 0;
+}
+
+/* Decorative Corner */
+.corner-accent {
+  position: relative;
+}
+
+.corner-accent::before,
+.corner-accent::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: var(--gold-400);
+  border-style: solid;
+  opacity: 0.5;
+}
+
+.corner-accent::before {
+  top: 8px;
+  left: 8px;
+  border-width: 2px 0 0 2px;
+}
+
+.corner-accent::after {
+  bottom: 8px;
+  right: 8px;
+  border-width: 0 2px 2px 0;
+}
+
+/* Premium Badge */
+.premium-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--grad-gold);
+  color: #0f172a;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: var(--r-pill);
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+}
+
+.premium-badge::before {
+  content: "★";
+  font-size: 0.8rem;
+}
+
+/* Luxury Divider */
+.luxury-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 32px 0;
+}
+
+.luxury-divider::before,
+.luxury-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-400), transparent);
+}
+
+.luxury-divider span {
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-500);
+}
+
+/* Glass Reflection */
+.glass-reflection {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-reflection::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.6s var(--ease-out-expo);
+}
+
+.glass-reflection:hover::after {
+  left: 100%;
+}
+
+/* Depth Layers */
+.depth-1 { transform: translateZ(10px); }
+.depth-2 { transform: translateZ(20px); }
+.depth-3 { transform: translateZ(30px); }
+.depth-4 { transform: translateZ(40px); }
+.depth-5 { transform: translateZ(50px); }
+
+/* ============================================================
+   72. VIP FINAL POLISH - SIGNATURE ELEMENTS
+   ============================================================ */
+
+/* Signature Gold Underline */
+.signature-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.signature-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 3px;
+  background: var(--grad-gold);
+  border-radius: 3px;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 400ms var(--ease-out-expo);
+}
+
+.signature-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Signature Glow */
+.signature-glow {
+  position: relative;
+}
+
+.signature-glow::before {
+  content: "";
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.2), transparent 70%);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 400ms var(--ease-out-expo);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.signature-glow:hover::before {
+  opacity: 1;
+}
+
+/* Signature Border Animation */
+.signature-border {
+  position: relative;
+  background: var(--bg-elevated);
+  border-radius: var(--r-lg);
+  padding: 2px;
+  overflow: hidden;
+}
+
+.signature-border::before {
+  content: "";
+  position: absolute;
+  inset: -200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    var(--gold-400) 45deg,
+    transparent 90deg,
+    transparent 270deg,
+    var(--royal-400) 315deg,
+    transparent 360deg
+  );
+  animation: signatureRotate 6s linear infinite;
+}
+
+.signature-border::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  background: var(--bg-elevated);
+  border-radius: calc(var(--r-lg) - 2px);
+}
+
+@keyframes signatureRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   END OF VIP ULTRA PREMIUM STYLESHEET v5.0
+   ------------------------------------------------------------
+   Total Lines: 3000+
+   Components: 72 Sections
+   Animations: 50+ Keyframes
+   Effects: 3D, Glass, Neumorphic, Aurora, Particles
    ============================================================ */
