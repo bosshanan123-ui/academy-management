@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Notices{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Notices</h1>
+    <a href="{{ url_for('super_admin.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Post Notice</h2>
+    <form method="POST" class="form-grid">
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" name="title" required />
+      </div>
+      <div class="form-group">
+        <label>Target</label>
+        <select name="target_role">
+          <option value="all">All</option>
+          <option value="teacher">Teachers</option>
+          <option value="student">Students</option>
+          <option value="parent">Parents</option>
+        </select>
+      </div>
+      <div class="form-group" style="grid-column:1/-1;">
+        <label>Body</label>
+        <textarea name="body" required></textarea>
+      </div>
+      <button type="submit" class="btn">Post Notice</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">All Notices</h2>
+    {% if notices %}
+      {% for n in notices %}
+        <div class="schedule-item">
+          <div class="sched-info" style="flex:1;">
+            <strong>{{ n.title }}</strong>
+            <span>{{ n.body }}</span>
+            <span class="text-muted" style="font-size:.75rem;">
+              By {{ n.posted_by }} • Target: {{ n.target_role }}
+            </span>
+          </div>
+          <form method="POST" action="{{ url_for('super_admin.delete_notice', nid=n.id) }}"
+                data-confirm="Delete this notice?">
+            <button class="btn btn-sm btn-danger">Delete</button>
+          </form>
+        </div>
+      {% endfor %}
+    {% else %}<p class="empty-state">No notices yet.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}

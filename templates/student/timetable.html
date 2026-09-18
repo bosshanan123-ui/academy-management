@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}My Timetable{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>My Timetable</h1>
+    <a href="{{ url_for('student.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+
+  <div class="card">
+    <div class="timetable-grid">
+      {% for d in days %}
+      <div class="timetable-day">
+        <h4>{{ d }}</h4>
+        {% if grid[d] %}
+          {% for e in grid[d] %}
+            <div class="slot">
+              <strong>{{ e.subject_name }}</strong>
+              <span class="slot-time">{{ e.start_time }}–{{ e.end_time }} • {{ e.teacher_name }}</span>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted" style="font-size:.8rem;">No classes</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

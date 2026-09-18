@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Teacher Assignments{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Teacher Assignments</h1>
+    <a href="{{ url_for('super_admin.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">⭐ Assign Teacher → Class → Section → Subject</h2>
+    <form method="POST" class="form-grid">
+      <div class="form-group">
+        <label>Teacher</label>
+        <select name="teacher_user_id" required>
+          <option value="">— Select teacher —</option>
+          {% for t in teachers %}<option value="{{ t.id }}">{{ t.name }} ({{ t.roll_number }})</option>{% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Class</label>
+        <select id="classSelect" name="class_id" required>
+          <option value="">— Select class —</option>
+          {% for c in classes %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Section</label>
+        <select id="sectionSelect" name="section_id" required>
+          <option value="">— Select section —</option>
+          {% for s in sections %}
+            <option value="{{ s.id }}" data-class-id="{{ s.class_id }}">{{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Subject</label>
+        <select name="subject_id" required>
+          <option value="">— Select subject —</option>
+          {% for s in subjects %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn">Assign</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Current Assignments</h2>
+    {% if assignments %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Teacher</th><th>Roll No</th><th>Class</th><th>Section</th><th>Subject</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          {% for a in assignments %}
+          <tr>
+            <td>{{ a.teacher_name }}</td>
+            <td><span class="roll-badge">{{ a.teacher_roll }}</span></td>
+            <td>{{ a.class_name }}</td>
+            <td>{{ a.section_name }}</td>
+            <td>{{ a.subject_name }}</td>
+            <td>
+              <form method="POST" action="{{ url_for('super_admin.delete_assignment', aid=a.id) }}"
+                    data-confirm="Delete this assignment?">
+                <button class="btn btn-sm btn-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<p class="empty-state">No assignments yet.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}

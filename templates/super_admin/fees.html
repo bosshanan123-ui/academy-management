@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Fees{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Fees</h1>
+    <a href="{{ url_for('super_admin.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Fee Collection by Month</h3>
+      <div class="chart-container"><canvas id="feeChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Generate Vouchers</h2>
+    <form method="POST" class="form-grid">
+      <input type="hidden" name="action" value="generate" />
+      <div class="form-group">
+        <label>Month</label>
+        <input type="text" name="month" placeholder="e.g. 2025-01 or January" required />
+      </div>
+      <div class="form-group">
+        <label>Amount</label>
+        <input type="number" step="0.01" name="amount" required />
+      </div>
+      <button type="submit" class="btn">Generate for All Students</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Fee Records</h2>
+    {% if fees %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Student</th><th>Roll No</th><th>Month</th><th>Amount</th><th>Status</th><th>Paid Date</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for f in fees %}
+          <tr>
+            <td>{{ f.student_name }}</td>
+            <td><span class="roll-badge">{{ f.student_roll }}</span></td>
+            <td>{{ f.month }}</td>
+            <td>{{ f.amount }}</td>
+            <td>
+              <span class="pill pill-{{ f.status }}">{{ f.status }}</span>
+            </td>
+            <td>{{ f.paid_date or '-' }}</td>
+            <td class="actions">
+              {% if f.status != 'paid' %}
+              <form method="POST">
+                <input type="hidden" name="action" value="mark_paid" />
+                <input type="hidden" name="fee_id" value="{{ f.id }}" />
+                <button class="btn btn-sm btn-success">Mark Paid</button>
+              </form>
+              {% else %}
+              <form method="POST">
+                <input type="hidden" name="action" value="mark_unpaid" />
+                <input type="hidden" name="fee_id" value="{{ f.id }}" />
+                <button class="btn btn-sm btn-warning">Mark Unpaid</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<p class="empty-state">No fee records yet.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  renderMultiBarChart('feeChart',
+    {{ fee_labels | tojson }},
+    [
+      { label: 'Paid', data: {{ fee_paid | tojson }}, backgroundColor: CHART_COLORS.green, borderRadius: 6 },
+      { label: 'Unpaid', data: {{ fee_unpaid | tojson }}, backgroundColor: CHART_COLORS.red, borderRadius: 6 }
+    ]);
+</script>
+{% endblock %}

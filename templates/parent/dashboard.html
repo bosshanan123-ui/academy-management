@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Parent Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Parent Dashboard</h1>
+    <div class="actions">
+      <a href="{{ url_for('parent.attendance') }}" class="btn btn-ghost">✅ Attendance</a>
+      <a href="{{ url_for('parent.result') }}" class="btn btn-ghost">📊 Result</a>
+      <a href="{{ url_for('parent.fee') }}" class="btn btn-ghost">💰 Fees</a>
+    </div>
+  </div>
+
+  {% if not has_child %}
+    <div class="card"><p class="empty-state">No child linked to your account yet. Please contact the administration.</p></div>
+  {% else %}
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Child</div><div class="stat-value" style="font-size:1.2rem;">{{ child.name }}</div></div>
+      <div class="stat-card accent-blue"><div class="stat-label">Roll</div><div class="stat-value" style="font-size:1.1rem;">{{ child.roll_number }}</div></div>
+      <div class="stat-card"><div class="stat-label">Class</div><div class="stat-value">{{ class_name }}-{{ section_name }}</div></div>
+      <div class="stat-card accent-green"><div class="stat-label">Attendance %</div><div class="stat-value">{{ att_percent }}%</div></div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>Child Attendance</h3>
+        <div class="chart-container"><canvas id="attChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title">🕐 Today's Timetable ({{ today_name }})</h2>
+      {% if today_tt %}
+        {% for t in today_tt %}
+          <div class="schedule-item">
+            <span class="time-chip">{{ t.start_time }}–{{ t.end_time }}</span>
+            <div class="sched-info">
+              <strong>{{ t.subject_name }}</strong>
+              <span>Teacher: {{ t.teacher_name }}</span>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}<p class="empty-state">No classes today.</p>{% endif %}
+    </div>
+
+    <div class="card">
+      <h2 class="section-title">👩‍🏫 Child's Teachers</h2>
+      {% if my_teachers %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Subject</th><th>Teacher</th></tr></thead>
+          <tbody>
+            {% for t in my_teachers %}
+            <tr><td>{{ t.subject }}</td><td>{{ t.teacher_name }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}<p class="empty-state">No teachers assigned.</p>{% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if has_child %}
+<script>
+  renderDoughnutChart('attChart',
+    ['Present', 'Absent', 'Leave'],
+    [{{ att_counts.P }}, {{ att_counts.A }}, {{ att_counts.L }}]);
+</script>
+{% endif %}
+{% endblock %}

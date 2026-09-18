@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Parents{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Parents</h1>
+    <a href="{{ url_for('super_admin.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Add Parent</h2>
+    <form method="POST" class="form-grid">
+      <div class="form-group"><label>Name</label><input type="text" name="name" required /></div>
+      <div class="form-group"><label>Phone</label><input type="tel" name="phone" /></div>
+      <div class="form-group"><label>Password</label><input type="password" name="password" required /></div>
+      <div class="form-group">
+        <label>Link Student</label>
+        <select name="student_user_id">
+          <option value="">— None —</option>
+          {% for s in students %}<option value="{{ s.id }}">{{ s.roll_number }} — {{ s.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn">Create Parent</button>
+    </form>
+    <p class="text-muted mt-3">Roll number will be auto-generated (PT-YYYY-NNNN).</p>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">All Parents</h2>
+    {% if parents %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Roll No</th><th>Name</th><th>Phone</th><th>Linked Student</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for p in parents %}
+          <tr>
+            <td><span class="roll-badge">{{ p.roll_number }}</span></td>
+            <td>{{ p.name }}</td>
+            <td>{{ p.phone or '-' }}</td>
+            <td>{{ p.linked_student }} ({{ p.linked_roll }})</td>
+            <td>
+              <form method="POST" action="{{ url_for('super_admin.delete_parent', uid=p.id) }}"
+                    data-confirm="Delete this parent?">
+                <button class="btn btn-sm btn-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<p class="empty-state">No parents yet.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}

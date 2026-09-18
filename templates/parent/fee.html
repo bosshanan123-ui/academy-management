@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Child Fees{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Child Fees</h1>
+    <a href="{{ url_for('parent.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+
+  {% if has_child and fees %}
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Month</th><th>Amount</th><th>Status</th><th>Paid Date</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for f in fees %}
+          <tr>
+            <td>{{ f.month }}</td>
+            <td>{{ f.amount }}</td>
+            <td><span class="pill pill-{{ f.status }}">{{ f.status }}</span></td>
+            <td>{{ f.paid_date or '-' }}</td>
+            <td>
+              {% if f.status != 'paid' %}
+                <button class="btn btn-sm btn-success" onclick="alert('Online payment UI only — integrate a gateway here.');">
+                  Pay Now
+                </button>
+              {% else %}<span class="text-muted">Paid</span>{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% else %}<div class="card"><p class="empty-state">No fee records.</p></div>{% endif %}
+</div>
+{% endblock %}

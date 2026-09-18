@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Teacher Dashboard</h1>
+    <a href="{{ url_for('teacher.timetable') }}" class="btn btn-ghost">📅 My Timetable</a>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">📚 My Assigned Classes</h2>
+    {% if assignments %}
+      {% for a in assignments %}
+        <div class="schedule-item">
+          <div class="sched-info" style="flex:1;">
+            <strong>{{ a.class_name }} — {{ a.section_name }}</strong>
+            <span>Subject: {{ a.subject_name }}</span>
+          </div>
+          <div class="actions">
+            <a class="btn btn-sm"
+               href="{{ url_for('teacher.attendance',
+                    class_id=a.class_id, section_id=a.section_id, subject_id=a.subject_id) }}">
+              Attendance
+            </a>
+            <a class="btn btn-sm btn-ghost"
+               href="{{ url_for('teacher.marks',
+                    class_id=a.class_id, section_id=a.section_id, subject_id=a.subject_id) }}">
+              Marks
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="empty-state">No assignments yet — contact Super Admin.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">🕐 Today's Schedule ({{ today_name }})</h2>
+    {% if today_schedule %}
+      {% for t in today_schedule %}
+        <div class="schedule-item">
+          <span class="time-chip">{{ t.start_time }}–{{ t.end_time }}</span>
+          <div class="sched-info">
+            <strong>{{ t.class_name }} — {{ t.section_name }}</strong>
+            <span>{{ t.subject_name }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="empty-state">No classes scheduled today.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">📢 Notices</h2>
+    {% for n in notices %}
+      <div class="schedule-item">
+        <div class="sched-info">
+          <strong>{{ n.title }}</strong>
+          <span>{{ n.body }}</span>
+        </div>
+      </div>
+    {% endfor %}
+    {% if not notices %}<p class="empty-state">No notices.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}

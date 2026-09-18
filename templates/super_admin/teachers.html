@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Teachers{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Teachers</h1>
+    <a href="{{ url_for('super_admin.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Add Teacher</h2>
+    <form method="POST" class="form-grid">
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" name="name" required />
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" name="phone" />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" />
+      </div>
+      <div class="form-group">
+        <label>Qualification</label>
+        <input type="text" name="qualification" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" required />
+      </div>
+      <button type="submit" class="btn">Create Teacher</button>
+    </form>
+    <p class="text-muted mt-3">Roll number will be auto-generated (T-YYYY-NNNN).</p>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">All Teachers</h2>
+    {% if teachers %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Roll No</th><th>Name</th><th>Phone</th><th>Qualification</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for t in teachers %}
+          <tr>
+            <td><span class="roll-badge">{{ t.roll_number }}</span></td>
+            <td>{{ t.name }}</td>
+            <td>{{ t.phone or '-' }}</td>
+            <td>{{ t.profile.qualification or '-' }}</td>
+            <td>
+              <form method="POST" action="{{ url_for('super_admin.delete_teacher', uid=t.id) }}"
+                    data-confirm="Delete this teacher?">
+                <button class="btn btn-sm btn-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<p class="empty-state">No teachers yet.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}

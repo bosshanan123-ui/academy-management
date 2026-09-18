@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Super Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Super Admin Dashboard</h1>
+    <span class="text-muted">Full system overview</span>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Students</div><div class="stat-value">{{ stats.students }}</div></div>
+    <div class="stat-card accent-green"><div class="stat-label">Teachers</div><div class="stat-value">{{ stats.teachers }}</div></div>
+    <div class="stat-card accent-amber"><div class="stat-label">Parents</div><div class="stat-value">{{ stats.parents }}</div></div>
+    <div class="stat-card accent-blue"><div class="stat-label">Classes</div><div class="stat-value">{{ stats.classes }}</div></div>
+    <div class="stat-card accent-green"><div class="stat-label">Collected</div><div class="stat-value">{{ stats.collected }}</div></div>
+    <div class="stat-card accent-red"><div class="stat-label">Pending</div><div class="stat-value">{{ stats.pending }}</div></div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Students per Class</h3>
+      <div class="chart-container"><canvas id="classChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Fee Collection</h3>
+      <div class="chart-container"><canvas id="feeChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Attendance Trend (Last 30 Days)</h3>
+      <div class="chart-container"><canvas id="attChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <a href="{{ url_for('super_admin.classes') }}" class="card"><h3>🏫 Classes</h3><p>Manage class list</p></a>
+    <a href="{{ url_for('super_admin.sections') }}" class="card"><h3>🧩 Sections</h3><p>Manage sections per class</p></a>
+    <a href="{{ url_for('super_admin.subjects') }}" class="card"><h3>📚 Subjects</h3><p>Manage subjects</p></a>
+    <a href="{{ url_for('super_admin.teachers') }}" class="card"><h3>👩‍🏫 Teachers</h3><p>Create teacher accounts</p></a>
+    <a href="{{ url_for('super_admin.students') }}" class="card"><h3>🎒 Students</h3><p>Create student accounts</p></a>
+    <a href="{{ url_for('super_admin.parents') }}" class="card"><h3>👨‍👩‍👧 Parents</h3><p>Create parent accounts</p></a>
+    <a href="{{ url_for('super_admin.assignments') }}" class="card"><h3>⭐ Assignments</h3><p>Teacher → Class → Subject</p></a>
+    <a href="{{ url_for('super_admin.timetable') }}" class="card"><h3>🗓️ Timetable</h3><p>Weekly schedule</p></a>
+    <a href="{{ url_for('super_admin.fees') }}" class="card"><h3>💰 Fees</h3><p>Vouchers & payments</p></a>
+    <a href="{{ url_for('super_admin.notices') }}" class="card"><h3>📢 Notices</h3><p>Announcements</p></a>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  renderBarChart('classChart',
+    {{ class_labels | tojson }},
+    {{ class_counts | tojson }},
+    'Students');
+
+  renderBarChart('feeChart',
+    {{ fee_labels | tojson }},
+    {{ fee_values | tojson }},
+    'Collected',
+    CHART_COLORS.green);
+
+  renderLineChart('attChart',
+    {{ att_dates | tojson }},
+    {{ att_present | tojson }},
+    'Present');
+</script>
+{% endblock %}

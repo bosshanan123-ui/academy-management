@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Classes{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Classes</h1>
+    <a href="{{ url_for('super_admin.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Add Class</h2>
+    <form method="POST" class="form-grid">
+      <div class="form-group">
+        <label>Class Name</label>
+        <input type="text" name="name" placeholder="e.g. 9th" required />
+      </div>
+      <button type="submit" class="btn">Add Class</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">All Classes</h2>
+    {% if classes %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Name</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for c in classes %}
+          <tr>
+            <td>{{ c.id }}</td>
+            <td>{{ c.name }}</td>
+            <td class="actions">
+              <form method="POST" action="{{ url_for('super_admin.edit_class', cid=c.id) }}"
+                    style="display:flex;gap:6px;">
+                <input type="text" name="name" value="{{ c.name }}" required />
+                <button class="btn btn-sm btn-ghost" type="submit">Save</button>
+              </form>
+              <form method="POST" action="{{ url_for('super_admin.delete_class', cid=c.id) }}"
+                    data-confirm="Delete this class?">
+                <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<p class="empty-state">No classes yet.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}

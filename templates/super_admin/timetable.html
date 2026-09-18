@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Timetable{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>Timetable</h1>
+    <a href="{{ url_for('super_admin.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Add Timetable Entry</h2>
+    <form method="POST" class="form-grid">
+      <div class="form-group">
+        <label>Class</label>
+        <select id="ttClassSelect" name="class_id" required>
+          <option value="">— Class —</option>
+          {% for c in classes %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Section</label>
+        <select id="ttSectionSelect" name="section_id" required>
+          <option value="">— Section —</option>
+          {% for s in sections %}
+            <option value="{{ s.id }}" data-class-id="{{ s.class_id }}">{{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Subject</label>
+        <select name="subject_id" required>
+          <option value="">— Subject —</option>
+          {% for s in subjects %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Teacher</label>
+        <select name="teacher_user_id" required>
+          <option value="">— Teacher —</option>
+          {% for t in teachers %}<option value="{{ t.id }}">{{ t.name }} ({{ t.roll_number }})</option>{% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Day</label>
+        <select name="day" required>
+          <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+          <option>Thursday</option><option>Friday</option><option>Saturday</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Period No</label>
+        <input type="number" name="period_no" min="1" max="12" required />
+      </div>
+      <div class="form-group">
+        <label>Start Time</label>
+        <input type="time" name="start_time" required />
+      </div>
+      <div class="form-group">
+        <label>End Time</label>
+        <input type="time" name="end_time" required />
+      </div>
+      <button type="submit" class="btn">Add Entry</button>
+    </form>
+  </div>
+
+  {% for key, entries in grid.items() %}
+  <div class="card">
+    <h2 class="section-title">🗓️ {{ key }}</h2>
+    <div class="timetable-grid">
+      {% set days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'] %}
+      {% for d in days %}
+        <div class="timetable-day">
+          <h4>{{ d }}</h4>
+          {% set day_entries = entries | selectattr('day', 'equalto', d) | list %}
+          {% if day_entries %}
+            {% for e in day_entries %}
+              <div class="slot">
+                <strong>{{ e.subject_name }}</strong>
+                <span class="slot-time">{{ e.start_time }}–{{ e.end_time }} • {{ e.teacher_name }}</span>
+              </div>
+            {% endfor %}
+          {% else %}
+            <p class="text-muted" style="font-size:.8rem;">No classes</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
