@@ -574,33 +574,148 @@ def delete_timetable(tid):
 @super_admin_bp.route("/fees", methods=["GET", "POST"])
 @role_required("super_admin")
 def fees():
+    """Fee management: class-wise structures + monthly vouchers."""
     if request.method == "POST":
         action = request.form.get("action")
 
-        if action == "generate":
-            month = (request.form.get("month") or "").strip()
-            amount = float(request.form.get("amount") or 0)
-            if not month or amount <= 0:
-                flash("Month and amount are required.", "error")
+        # ---------- Save / update class fee structure ----------
+        if action == "save_structure":
+            class_id = request.form.get("class_id")
+            monthly_fee = request.form.get("monthly_fee") or 0
+            admission_fee = request.form.get("admission_fee") or 0
+            exam_fee = request.form.get("exam_fee") or 0
+            notes = (request.form.get("notes") or "").strip()
+
+            if not class_id:
+                flash("Class is required.", "error")
                 return redirect(url_for("super_admin.fees"))
 
-            students = _safe_select("users", role="student")
+            try:
+                payload = {
+                    "class_id": int(class_id),
+                    "monthly_fee": float(monthly_fee),
+                    "admission_fee": float(admission_fee),
+                    "exam_fee": float(exam_fee),
+                    "notes": notes,
+                }
+                # Upsert (insert or update based on unique class_id)
+                existing = table("fee_structures").select("id").eq(
+                    "class_id", int(class_id)
+                ).execute().data
+
+                if existing:
+                    table("fee_structures").update(payload).eq(
+                        "class_id", int(class_id)
+                    ).execute()
+                    flash("Fee structure updated.", "success")
+                else:
+                    table("fee_structures").insert(payload).execute()
+                    flash("Fee structure created.", "success")
+            except Exception as e:
+                flash(f"Error saving structure: {e}", "error")
+            return redirect(url_for("super_admin.fees"))
+
+        # ---------- Generate vouchers for a month ----------
+        if action == "generate":
+            month = (request.form.get("month") or "").strip()
+            mode = request.form.get("mode") or "all"  # all | class | student
+            target_class_id = request.form.get("target_class_id")
+            target_student_id = request.form.get("target_student_id")
+            override_amount = request.form.get("override_amount") or ""
+
+            if not month:
+                flash("Month is required.", "error")
+                return redirect(url_for("super_admin.fees"))
+
+            # Load class fee structures + student custom fees
+            structures = _safe_select("fee_structures")
+            struct_map = {s["class_id"]: s for s in structures}
+
+            # Load students with profiles
+            student_users = _safe_select("users", role="student")
+            student_profiles = _safe_select("students")
+            profile_map = {p["user_id"]: p for p in student_profiles}
+
+            # Load existing fees (to avoid duplicates)
             existing = _safe_select("fees")
             existing_set = {(f["student_user_id"], f["month"]) for f in existing}
-            count = 0
-            for s in students:
-                if (s["id"], month) in existing_set:
-                    continue
-                table("fees").insert({
-                    "student_user_id": s["id"],
-                    "month": month,
-                    "amount": amount,
-                    "status": "unpaid",
-                }).execute()
-                count += 1
-            flash(f"{count} fee vouchers generated for {month}.", "success")
 
-        elif action == "mark_paid":
+            count = 0
+            skipped = 0
+            failed = []
+
+            for u in student_users:
+                sid = u["id"]
+
+                # Filter by mode
+                if mode == "student" and str(sid) != str(target_student_id):
+                    continue
+
+                profile = profile_map.get(sid)
+                if not profile:
+                    continue
+
+                if mode == "class" and str(profile.get("class_id")) != str(target_class_id):
+                    continue
+
+                # Skip if voucher already exists
+                if (sid, month) in existing_set:
+                    skipped += 1
+                    continue
+
+                # Determine amount (priority: override → custom → class)
+                amount = 0
+                if override_amount and str(override_amount).strip():
+                    try:
+                        amount = float(override_amount)
+                    except ValueError:
+                        pass
+                elif profile.get("custom_fee"):
+                    amount = float(profile["custom_fee"])
+                else:
+                    s = struct_map.get(profile.get("class_id"))
+                    if s:
+                        amount = float(s.get("monthly_fee") or 0)
+
+                if amount <= 0:
+                    failed.append(u.get("name", "?"))
+                    continue
+
+                try:
+                    table("fees").insert({
+                        "student_user_id": sid,
+                        "month": month,
+                        "amount": amount,
+                        "status": "unpaid",
+                    }).execute()
+                    count += 1
+                except Exception as e:
+                    failed.append(f"{u.get('name')} ({e})")
+
+            msg = f"{count} voucher(s) generated for {month}."
+            if skipped:
+                msg += f" {skipped} already existed."
+            if failed:
+                msg += f" {len(failed)} skipped (no fee set)."
+            flash(msg, "success")
+
+            if failed and count == 0:
+                flash(f"Could not generate for: {', '.join(failed[:5])}", "warning")
+
+            return redirect(url_for("super_admin.fees"))
+
+        # ---------- Delete structure ----------
+        if action == "delete_structure":
+            sid = request.form.get("structure_id")
+            try:
+                table("fee_structures").delete().eq("id", int(sid)).execute()
+                flash("Fee structure deleted.", "success")
+            except Exception as e:
+                flash(f"Error: {e}", "error")
+            return redirect(url_for("super_admin.fees"))
+
+        # ---------- Mark paid / unpaid ----------
+        if action == "mark_paid":
             fid = request.form.get("fee_id")
             try:
                 table("fees").update({
@@ -610,8 +725,9 @@ def fees():
                 flash("Marked as paid.", "success")
             except Exception as e:
                 flash(f"Error: {e}", "error")
+            return redirect(url_for("super_admin.fees"))
 
-        elif action == "mark_unpaid":
+        if action == "mark_unpaid":
             fid = request.form.get("fee_id")
             try:
                 table("fees").update({
@@ -621,18 +737,52 @@ def fees():
                 flash("Marked as unpaid.", "success")
             except Exception as e:
                 flash(f"Error: {e}", "error")
+            return redirect(url_for("super_admin.fees"))
+
+        # ---------- Delete voucher ----------
+        if action == "delete_voucher":
+            fid = request.form.get("fee_id")
+            try:
+                table("fees").delete().eq("id", int(fid)).execute()
+                flash("Voucher deleted.", "success")
+            except Exception as e:
+                flash(f"Error: {e}", "error")
+            return redirect(url_for("super_admin.fees"))
 
         return redirect(url_for("super_admin.fees"))
 
+    # ---------- GET: load everything ----------
     fees_list = _safe_select("fees")
     students = _safe_select("users", role="student")
+    student_profiles = _safe_select("students")
+    classes = _safe_select("classes")
+    structures = _safe_select("fee_structures")
+
     smap = {s["id"]: s for s in students}
+    cmap = {c["id"]: c for c in classes}
+    pmap = {p["user_id"]: p for p in student_profiles}
+
+    # Attach names to fee vouchers
     for f in fees_list:
         stu = smap.get(f["student_user_id"], {})
+        profile = pmap.get(f["student_user_id"], {})
         f["student_name"] = stu.get("name", "-")
         f["student_roll"] = stu.get("roll_number", "-")
+        cls = cmap.get(profile.get("class_id"), {})
+        f["class_name"] = cls.get("name", "-")
 
-    # Chart: collection per month
+    # Attach class names to structures
+    for s in structures:
+        cls = cmap.get(s["class_id"], {})
+        s["class_name"] = cls.get("name", "-")
+
+    # Attach custom_fee to students (for generation list)
+    for u in students:
+        profile = pmap.get(u["id"], {})
+        u["custom_fee"] = profile.get("custom_fee")
+        u["class_id"] = profile.get("class_id")
+
+    # Chart data
     months = {}
     for f in fees_list:
         m = f.get("month") or "-"
@@ -650,12 +800,13 @@ def fees():
     return render_template(
         "super_admin/fees.html",
         fees=fees_list,
+        students=students,
+        classes=classes,
+        structures=structures,
         fee_labels=fee_labels,
         fee_paid=fee_paid,
         fee_unpaid=fee_unpaid,
     )
-
-
 # =====================================================
 # NOTICES
 # =====================================================
