@@ -35,9 +35,84 @@ def timetable():
 @student_bp.route("/attendance")
 @role_required("student")
 def attendance():
+    """Attendance page: overall % + subject-wise + date-wise log."""
     uid = session["user_id"]
     profile = _profile(uid)
     ctx = _base_ctx(uid, profile)
+
+    # Get all attendance records for this student
+    all_att = _safe_select("attendance", student_user_id=uid)
+
+    # Fetch subjects + teachers for name mapping
+    subjects = _safe_select("subjects")
+    submap = {s["id"]: s["name"] for s in subjects}
+    users = _safe_select("users")
+    umap = {u["id"]: u.get("name", "-") for u in users}
+
+    # Subject-wise breakdown
+    subject_stats = {}
+    for a in all_att:
+        sid = a.get("subject_id")
+        if not sid:
+            continue
+        subject_stats.setdefault(sid, {
+            "subject_name": submap.get(sid, "-"),
+            "P": 0, "A": 0, "L": 0, "total": 0,
+        })
+        status = a.get("status", "P")
+        subject_stats[sid][status] = subject_stats[sid].get(status, 0) + 1
+        subject_stats[sid]["total"] += 1
+
+    # Add percentage per subject
+    subject_rows = []
+    for sid, stats in subject_stats.items():
+        total = stats["total"] or 1
+        stats["percent"] = round(stats["P"] * 100 / total, 1)
+        stats["subject_id"] = sid
+        subject_rows.append(stats)
+    subject_rows.sort(key=lambda x: x["subject_name"])
+
+    # Date-wise log (recent first)
+    log_rows = []
+    for a in all_att:
+        log_rows.append({
+            "date": a.get("date"),
+            "subject_name": submap.get(a.get("subject_id"), "-"),
+            "teacher_name": umap.get(a.get("teacher_user_id"), "-"),
+            "status": a.get("status", "-"),
+        })
+    log_rows.sort(key=lambda x: x["date"] or "", reverse=True)
+
+    # Monthly calendar data (current month)
+    from datetime import date as _date
+    import calendar
+    today = _date.today()
+    year, month = today.year, today.month
+
+    # Group by date for this month
+    month_log = {}
+    for a in all_att:
+        d = a.get("date")
+        if not d:
+            continue
+        try:
+            y, m, day = str(d).split("-")
+            if int(y) == year and int(m) == month:
+                month_log[int(day)] = a.get("status", "-")
+        except Exception:
+            continue
+
+    ctx.update({
+        "subject_rows": subject_rows,
+        "log_rows": log_rows,
+        "month_log": month_log,
+        "calendar_year": year,
+        "calendar_month": month,
+        "month_name": calendar.month_name[month],
+        "days_in_month": calendar.monthrange(year, month)[1],
+        "first_weekday": calendar.monthrange(year, month)[0],  # 0=Mon
+    })
+
     return render_template("student/attendance.html", **ctx)
 
 
