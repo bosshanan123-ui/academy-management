@@ -1,8 +1,9 @@
 """
 routes/super_admin.py
-All Super Admin functionality.
+All Super Admin functionality: classes, sections, subjects, teachers,
+students, parents, assignments, timetable, fees, notices.
 """
-from datetime import date, datetime
+from datetime import date
 
 from flask import (
     Blueprint, render_template, request, redirect, url_for, flash, session
@@ -37,15 +38,6 @@ def dashboard():
     )
 
     # Students per class
-    class_labels = []
-    class_counts = []
-    for c in classes:
-        class_labels.append(c["name"])
-        count = sum(1 for s in students if s.get("class_id") == c["id"]) if False else 0
-        # We need students joined w/ student_profiles; simpler: query students table
-        class_counts.append(count)
-
-    # Better: use students table
     student_profiles = _safe_select("students")
     class_labels = []
     class_counts = []
@@ -53,7 +45,7 @@ def dashboard():
         class_labels.append(c["name"])
         class_counts.append(sum(1 for s in student_profiles if s.get("class_id") == c["id"]))
 
-    # Fee collection by month (last 6 months)
+    # Fee collection by month
     month_totals = {}
     for f in fees:
         if f.get("status") == "paid":
@@ -256,7 +248,6 @@ def teachers():
         return redirect(url_for("super_admin.teachers"))
 
     teacher_users = _safe_select("users", role="teacher")
-    # Attach teacher details
     tprofiles = _safe_select("teachers")
     pmap = {t["user_id"]: t for t in tprofiles}
     for u in teacher_users:
@@ -292,10 +283,18 @@ def students():
         address = (request.form.get("address") or "").strip()
         roll_in_class = request.form.get("roll_no_in_class") or 0
         parent_user_id = request.form.get("parent_user_id")
+        custom_fee_raw = request.form.get("custom_fee") or ""
 
         if not name or not password or not class_id or not section_id:
             flash("Name, password, class and section are required.", "error")
             return redirect(url_for("super_admin.students"))
+
+        custom_fee = None
+        if custom_fee_raw.strip():
+            try:
+                custom_fee = float(custom_fee_raw)
+            except ValueError:
+                custom_fee = None
 
         try:
             roll = generate_roll_number("student")
@@ -307,27 +306,20 @@ def students():
                 "phone": phone,
             }).execute().data[0]
 
-           custom_fee_raw = request.form.get("custom_fee") or ""
-custom_fee = None
-if custom_fee_raw.strip():
-    try:
-        custom_fee = float(custom_fee_raw)
-    except ValueError:
-        custom_fee = None
-
-student_payload = {
-    "user_id": user["id"],
-    "class_id": int(class_id),
-    "section_id": int(section_id),
-    "roll_no_in_class": int(roll_in_class) if str(roll_in_class).isdigit() else 0,
-    "guardian_name": guardian_name,
-    "guardian_phone": guardian_phone,
-    "address": address,
-}
-if custom_fee is not None:
-    student_payload["custom_fee"] = custom_fee
+            student_payload = {
+                "user_id": user["id"],
+                "class_id": int(class_id),
+                "section_id": int(section_id),
+                "roll_no_in_class": int(roll_in_class) if str(roll_in_class).isdigit() else 0,
+                "guardian_name": guardian_name,
+                "guardian_phone": guardian_phone,
+                "address": address,
+            }
             if parent_user_id:
                 student_payload["parent_user_id"] = int(parent_user_id)
+            if custom_fee is not None:
+                student_payload["custom_fee"] = custom_fee
+
             table("students").insert(student_payload).execute()
 
             flash(f"Student created. Roll Number: {roll}", "success")
@@ -352,6 +344,7 @@ if custom_fee is not None:
         u["section_name"] = section_map.get(p.get("section_id"), "-")
         u["parent_roll"] = parent_map.get(p.get("parent_user_id"), "-")
         u["roll_no_in_class"] = p.get("roll_no_in_class", "-")
+        u["custom_fee"] = p.get("custom_fee")
 
     return render_template(
         "super_admin/students.html",
@@ -411,7 +404,6 @@ def parents():
     parents_list = _safe_select("users", role="parent")
     students_list = _safe_select("users", role="student")
     student_profiles = _safe_select("students")
-    smap = {s["user_id"]: s for s in student_profiles}
 
     for p in parents_list:
         linked = next((s for s in student_profiles if s.get("parent_user_id") == p["id"]), None)
@@ -550,7 +542,6 @@ def timetable():
         e["subject_name"] = submap.get(e["subject_id"], "-")
         e["teacher_name"] = tmap.get(e["teacher_user_id"], {}).get("name", "-")
 
-    # Group by class+section
     grid = {}
     for e in entries:
         key = f"{e['class_name']}-{e['section_name']}"
@@ -608,7 +599,6 @@ def fees():
                     "exam_fee": float(exam_fee),
                     "notes": notes,
                 }
-                # Upsert (insert or update based on unique class_id)
                 existing = table("fee_structures").select("id").eq(
                     "class_id", int(class_id)
                 ).execute().data
@@ -625,10 +615,10 @@ def fees():
                 flash(f"Error saving structure: {e}", "error")
             return redirect(url_for("super_admin.fees"))
 
-        # ---------- Generate vouchers for a month ----------
+        # ---------- Generate vouchers ----------
         if action == "generate":
             month = (request.form.get("month") or "").strip()
-            mode = request.form.get("mode") or "all"  # all | class | student
+            mode = request.form.get("mode") or "all"
             target_class_id = request.form.get("target_class_id")
             target_student_id = request.form.get("target_student_id")
             override_amount = request.form.get("override_amount") or ""
@@ -637,16 +627,13 @@ def fees():
                 flash("Month is required.", "error")
                 return redirect(url_for("super_admin.fees"))
 
-            # Load class fee structures + student custom fees
             structures = _safe_select("fee_structures")
             struct_map = {s["class_id"]: s for s in structures}
 
-            # Load students with profiles
             student_users = _safe_select("users", role="student")
             student_profiles = _safe_select("students")
             profile_map = {p["user_id"]: p for p in student_profiles}
 
-            # Load existing fees (to avoid duplicates)
             existing = _safe_select("fees")
             existing_set = {(f["student_user_id"], f["month"]) for f in existing}
 
@@ -657,7 +644,6 @@ def fees():
             for u in student_users:
                 sid = u["id"]
 
-                # Filter by mode
                 if mode == "student" and str(sid) != str(target_student_id):
                     continue
 
@@ -668,12 +654,10 @@ def fees():
                 if mode == "class" and str(profile.get("class_id")) != str(target_class_id):
                     continue
 
-                # Skip if voucher already exists
                 if (sid, month) in existing_set:
                     skipped += 1
                     continue
 
-                # Determine amount (priority: override → custom → class)
                 amount = 0
                 if override_amount and str(override_amount).strip():
                     try:
@@ -761,7 +745,7 @@ def fees():
 
         return redirect(url_for("super_admin.fees"))
 
-    # ---------- GET: load everything ----------
+    # ---------- GET ----------
     fees_list = _safe_select("fees")
     students = _safe_select("users", role="student")
     student_profiles = _safe_select("students")
@@ -772,7 +756,6 @@ def fees():
     cmap = {c["id"]: c for c in classes}
     pmap = {p["user_id"]: p for p in student_profiles}
 
-    # Attach names to fee vouchers
     for f in fees_list:
         stu = smap.get(f["student_user_id"], {})
         profile = pmap.get(f["student_user_id"], {})
@@ -781,18 +764,15 @@ def fees():
         cls = cmap.get(profile.get("class_id"), {})
         f["class_name"] = cls.get("name", "-")
 
-    # Attach class names to structures
     for s in structures:
         cls = cmap.get(s["class_id"], {})
         s["class_name"] = cls.get("name", "-")
 
-    # Attach custom_fee to students (for generation list)
     for u in students:
         profile = pmap.get(u["id"], {})
         u["custom_fee"] = profile.get("custom_fee")
         u["class_id"] = profile.get("class_id")
 
-    # Chart data
     months = {}
     for f in fees_list:
         m = f.get("month") or "-"
@@ -817,6 +797,8 @@ def fees():
         fee_paid=fee_paid,
         fee_unpaid=fee_unpaid,
     )
+
+
 # =====================================================
 # NOTICES
 # =====================================================
@@ -871,5 +853,6 @@ def _safe_select(table_name: str, **filters):
         for k, v in filters.items():
             q = q.eq(k, v)
         return q.execute().data or []
-    except Exception:
+    except Exception as e:
+        print(f"_safe_select error ({table_name}): {e}")
         return []
