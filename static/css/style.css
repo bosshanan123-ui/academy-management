@@ -2895,5 +2895,130 @@ input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 
   .att-calendar .cal-cell .cal-status { font-size: 0.5rem; padding: 0 3px; }
 }
 /* ============================================================
+   CHART CARDS — Premium upgrade
+   ============================================================ */
+.chart-card {
+  position: relative;
+  padding: 26px 26px 22px;
+  border-radius: var(--r-xl);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(47, 90, 163, 0.06), transparent 45%),
+    radial-gradient(circle at 100% 100%, rgba(52, 136, 155, 0.05), transparent 45%),
+    var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  box-shadow:
+    0 1px 2px rgba(17, 24, 39, 0.04),
+    0 8px 22px -6px rgba(17, 24, 39, 0.08),
+    0 24px 48px -16px rgba(47, 90, 163, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+  transition: transform var(--t-base) var(--ease-out),
+              box-shadow var(--t-base) var(--ease-out);
+}
+
+.chart-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #2f5aa3, #6d5fbd, #34889b, #1f9670, #2f5aa3);
+  background-size: 200% 100%;
+  animation: chartStripe 6s linear infinite;
+}
+
+.chart-card::after {
+  content: "";
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(109, 95, 189, 0.10), transparent 70%);
+  pointer-events: none;
+}
+
+.chart-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 4px 8px rgba(17, 24, 39, 0.05),
+    0 16px 32px -8px rgba(17, 24, 39, 0.10),
+    0 40px 80px -20px rgba(47, 90, 163, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.chart-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  margin-bottom: 22px;
+  position: relative;
+  z-index: 1;
+}
+
+.chart-card h3::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2f5aa3, #6d5fbd);
+  box-shadow:
+    0 0 0 3px rgba(47, 90, 163, 0.15),
+    0 0 12px rgba(47, 90, 163, 0.6);
+  animation: chartDotPulse 2.4s ease-in-out infinite;
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  z-index: 1;
+  padding: 4px;
+}
+
+.chart-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(47, 90, 163, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(47, 90, 163, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  border-radius: 12px;
+  pointer-events: none;
+  opacity: 0.5;
+  mask-image: radial-gradient(ellipse at center, #000 40%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 40%, transparent 75%);
+  z-index: -1;
+}
+
+@keyframes chartStripe {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+@keyframes chartDotPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 3px rgba(47, 90, 163, 0.15),
+      0 0 12px rgba(47, 90, 163, 0.6);
+  }
+  50% {
+    box-shadow:
+      0 0 0 6px rgba(47, 90, 163, 0.08),
+      0 0 20px rgba(109, 95, 189, 0.75);
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .chart-card { padding: 20px 18px; border-radius: var(--r-lg); }
+  .chart-container { height: 240px; }
+  .chart-card h3 { font-size: 0.72rem; margin-bottom: 16px; }
+}
+/* ============================================================
    END OF STYLESHEET v6.0
    ============================================================ */
