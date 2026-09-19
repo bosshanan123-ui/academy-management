@@ -2772,7 +2772,128 @@ input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 
   h1, h2, h3 { color: #000 !important; -webkit-text-fill-color: #000 !important; }
 }
 
+/* ============================================================
+   ATTENDANCE CALENDAR
+   ============================================================ */
+.att-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 20px;
+}
 
+.att-calendar .cal-header {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--ink-400);
+  padding: 8px 0;
+}
+
+.att-calendar .cal-cell {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--r-sm);
+  background: var(--bg-recessed);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: all var(--t-fast) var(--ease-out);
+}
+
+.att-calendar .cal-cell:hover {
+  transform: scale(1.05);
+  box-shadow: var(--sh-2);
+}
+
+.att-calendar .cal-cell.cal-empty {
+  background: transparent;
+  border-color: transparent;
+}
+
+.att-calendar .cal-cell .cal-day {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink-700);
+}
+
+.att-calendar .cal-cell .cal-status {
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* Calendar state colors */
+.att-calendar .cal-cell.cal-present {
+  background: var(--success-soft);
+  border-color: rgba(31, 150, 112, 0.30);
+}
+.att-calendar .cal-cell.cal-present .cal-day,
+.att-calendar .cal-cell.cal-present .cal-status {
+  color: var(--success-dark);
+}
+
+.att-calendar .cal-cell.cal-absent {
+  background: var(--danger-soft);
+  border-color: rgba(192, 67, 63, 0.30);
+}
+.att-calendar .cal-cell.cal-absent .cal-day,
+.att-calendar .cal-cell.cal-absent .cal-status {
+  color: var(--danger-dark);
+}
+
+.att-calendar .cal-cell.cal-leave {
+  background: var(--warning-soft);
+  border-color: rgba(177, 121, 26, 0.30);
+}
+.att-calendar .cal-cell.cal-leave .cal-day,
+.att-calendar .cal-cell.cal-leave .cal-status {
+  color: var(--warning-dark);
+}
+
+/* Legend */
+.cal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 4px 4px;
+  border-top: 1px dashed var(--border-soft);
+  font-size: 0.78rem;
+  color: var(--ink-600);
+  font-weight: 600;
+}
+.cal-legend .cal-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.cal-legend .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.cal-legend .dot-present { background: var(--success); }
+.cal-legend .dot-absent  { background: var(--danger); }
+.cal-legend .dot-leave   { background: var(--warning); }
+.cal-legend .dot-none    { background: var(--bg-recessed); border: 1px solid var(--border-strong); }
+
+/* Mobile */
+@media (max-width: 600px) {
+  .att-calendar { gap: 4px; }
+  .att-calendar .cal-header { font-size: 0.6rem; padding: 6px 0; }
+  .att-calendar .cal-cell .cal-day { font-size: 0.72rem; }
+  .att-calendar .cal-cell .cal-status { font-size: 0.5rem; padding: 0 3px; }
+}
 /* ============================================================
    END OF STYLESHEET v6.0
    ============================================================ */
