@@ -46,6 +46,11 @@ def create_app() -> Flask:
 
     return app
 
+    @app.route("/offline")
+    def offline():
+        """Offline fallback page for PWA."""
+        from flask import send_from_directory
+        return send_from_directory("static", "offline.html")
 
 def _dashboard_for_role(role: str) -> str:
     """Return the dashboard endpoint for a given role."""
