@@ -1,32 +1,34 @@
 /* ============================================================
-   ACADEMY MANAGEMENT SYSTEM — PROFESSIONAL EDITION
+   ACADEMY MANAGEMENT SYSTEM — REFINED PROFESSIONAL EDITION
    ------------------------------------------------------------
-   Version: 4.0 (Refined / Enterprise Edition)
+   Version: 5.0 (Premium / Enterprise)
    Design Language:
-     • Clean, confident, education-grade SaaS
-     • One disciplined brand color, used with intent
-     • Soft, believable shadows instead of neon glow
-     • Motion kept for feedback, not decoration
+     • Confident, education-grade SaaS aesthetic
+     • Disciplined brand palette (Deep Blue + Teal + refined accents)
+     • Believable depth — soft shadows, no neon glow
+     • Purposeful motion — feedback, not decoration
+     • Premium charts, cards, tables, forms
    Palette:
-     Deep Blue (brand) • Slate (ink/surfaces) • Teal (secondary)
+     Deep Blue (brand) • Teal (secondary) • Violet (accent)
+     Emerald (success) • Amber (warning) • Rose (danger)
    Typography:
      Inter Variable + JetBrains Mono
    ------------------------------------------------------------
    Sections:
      01. Design Tokens
      02. Reset & Base
-     03. Ambient Background System
-     04. Aurora Layers
+     03. Ambient Background
+     04. Aurora Layers (auth only)
      05. Typography System
      06. Layout & Grid
      07. Login / Auth Screen
-     08. Navbar (Floating)
-     09. Cards (Neumorphic + Glass)
-     10. Stat Cards (3D Tiles)
-     11. Charts Shell
+     08. Navbar
+     09. Cards
+     10. Stat Cards
+     11. Chart Shells
      12. Data Tables
      13. Forms & Inputs
-     14. Buttons (3D Tactile)
+     14. Buttons
      15. Flash Messages
      16. Badges & Pills
      17. Schedules & Timetable
@@ -36,24 +38,21 @@
      21. Keyframe Library
      22. Utility Classes
      23. Responsive
-     24. Accessibility & Misc
+     24. Accessibility
      25. Print
-   NOTE: every class name, id and CSS variable name from the
-   original stylesheet is preserved on purpose so this file is
-   a drop-in replacement — no HTML/JS changes required.
    ============================================================ */
+
 
 /* ============================================================
    01. DESIGN TOKENS
    ============================================================ */
 :root {
-  /* ---------- Brand Spectrum (kept as named scales, values now
-     resolve to one disciplined blue instead of a rainbow) ---------- */
-  --indigo-50:  #eef2f9;
-  --indigo-100: #dde6f3;
-  --indigo-200: #b9c9e6;
-  --indigo-300: #8ea7d4;
-  --indigo-400: #5c80bd;
+  /* ---------- Brand — Deep Blue Spectrum ---------- */
+  --indigo-50:  #eef3fa;
+  --indigo-100: #d9e4f3;
+  --indigo-200: #b6c9e4;
+  --indigo-300: #8aa7cf;
+  --indigo-400: #5a80b3;
   --indigo-500: #2f5aa3;
   --indigo-600: #244a8b;
   --indigo-700: #1c3b70;
@@ -61,32 +60,45 @@
   --indigo-900: #10233f;
   --indigo-950: #0a1729;
 
-  --violet-400: #7c8aab;
-  --violet-500: #5f6f95;
-  --violet-600: #4a5878;
-  --violet-700: #3a4560;
-
+  /* ---------- Teal (secondary) ---------- */
   --cyan-400: #4fa9b8;
   --cyan-500: #34889b;
   --cyan-600: #276b7c;
+  --cyan-700: #1d525f;
 
-  --rose-400: #c97a7a;
-  --rose-500: #b6595c;
-  --rose-600: #984144;
+  /* ---------- Violet (accent, used sparingly) ---------- */
+  --violet-400: #8b7fd4;
+  --violet-500: #6d5fbd;
+  --violet-600: #564aa0;
+  --violet-700: #443a80;
 
-  --pink-500: #a95f8a;
-  --pink-600: #8a4a6f;
+  /* ---------- Rose (danger accent) ---------- */
+  --rose-400: #d18181;
+  --rose-500: #bc6567;
+  --rose-600: #9d4a4d;
+  --rose-700: #7c393c;
 
-  --amber-400: #e3a83f;
-  --amber-500: #d4901c;
-  --amber-600: #b17414;
-
+  /* ---------- Emerald (success) ---------- */
   --emerald-400: #34b085;
   --emerald-500: #1f9670;
   --emerald-600: #17795a;
+  --emerald-700: #105c44;
 
+  /* ---------- Amber (warning) ---------- */
+  --amber-400: #e3a83f;
+  --amber-500: #d4901c;
+  --amber-600: #b17414;
+  --amber-700: #8a5a0e;
+
+  /* ---------- Pink (parent badge) ---------- */
+  --pink-400: #c47ba4;
+  --pink-500: #a95f8a;
+  --pink-600: #8a4a6f;
+
+  /* ---------- Sky ---------- */
   --sky-400: #5fa3c9;
   --sky-500: #3d87b0;
+  --sky-600: #2e6c92;
 
   /* ---------- Semantic ---------- */
   --success: #1f9670;
@@ -114,9 +126,8 @@
   --bg-recessed: #eef0f4;
   --bg-glass: rgba(255, 255, 255, 0.82);
   --bg-glass-strong: rgba(255, 255, 255, 0.92);
-  --bg-glass-dark: rgba(10, 23, 41, 0.60);
 
-  /* ---------- Text ---------- */
+  /* ---------- Ink ---------- */
   --ink-950: #0c1220;
   --ink-900: #111827;
   --ink-800: #1f2937;
@@ -133,66 +144,67 @@
   --border-soft:   rgba(17, 24, 39, 0.10);
   --border-strong: rgba(17, 24, 39, 0.16);
 
-  /* ---------- Radii (slightly tighter — reads more "enterprise") ---------- */
-  --r-xs: 5px;
-  --r-sm: 8px;
-  --r-md: 10px;
-  --r-lg: 14px;
-  --r-xl: 18px;
-  --r-2xl: 22px;
+  /* ---------- Radii ---------- */
+  --r-xs: 6px;
+  --r-sm: 9px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --r-2xl: 26px;
   --r-pill: 999px;
 
-  /* ---------- Shadows (soft, low-contrast, believable) ---------- */
+  /* ---------- Shadows — believable, layered ---------- */
   --sh-0: 0 0 0 1px rgba(17, 24, 39, 0.04);
   --sh-1:
     0 1px 2px rgba(17, 24, 39, 0.05),
     0 1px 1px rgba(17, 24, 39, 0.03);
   --sh-2:
     0 1px 2px rgba(17, 24, 39, 0.04),
-    0 3px 8px rgba(17, 24, 39, 0.05);
+    0 4px 10px rgba(17, 24, 39, 0.05);
   --sh-3:
     0 2px 6px rgba(17, 24, 39, 0.05),
-    0 8px 20px rgba(17, 24, 39, 0.07);
+    0 10px 22px rgba(17, 24, 39, 0.07);
   --sh-4:
-    0 4px 10px rgba(17, 24, 39, 0.06),
-    0 16px 32px rgba(17, 24, 39, 0.08);
+    0 4px 12px rgba(17, 24, 39, 0.06),
+    0 18px 36px rgba(17, 24, 39, 0.08);
   --sh-5:
-    0 8px 20px rgba(17, 24, 39, 0.08),
-    0 28px 56px rgba(17, 24, 39, 0.10);
+    0 10px 24px rgba(17, 24, 39, 0.08),
+    0 30px 60px rgba(17, 24, 39, 0.10);
 
-  /* Colored shadows — now used sparingly, low opacity */
-  --sh-indigo: 0 8px 20px rgba(36, 74, 139, 0.18);
-  --sh-violet: 0 8px 20px rgba(74, 88, 120, 0.16);
-  --sh-cyan:   0 8px 20px rgba(39, 107, 124, 0.16);
-  --sh-rose:   0 8px 20px rgba(152, 65, 68, 0.16);
+  /* ---------- Colored shadows (subtle, intentional) ---------- */
+  --sh-indigo: 0 8px 20px rgba(36, 74, 139, 0.16);
+  --sh-teal:   0 8px 20px rgba(39, 107, 124, 0.16);
+  --sh-violet: 0 8px 20px rgba(86, 74, 160, 0.16);
+  --sh-rose:   0 8px 20px rgba(157, 74, 77, 0.16);
   --sh-emerald: 0 8px 20px rgba(23, 121, 90, 0.16);
   --sh-amber:  0 8px 20px rgba(177, 116, 20, 0.16);
 
-  /* Inner highlights (neumorphism) */
-  --in-light: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  /* ---------- Inner light ---------- */
+  --in-light: inset 0 1px 0 rgba(255, 255, 255, 0.8);
   --in-dark:  inset 0 -1px 0 rgba(17, 24, 39, 0.04);
 
-  /* Focus ring */
-  --ring: 0 0 0 3px rgba(47, 90, 163, 0.30);
-  --ring-strong: 0 0 0 3px rgba(47, 90, 163, 0.40);
+  /* ---------- Focus rings ---------- */
+  --ring: 0 0 0 3px rgba(47, 90, 163, 0.28);
+  --ring-strong: 0 0 0 3px rgba(47, 90, 163, 0.42);
 
-  /* ---------- Gradients (one restrained brand gradient, used with intent) ---------- */
+  /* ---------- Gradients ---------- */
   --grad-brand:    linear-gradient(135deg, #244a8b 0%, #2f5aa3 55%, #34889b 100%);
   --grad-brand-2:  linear-gradient(135deg, #1c3b70 0%, #2f5aa3 100%);
   --grad-brand-3:  linear-gradient(135deg, #1c3b70, #276b7c);
-  --grad-sunset:   linear-gradient(135deg, #b6595c 0%, #d4901c 100%);
+  --grad-teal:     linear-gradient(135deg, #276b7c 0%, #4fa9b8 100%);
+  --grad-sunset:   linear-gradient(135deg, #9d4a4d 0%, #d4901c 100%);
   --grad-ocean:    linear-gradient(135deg, #3d87b0 0%, #4fa9b8 100%);
   --grad-forest:   linear-gradient(135deg, #17795a 0%, #34b085 100%);
-  --grad-candy:    linear-gradient(135deg, #8a4a6f 0%, #4a5878 100%);
-  --grad-royal:    linear-gradient(135deg, #1c3b70 0%, #8a4a6f 100%);
+  --grad-violet:   linear-gradient(135deg, #564aa0 0%, #8b7fd4 100%);
+  --grad-royal:    linear-gradient(135deg, #1c3b70 0%, #6d5fbd 100%);
   --grad-glass:    linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,255,255,0.65));
 
-  /* Aurora — quieter, fewer competing hues */
-  --aurora-1: radial-gradient(circle at 20% 30%, rgba(36, 74, 139, 0.22), transparent 55%);
-  --aurora-2: radial-gradient(circle at 80% 70%, rgba(39, 107, 124, 0.16), transparent 55%);
-  --aurora-3: radial-gradient(circle at 55% 90%, rgba(47, 90, 163, 0.14), transparent 55%);
+  /* ---------- Aurora (auth only) ---------- */
+  --aurora-1: radial-gradient(circle at 20% 30%, rgba(36, 74, 139, 0.24), transparent 55%);
+  --aurora-2: radial-gradient(circle at 80% 70%, rgba(39, 107, 124, 0.18), transparent 55%);
+  --aurora-3: radial-gradient(circle at 55% 90%, rgba(86, 74, 160, 0.16), transparent 55%);
 
-  /* ---------- Type ---------- */
+  /* ---------- Fonts ---------- */
   --font-sans: "Inter", "Inter Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
 
@@ -249,10 +261,7 @@ ul, ol { list-style: none; }
 
 
 /* ============================================================
-   03. AMBIENT BACKGROUND SYSTEM
-   Kept, but toned down considerably: one quiet wash instead of
-   three competing color pools, and no moving blobs on the main
-   app screens (motion is reserved for the auth screen only).
+   03. AMBIENT BACKGROUND
    ============================================================ */
 body::before {
   content: "";
@@ -262,11 +271,11 @@ body::before {
   background:
     radial-gradient(1200px 800px at 8% -10%, rgba(36, 74, 139, 0.06), transparent 60%),
     radial-gradient(1000px 700px at 108% 5%, rgba(39, 107, 124, 0.05), transparent 60%),
+    radial-gradient(900px 700px at 50% 110%, rgba(86, 74, 160, 0.04), transparent 60%),
     linear-gradient(180deg, #f8f9fb 0%, #f5f6f8 40%, #f2f3f6 100%);
   pointer-events: none;
 }
 
-/* Fine grid mesh — kept, very subtle */
 body::after {
   content: "";
   position: fixed;
@@ -281,9 +290,7 @@ body::after {
   -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 30%, transparent 75%);
 }
 
-/* Ambient blobs — disabled by default on app screens (no motion, no bulk).
-   Left in place and inert so nothing breaks if the markup still includes
-   .ambient/.blob; add .ambient--on if you ever want them back. */
+/* Ambient blobs — off by default */
 .ambient {
   position: fixed;
   inset: 0;
@@ -323,9 +330,7 @@ body::after {
 
 
 /* ============================================================
-   04. AURORA LAYERS (for login / hero areas)
-   Still present for the auth screen, but as a slow, quiet wash
-   rather than a spinning rainbow conic gradient.
+   04. AURORA LAYERS (auth only)
    ============================================================ */
 .aurora {
   position: absolute;
@@ -339,10 +344,11 @@ body::after {
   position: absolute;
   inset: -20%;
   background:
-    radial-gradient(closest-side, rgba(36, 74, 139, 0.35), transparent 70%) 15% 20%/60% 60% no-repeat,
-    radial-gradient(closest-side, rgba(39, 107, 124, 0.28), transparent 70%) 80% 75%/55% 55% no-repeat;
+    radial-gradient(closest-side, rgba(36, 74, 139, 0.38), transparent 70%) 15% 20%/60% 60% no-repeat,
+    radial-gradient(closest-side, rgba(39, 107, 124, 0.30), transparent 70%) 80% 75%/55% 55% no-repeat,
+    radial-gradient(closest-side, rgba(86, 74, 160, 0.22), transparent 70%) 50% 50%/50% 50% no-repeat;
   filter: blur(90px);
-  opacity: 0.6;
+  opacity: 0.55;
   animation: auroraSpin 70s linear infinite;
 }
 .aurora::after {
@@ -385,8 +391,6 @@ p { color: var(--ink-600); }
   color: transparent;
 }
 
-/* Shimmer kept but calmer — slower sweep, narrower hue range,
-   and reserved for one-off emphasis rather than headline default. */
 .text-shimmer {
   background: linear-gradient(90deg,
     var(--indigo-600) 0%,
@@ -462,7 +466,6 @@ p { color: var(--ink-600); }
   margin-top: 8px;
 }
 
-/* Grids */
 .stat-grid, .dashboard-grid, .charts-grid, .form-grid, .timetable-grid {
   display: grid;
   gap: 20px;
@@ -480,9 +483,6 @@ p { color: var(--ink-600); }
 
 /* ============================================================
    07. LOGIN / AUTH SCREEN
-   Moved from a magenta/cyan "cosmic" gradient to a composed,
-   institutional deep-blue field — still has presence, reads
-   like a serious institution rather than a consumer app.
    ============================================================ */
 .auth-wrapper {
   position: relative;
@@ -494,8 +494,9 @@ p { color: var(--ink-600); }
   padding: 28px;
   overflow: hidden;
   background:
-    radial-gradient(900px 600px at 15% 15%, rgba(47, 90, 163, 0.45), transparent 60%),
-    radial-gradient(800px 550px at 85% 85%, rgba(39, 107, 124, 0.30), transparent 60%),
+    radial-gradient(900px 600px at 15% 15%, rgba(47, 90, 163, 0.48), transparent 60%),
+    radial-gradient(800px 550px at 85% 85%, rgba(39, 107, 124, 0.32), transparent 60%),
+    radial-gradient(700px 600px at 55% 55%, rgba(86, 74, 160, 0.28), transparent 60%),
     linear-gradient(160deg, #0a1729 0%, #10233f 45%, #162e58 75%, #1c3b70 100%);
   isolation: isolate;
 }
@@ -511,13 +512,12 @@ p { color: var(--ink-600); }
   z-index: 1;
 }
 
-/* Floating orbs — fewer, slower, same brand family */
 .auth-wrapper .orb {
   position: absolute;
   border-radius: 50%;
   filter: blur(80px);
   pointer-events: none;
-  opacity: 0.4;
+  opacity: 0.42;
   will-change: transform;
   z-index: 0;
 }
@@ -526,14 +526,13 @@ p { color: var(--ink-600); }
 .auth-wrapper .orb.o3 { width: 240px; height: 240px; top: 40%; right: 8%;     background: var(--violet-500); animation: driftC 34s ease-in-out infinite; animation-delay: -12s; }
 .auth-wrapper .orb.o4 { width: 200px; height: 200px; bottom: 20%; left: 8%;   background: var(--indigo-400); animation: driftA 28s ease-in-out infinite; animation-delay: -4s; }
 
-/* Auth card — quieter glass: less glow, more structure */
 .auth-card {
   position: relative;
   z-index: 2;
   width: 100%;
   max-width: 440px;
   padding: 42px 36px 36px;
-  border-radius: 20px;
+  border-radius: var(--r-2xl);
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.16);
   backdrop-filter: blur(20px) saturate(150%);
@@ -563,8 +562,6 @@ p { color: var(--ink-600); }
   pointer-events: none;
 }
 
-/* The rotating conic sheen is removed — a static, low-opacity
-   diagonal highlight reads calmer and still adds depth. */
 .auth-card::after {
   content: "";
   position: absolute;
@@ -606,7 +603,6 @@ p { color: var(--ink-600); }
   letter-spacing: 0.005em;
 }
 
-/* Auth inputs */
 .auth-card label { color: rgba(255, 255, 255, 0.82); font-size: 0.8rem; }
 
 .auth-card input[type="text"],
@@ -616,7 +612,7 @@ p { color: var(--ink-600); }
   border: 1px solid rgba(255, 255, 255, 0.18);
   color: #fff;
   padding: 13px 15px;
-  border-radius: 10px;
+  border-radius: var(--r-md);
   font-size: 0.95rem;
   transition: all var(--t-base) var(--ease-out);
 }
@@ -636,13 +632,13 @@ p { color: var(--ink-600); }
 
 .auth-card .btn {
   padding: 14px 20px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #244a8b 0%, #276b7c 100%);
+  border-radius: var(--r-md);
+  background: var(--grad-brand);
   color: #fff;
   font-weight: 700;
   letter-spacing: 0.01em;
   box-shadow:
-    0 10px 24px rgba(36, 74, 139, 0.35),
+    0 10px 24px rgba(36, 74, 139, 0.38),
     inset 0 1px 0 rgba(255, 255, 255, 0.18);
   transition: all var(--t-base) var(--ease-out);
 }
@@ -650,7 +646,7 @@ p { color: var(--ink-600); }
   transform: translateY(-1px);
   filter: brightness(1.06);
   box-shadow:
-    0 14px 30px rgba(36, 74, 139, 0.42),
+    0 14px 30px rgba(36, 74, 139, 0.46),
     inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 .auth-card .btn:active { transform: translateY(0); }
@@ -666,7 +662,7 @@ p { color: var(--ink-600); }
 
 
 /* ============================================================
-   08. NAVBAR (FLOATING GLASS)
+   08. NAVBAR
    ============================================================ */
 .navbar {
   position: sticky;
@@ -700,7 +696,7 @@ p { color: var(--ink-600); }
 .navbar .brand-mark {
   width: 36px;
   height: 36px;
-  border-radius: 9px;
+  border-radius: 10px;
   display: grid;
   place-items: center;
   font-size: 1.1rem;
@@ -755,7 +751,7 @@ p { color: var(--ink-600); }
 
 
 /* ============================================================
-   09. CARDS (NEUMORPHIC + GLASS HYBRID)
+   09. CARDS
    ============================================================ */
 .card {
   position: relative;
@@ -808,10 +804,7 @@ p { color: var(--ink-600); }
 
 
 /* ============================================================
-   10. STAT CARDS (3D TILES)
-   Values now read in solid ink rather than a rainbow gradient —
-   easier to scan, more report-like, still identifiable by the
-   accent wash and top hairline.
+   10. STAT CARDS
    ============================================================ */
 .stat-card {
   position: relative;
@@ -884,8 +877,6 @@ p { color: var(--ink-600); }
   color: var(--ink-500);
 }
 
-/* Accent variants — small colored top rule + label tint,
-   value stays solid ink for legibility */
 .stat-card.accent-green::before { background: radial-gradient(500px 120px at -10% -40%, rgba(31, 150, 112, 0.08), transparent 70%); }
 .stat-card.accent-green::after  { background: linear-gradient(90deg, transparent, var(--success), transparent); opacity: 0.5; }
 
@@ -900,7 +891,7 @@ p { color: var(--ink-600); }
 
 
 /* ============================================================
-   11. CHARTS SHELL
+   11. CHART SHELLS
    ============================================================ */
 .chart-card {
   position: relative;
@@ -910,14 +901,22 @@ p { color: var(--ink-600); }
   border: 1px solid var(--border-subtle);
   box-shadow: var(--sh-2), var(--in-light);
   overflow: hidden;
+  transition: transform var(--t-base) var(--ease-out),
+              box-shadow var(--t-base) var(--ease-out);
 }
+
+.chart-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sh-3), var(--in-light);
+}
+
 .chart-card::after {
   content: "";
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 2px;
-  background: var(--indigo-600);
-  opacity: 0.7;
+  height: 3px;
+  background: var(--grad-brand);
+  opacity: 0.85;
 }
 
 .chart-card h3 {
@@ -1082,10 +1081,7 @@ input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 
 
 
 /* ============================================================
-   14. BUTTONS (3D TACTILE)
-   Depth kept, but the diagonal shine sweep on hover is removed —
-   it's the single biggest "flashy demo" tell. Buttons now rely
-   on a slight lift and solid brand color instead.
+   14. BUTTONS
    ============================================================ */
 .btn {
   --btn-grad: var(--grad-brand-2);
@@ -1211,8 +1207,6 @@ input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 
 
 /* ============================================================
    16. BADGES & PILLS
-   Flatter, no glow-shadow, no text-shadow — reads as UI chrome
-   rather than a sticker.
    ============================================================ */
 .role-badge {
   display: inline-flex;
@@ -1555,7 +1549,6 @@ input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 
   50%      { background-position: 100% 50%; }
 }
 
-/* Util animation helpers */
 .fade-up { animation: fadeUp 420ms var(--ease-out) both; }
 .fade-up.d1 { animation-delay: 60ms; }
 .fade-up.d2 { animation-delay: 120ms; }
@@ -1710,5 +1703,5 @@ input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 
 
 
 /* ============================================================
-   END OF STYLESHEET v4.0
+   END OF STYLESHEET v5.0
    ============================================================ */
