@@ -7,27 +7,28 @@
   <meta name="description" content="Academy Management System — Role-based roll number login, attendance, marks, fees, timetable & more." />
   <title>{% block title %}Academy Management System{% endblock %}</title>
 
+  <!-- Theme bootstrap (before CSS) — prevents FOUC -->
+  <script>
+    (function () {
+      try {
+        const theme = localStorage.getItem('academy-theme') || 'blue';
+        const mode = localStorage.getItem('academy-mode') || 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-mode', mode);
+      } catch (e) {}
+    })();
+  </script>
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <!-- PWA Manifest -->
+  <!-- PWA Manifest (optional — if you have it) -->
   <link rel="manifest" href="/static/manifest.json" />
 
-  <!-- Mobile app meta -->
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Academy MS" />
-
   <!-- Icons -->
-  <link rel="icon" href="/static/images/icon-192.png" />
-  <link rel="apple-touch-icon" href="/static/images/icon-192.png" />
-  <link rel="apple-touch-icon" sizes="192x192" href="/static/images/icon-192.png" />
-  <link rel="apple-touch-icon" sizes="512x512" href="/static/images/icon-512.png" />
-  <meta name="msapplication-TileColor" content="#244a8b" />
-  <meta name="msapplication-TileImage" content="/static/images/icon-192.png" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
 
   <!-- Styles -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
@@ -37,61 +38,6 @@
 </head>
 <body>
 
-<!-- Ambient background blobs (behind everything) -->
-<div class="ambient" aria-hidden="true">
-  <div class="blob b1"></div>
-  <div class="blob b2"></div>
-  <div class="blob b3"></div>
-</div>
-<!-- PWA Install Banner -->
-<div id="pwa-install-banner" style="
-  display: none;
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, #244a8b, #34889b);
-  color: #fff;
-  padding: 12px 18px;
-  border-radius: 14px;
-  box-shadow: 0 12px 30px rgba(36, 74, 139, 0.4);
-  align-items: center;
-  gap: 14px;
-  z-index: 9999;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 0.88rem;
-  font-weight: 600;
-  max-width: 92vw;
-  animation: slideUp 0.4s ease;
-">
-  <span style="font-size: 1.5rem;">📱</span>
-  <span style="flex: 1;">Install Academy MS on your phone</span>
-  <button id="pwa-install-btn" style="
-    background: #fff;
-    color: #244a8b;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 0.85rem;
-  ">Install</button>
-  <button id="pwa-dismiss-btn" style="
-    background: transparent;
-    color: rgba(255,255,255,0.8);
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 4px 8px;
-  ">✕</button>
-</div>
-
-<style>
-@keyframes slideUp {
-  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
-}
-</style>
 {% if session.get('user_id') %}
 <nav class="navbar">
   <a href="{{ url_for('index') }}" class="brand">
@@ -128,11 +74,32 @@
   </div>
 
   <div class="nav-user">
+    <!-- Live Clock -->
+    <span class="live-clock" id="liveClock">
+      <span class="clock-icon">🕐</span>
+      <span id="clockTime">--:--</span>
+    </span>
+
+    <!-- Theme Switcher -->
+    <div class="theme-switcher" title="Change theme">
+      <span class="swatch" data-theme-value="blue"   title="Blue"></span>
+      <span class="swatch" data-theme-value="green"  title="Green"></span>
+      <span class="swatch" data-theme-value="purple" title="Purple"></span>
+      <span class="swatch" data-theme-value="orange" title="Orange"></span>
+    </div>
+
+    <!-- Dark/Light Mode Toggle -->
+    <button class="mode-toggle" id="modeToggle" title="Toggle dark mode" type="button">
+      <span class="mode-thumb">☀</span>
+    </button>
+
+    <!-- Roll + Role -->
     <span class="roll-badge">{{ session.get('roll_number') }}</span>
     <span class="role-badge role-{{ session.get('role') }}">
       {{ session.get('role') | replace('_', ' ') }}
     </span>
     <span class="user-name">{{ session.get('name') }}</span>
+
     <a href="{{ url_for('auth.logout') }}" class="btn btn-sm btn-ghost">Logout</a>
   </div>
 </nav>
