@@ -307,15 +307,25 @@ def students():
                 "phone": phone,
             }).execute().data[0]
 
-            student_payload = {
-                "user_id": user["id"],
-                "class_id": int(class_id),
-                "section_id": int(section_id),
-                "roll_no_in_class": int(roll_in_class) if str(roll_in_class).isdigit() else 0,
-                "guardian_name": guardian_name,
-                "guardian_phone": guardian_phone,
-                "address": address,
-            }
+           custom_fee_raw = request.form.get("custom_fee") or ""
+custom_fee = None
+if custom_fee_raw.strip():
+    try:
+        custom_fee = float(custom_fee_raw)
+    except ValueError:
+        custom_fee = None
+
+student_payload = {
+    "user_id": user["id"],
+    "class_id": int(class_id),
+    "section_id": int(section_id),
+    "roll_no_in_class": int(roll_in_class) if str(roll_in_class).isdigit() else 0,
+    "guardian_name": guardian_name,
+    "guardian_phone": guardian_phone,
+    "address": address,
+}
+if custom_fee is not None:
+    student_payload["custom_fee"] = custom_fee
             if parent_user_id:
                 student_payload["parent_user_id"] = int(parent_user_id)
             table("students").insert(student_payload).execute()
