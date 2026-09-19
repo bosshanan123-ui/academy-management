@@ -49,20 +49,25 @@
 
 {% block scripts %}
 <script>
+  // Students per class — Indigo
   renderBarChart('classChart',
     {{ class_labels | tojson }},
     {{ class_counts | tojson }},
-    'Students');
+    'Students',
+    'indigo');
 
+  // Fee collection — Emerald (money = green)
   renderBarChart('feeChart',
     {{ fee_labels | tojson }},
     {{ fee_values | tojson }},
-    'Collected',
-    CHART_COLORS.green);
+    'Collected (PKR)',
+    'emerald');
 
+  // Attendance trend — Cyan (fresh)
   renderLineChart('attChart',
     {{ att_dates | tojson }},
     {{ att_present | tojson }},
-    'Present');
+    'Present',
+    'cyan');
 </script>
 {% endblock %}
