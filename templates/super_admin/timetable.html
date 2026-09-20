@@ -48,18 +48,9 @@
           <option>Thursday</option><option>Friday</option><option>Saturday</option>
         </select>
       </div>
-      <div class="form-group">
-        <label>Period No</label>
-        <input type="number" name="period_no" min="1" max="12" required />
-      </div>
-      <div class="form-group">
-        <label>Start Time</label>
-        <input type="time" name="start_time" required />
-      </div>
-      <div class="form-group">
-        <label>End Time</label>
-        <input type="time" name="end_time" required />
-      </div>
+      <div class="form-group"><label>Period No</label><input type="number" name="period_no" min="1" max="12" required /></div>
+      <div class="form-group"><label>Start Time</label><input type="time" name="start_time" required /></div>
+      <div class="form-group"><label>End Time</label><input type="time" name="end_time" required /></div>
       <button type="submit" class="btn">Add Entry</button>
     </form>
   </div>
@@ -67,26 +58,121 @@
   {% for key, entries in grid.items() %}
   <div class="card">
     <h2 class="section-title">🗓️ {{ key }}</h2>
-    <div class="timetable-grid">
-      {% set days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'] %}
-      {% for d in days %}
-        <div class="timetable-day">
-          <h4>{{ d }}</h4>
-          {% set day_entries = entries | selectattr('day', 'equalto', d) | list %}
-          {% if day_entries %}
-            {% for e in day_entries %}
-              <div class="slot">
-                <strong>{{ e.subject_name }}</strong>
-                <span class="slot-time">{{ e.start_time }}–{{ e.end_time }} • {{ e.teacher_name }}</span>
-              </div>
-            {% endfor %}
-          {% else %}
-            <p class="text-muted" style="font-size:.8rem;">No classes</p>
-          {% endif %}
-        </div>
-      {% endfor %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Day</th><th>Period</th><th>Time</th><th>Subject</th><th>Teacher</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for e in entries %}
+          <tr>
+            <td><strong>{{ e.day }}</strong></td>
+            <td>{{ e.period_no }}</td>
+            <td style="font-family: var(--font-mono); font-size: 0.8rem;">{{ e.start_time }} – {{ e.end_time }}</td>
+            <td>{{ e.subject_name }}</td>
+            <td>{{ e.teacher_name }}</td>
+            <td class="actions">
+              <button type="button" class="btn btn-sm btn-ghost edit-tt-btn"
+                      data-id="{{ e.id }}"
+                      data-class-id="{{ e.class_id }}"
+                      data-section-id="{{ e.section_id }}"
+                      data-subject-id="{{ e.subject_id }}"
+                      data-teacher-id="{{ e.teacher_user_id }}"
+                      data-day="{{ e.day }}"
+                      data-period="{{ e.period_no }}"
+                      data-start="{{ e.start_time }}"
+                      data-end="{{ e.end_time }}">✏️ Edit</button>
+              <form method="POST" action="{{ url_for('super_admin.delete_timetable', tid=e.id) }}"
+                    data-confirm="Delete this entry?" style="display:inline;">
+                <button class="btn btn-sm btn-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
   {% endfor %}
 </div>
+
+<!-- Edit Timetable Modal -->
+<div class="modal-backdrop" id="editModalBackdrop"></div>
+<div class="modal" id="editModal">
+  <div class="modal-header">
+    <h3>✏️ Edit Timetable Entry</h3>
+    <button class="icon-btn" onclick="closeEditModal()">✕</button>
+  </div>
+  <form method="POST" id="editForm">
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Class</label>
+          <select name="class_id" id="edit_class_id" required>
+            {% for c in classes %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Section</label>
+          <select name="section_id" id="edit_section_id" required>
+            {% for s in sections %}
+              <option value="{{ s.id }}" data-class-id="{{ s.class_id }}">{{ s.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Subject</label>
+          <select name="subject_id" id="edit_subject_id" required>
+            {% for s in subjects %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Teacher</label>
+          <select name="teacher_user_id" id="edit_teacher_id" required>
+            {% for t in teachers %}<option value="{{ t.id }}">{{ t.name }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Day</label>
+          <select name="day" id="edit_day" required>
+            <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+            <option>Thursday</option><option>Friday</option><option>Saturday</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Period No</label><input type="number" name="period_no" id="edit_period" min="1" max="12" required /></div>
+        <div class="form-group"><label>Start Time</label><input type="time" name="start_time" id="edit_start" required /></div>
+        <div class="form-group"><label>End Time</label><input type="time" name="end_time" id="edit_end" required /></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
+      <button type="submit" class="btn btn-success">Save</button>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.edit-tt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById('edit_class_id').value = btn.dataset.classId;
+      document.getElementById('edit_section_id').value = btn.dataset.sectionId;
+      document.getElementById('edit_subject_id').value = btn.dataset.subjectId;
+      document.getElementById('edit_teacher_id').value = btn.dataset.teacherId;
+      document.getElementById('edit_day').value = btn.dataset.day;
+      document.getElementById('edit_period').value = btn.dataset.period;
+      document.getElementById('edit_start').value = btn.dataset.start;
+      document.getElementById('edit_end').value = btn.dataset.end;
+      document.getElementById('editForm').action = `/super-admin/timetable/edit/${btn.dataset.id}`;
+      document.getElementById('editModal').classList.add('open');
+      document.getElementById('editModalBackdrop').classList.add('open');
+    });
+  });
+});
+
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('open');
+  document.getElementById('editModalBackdrop').classList.remove('open');
+}
+</script>
 {% endblock %}
