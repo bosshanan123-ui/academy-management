@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Attendance Details{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>👁 Attendance Details</h1>
+    <div class="actions">
+      <a href="{{ url_for('teacher.attendance_edit', date_str=date_str, class_id=class_id, section_id=section_id, subject_id=subject_id) }}"
+         class="btn btn-warning">✏️ Edit</a>
+      <a href="{{ url_for('teacher.attendance_history') }}" class="btn btn-ghost">← History</a>
+    </div>
+  </div>
+
+  <!-- SESSION INFO -->
+  <div class="card">
+    <div class="row" style="gap: 20px; flex-wrap: wrap;">
+      <div>
+        <div class="text-muted text-xs">DATE</div>
+        <strong style="font-family: var(--font-mono);">{{ date_str }}</strong>
+      </div>
+      <div>
+        <div class="text-muted text-xs">CLASS</div>
+        <strong>{{ class_name }} — {{ section_name }}</strong>
+      </div>
+      <div>
+        <div class="text-muted text-xs">SUBJECT</div>
+        <strong>{{ subject_name }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stat-grid">
+    <div class="stat-card accent-green">
+      <div class="stat-label">Present</div>
+      <div class="stat-value">{{ stats.P }}</div>
+    </div>
+    <div class="stat-card accent-red">
+      <div class="stat-label">Absent</div>
+      <div class="stat-value">{{ stats.A }}</div>
+    </div>
+    <div class="stat-card accent-amber">
+      <div class="stat-label">Leave</div>
+      <div class="stat-value">{{ stats.L }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total</div>
+      <div class="stat-value">{{ stats.total }}</div>
+    </div>
+  </div>
+
+  <!-- STUDENTS -->
+  <div class="card">
+    <h2 class="section-title">📋 Student Attendance</h2>
+    {% if records %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Roll No</th>
+            <th>Name</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in records %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td><span class="roll-badge">{{ r.roll_number }}</span></td>
+            <td>{{ r.student_name }}</td>
+            <td>
+              {% if r.status == 'P' %}
+                <span class="pill pill-paid">Present</span>
+              {% elif r.status == 'A' %}
+                <span class="pill pill-unpaid">Absent</span>
+              {% elif r.status == 'L' %}
+                <span class="pill pill-partial">Leave</span>
+              {% else %}
+                <span class="pill">{{ r.status }}</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No records for this session.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
