@@ -11,29 +11,13 @@
   <div class="card">
     <h2 class="section-title">Add Teacher</h2>
     <form method="POST" class="form-grid">
-      <div class="form-group">
-        <label>Name</label>
-        <input type="text" name="name" required />
-      </div>
-      <div class="form-group">
-        <label>Phone</label>
-        <input type="tel" name="phone" />
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" name="email" />
-      </div>
-      <div class="form-group">
-        <label>Qualification</label>
-        <input type="text" name="qualification" />
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" name="password" required />
-      </div>
+      <div class="form-group"><label>Name</label><input type="text" name="name" required /></div>
+      <div class="form-group"><label>Phone</label><input type="tel" name="phone" /></div>
+      <div class="form-group"><label>Email</label><input type="email" name="email" /></div>
+      <div class="form-group"><label>Qualification</label><input type="text" name="qualification" /></div>
+      <div class="form-group"><label>Password</label><input type="password" name="password" required /></div>
       <button type="submit" class="btn">Create Teacher</button>
     </form>
-    <p class="text-muted mt-3">Roll number will be auto-generated (T-YYYY-NNNN).</p>
   </div>
 
   <div class="card">
@@ -41,18 +25,47 @@
     {% if teachers %}
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Roll No</th><th>Name</th><th>Phone</th><th>Qualification</th><th>Actions</th></tr></thead>
+        <thead>
+          <tr><th>Roll No</th><th>Name</th><th>Phone</th><th>Email</th><th>Qualification</th><th>Actions</th></tr>
+        </thead>
         <tbody>
           {% for t in teachers %}
           <tr>
             <td><span class="roll-badge">{{ t.roll_number }}</span></td>
-            <td>{{ t.name }}</td>
-            <td>{{ t.phone or '-' }}</td>
-            <td>{{ t.profile.qualification or '-' }}</td>
             <td>
+              <span class="edit-view" data-id="{{ t.id }}">{{ t.name }}</span>
+              <input type="text" class="edit-input" data-id="{{ t.id }}" value="{{ t.name }}" style="display:none;" />
+            </td>
+            <td>
+              <span class="edit-view" data-id="{{ t.id }}">{{ t.phone or '-' }}</span>
+              <input type="tel" class="edit-input" data-id="{{ t.id }}" value="{{ t.phone or '' }}" style="display:none;" />
+            </td>
+            <td>
+              <span class="edit-view" data-id="{{ t.id }}">{{ t.email or '-' }}</span>
+              <input type="email" class="edit-input" data-id="{{ t.id }}" value="{{ t.email or '' }}" style="display:none;" />
+            </td>
+            <td>
+              <span class="edit-view" data-id="{{ t.id }}">{{ t.profile.qualification or '-' }}</span>
+              <input type="text" class="edit-input" data-id="{{ t.id }}" value="{{ t.profile.qualification or '' }}" style="display:none;" />
+            </td>
+            <td class="actions">
+              <button type="button" class="btn btn-sm btn-ghost edit-btn" data-id="{{ t.id }}">✏️ Edit</button>
+              
+              <form method="POST" action="{{ url_for('super_admin.edit_teacher', uid=t.id) }}" 
+                    class="edit-form" data-id="{{ t.id }}" style="display:none;">
+                <input type="hidden" name="name" class="edit-f0-{{ t.id }}" />
+                <input type="hidden" name="phone" class="edit-f1-{{ t.id }}" />
+                <input type="hidden" name="email" class="edit-f2-{{ t.id }}" />
+                <input type="hidden" name="qualification" class="edit-f3-{{ t.id }}" />
+                <button class="btn btn-sm btn-success" type="submit">💾 Save</button>
+              </form>
+              
+              <button type="button" class="btn btn-sm btn-warning reset-pw-btn" 
+                      data-id="{{ t.id }}" data-name="{{ t.name }}">🔑 Reset</button>
+              
               <form method="POST" action="{{ url_for('super_admin.delete_teacher', uid=t.id) }}"
-                    data-confirm="Delete this teacher?">
-                <button class="btn btn-sm btn-danger">Delete</button>
+                    data-confirm="Delete this teacher?" style="display:inline;">
+                <button class="btn btn-sm btn-danger" type="submit">Delete</button>
               </form>
             </td>
           </tr>
@@ -63,4 +76,67 @@
     {% else %}<p class="empty-state">No teachers yet.</p>{% endif %}
   </div>
 </div>
+
+<!-- Reset Password Modal -->
+<div class="modal-backdrop" id="pwModalBackdrop"></div>
+<div class="modal" id="pwModal">
+  <div class="modal-header">
+    <h3>🔑 Reset Password</h3>
+    <button class="icon-btn" onclick="closePwModal()">✕</button>
+  </div>
+  <form method="POST" id="pwForm">
+    <div class="modal-body">
+      <p class="text-muted mb-3">Reset password for: <strong id="pwName"></strong></p>
+      <div class="form-group">
+        <label>New Password</label>
+        <input type="text" name="new_password" placeholder="Enter new password" required minlength="4" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-ghost" onclick="closePwModal()">Cancel</button>
+      <button type="submit" class="btn btn-success">Reset Password</button>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      document.querySelectorAll(`.edit-view[data-id="${id}"]`).forEach(el => el.style.display = 'none');
+      document.querySelectorAll(`.edit-input[data-id="${id}"]`).forEach(el => el.style.display = 'inline-block');
+      document.querySelector(`.edit-form[data-id="${id}"]`).style.display = 'inline-flex';
+      btn.style.display = 'none';
+    });
+  });
+
+  document.querySelectorAll('.edit-form').forEach(form => {
+    form.addEventListener('submit', () => {
+      const id = form.dataset.id;
+      const inputs = form.closest('tr').querySelectorAll(`.edit-input[data-id="${id}"]`);
+      const vals = Array.from(inputs).map(i => i.value);
+      ['name','phone','email','qualification'].forEach((key, i) => {
+        form.querySelector(`.edit-f${i}-${id}`).value = vals[i] || '';
+      });
+    });
+  });
+
+  // Reset password modal
+  document.querySelectorAll('.reset-pw-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      document.getElementById('pwName').textContent = btn.dataset.name;
+      document.getElementById('pwForm').action = `/super-admin/teachers/reset-password/${id}`;
+      document.getElementById('pwModal').classList.add('open');
+      document.getElementById('pwModalBackdrop').classList.add('open');
+    });
+  });
+});
+
+function closePwModal() {
+  document.getElementById('pwModal').classList.remove('open');
+  document.getElementById('pwModalBackdrop').classList.remove('open');
+}
+</script>
 {% endblock %}
