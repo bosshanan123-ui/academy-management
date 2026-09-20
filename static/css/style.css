@@ -3284,134 +3284,342 @@ input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 
   .progress-bar-mini { min-width: 100px; }
 }
 /* ============================================================
-   ID CARD SYSTEM
+   ID CARD SYSTEM v2.0 — ULTRA PREMIUM
+   Real plastic ID card look with holographic effects
    ============================================================ */
+
+/* ------------------------------------------------------------
+   CARD WRAPPER (Viewport with 3D perspective)
+   ------------------------------------------------------------ */
 .id-card-wrapper {
   display: flex;
   justify-content: center;
-  padding: 40px 20px;
-  background:
-    radial-gradient(circle at 30% 20%, rgba(47, 90, 163, 0.05), transparent 50%),
-    radial-gradient(circle at 70% 80%, rgba(52, 136, 155, 0.05), transparent 50%),
-    var(--bg-recessed);
-  border-radius: var(--r-xl);
-  margin-bottom: 24px;
-}
-
-.id-card {
-  position: relative;
-  width: 360px;
-  height: 560px;
-  border-radius: 20px;
-  background: linear-gradient(155deg, #ffffff 0%, #f8fafc 100%);
-  border: 1px solid var(--border-soft);
-  box-shadow:
-    0 1px 2px rgba(17, 24, 39, 0.06),
-    0 10px 24px -8px rgba(17, 24, 39, 0.15),
-    0 40px 80px -20px rgba(47, 90, 163, 0.20);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Top colored strip */
-.id-card::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 6px;
-  background: linear-gradient(90deg, #2f5aa3, #6d5fbd, #34889b, #1f9670, #2f5aa3);
-  background-size: 200% 100%;
-  animation: chartStripe 6s linear infinite;
-}
-
-/* Different accent for teacher */
-.id-card.id-card-teacher::before {
-  background: linear-gradient(90deg, #1f9670, #34b085, #4fa9b8, #1f9670);
-  background-size: 200% 100%;
-  animation: chartStripe 6s linear infinite;
-}
-
-/* Header */
-.id-card-header {
-  padding: 22px 24px 18px;
-  background: linear-gradient(135deg, #244a8b 0%, #34889b 100%);
-  color: #fff;
-  display: flex;
   align-items: center;
-  gap: 14px;
+  padding: 60px 20px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(47, 90, 163, 0.08), transparent 45%),
+    radial-gradient(circle at 80% 80%, rgba(109, 95, 189, 0.08), transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(52, 136, 155, 0.05), transparent 60%),
+    linear-gradient(135deg, #eef0f4 0%, #e4e8ef 100%);
+  border-radius: var(--r-2xl);
+  margin-bottom: 24px;
+  perspective: 2000px;
+  min-height: 640px;
   position: relative;
   overflow: hidden;
 }
 
-.id-card.id-card-teacher .id-card-header {
-  background: linear-gradient(135deg, #146149 0%, #34889b 100%);
-}
-
-.id-card-header::after {
+/* Ambient grid pattern */
+.id-card-wrapper::before {
   content: "";
   position: absolute;
-  top: -40px; right: -40px;
-  width: 140px; height: 140px;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(47, 90, 163, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(47, 90, 163, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 70%);
+}
+
+/* Floating orbs for atmosphere */
+.id-card-wrapper::after {
+  content: "";
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 300px;
+  height: 300px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
+  background: radial-gradient(circle, rgba(109, 95, 189, 0.15), transparent 70%);
+  filter: blur(60px);
   pointer-events: none;
 }
 
+/* ------------------------------------------------------------
+   MAIN CARD
+   ------------------------------------------------------------ */
+.id-card {
+  position: relative;
+  width: 380px;
+  height: 600px;
+  border-radius: 24px;
+  background:
+    linear-gradient(155deg, #ffffff 0%, #fbfcfe 40%, #f4f6fb 100%);
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  box-shadow:
+    /* Depth shadows - multi-layer */
+    0 2px 4px rgba(17, 24, 39, 0.04),
+    0 8px 16px -4px rgba(17, 24, 39, 0.08),
+    0 24px 48px -8px rgba(17, 24, 39, 0.12),
+    0 60px 120px -20px rgba(47, 90, 163, 0.25),
+    /* Inner highlight */
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(17, 24, 39, 0.04);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform-style: preserve-3d;
+  transition:
+    transform 600ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  isolation: isolate;
+}
+
+/* Card HOVER — subtle lift + tilt */
+.id-card:hover {
+  transform: translateY(-8px) rotateX(2deg) rotateY(-3deg) scale(1.01);
+  box-shadow:
+    0 4px 8px rgba(17, 24, 39, 0.05),
+    0 16px 32px -8px rgba(17, 24, 39, 0.10),
+    0 40px 80px -16px rgba(17, 24, 39, 0.15),
+    0 80px 160px -24px rgba(47, 90, 163, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+/* Holographic shine sweep (light catching the card) */
+.id-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.0) 20%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0.0) 80%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  pointer-events: none;
+  z-index: 10;
+  animation: cardShine 8s ease-in-out infinite;
+}
+
+@keyframes cardShine {
+  0%, 60%, 100% { left: -100%; }
+  30%           { left: 130%; }
+}
+
+/* Top holographic strip */
+.id-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: linear-gradient(
+    90deg,
+    #2f5aa3 0%,
+    #6d5fbd 15%,
+    #a95f8a 30%,
+    #d4901c 45%,
+    #1f9670 60%,
+    #34889b 75%,
+    #564aa0 90%,
+    #2f5aa3 100%
+  );
+  background-size: 200% 100%;
+  animation: holoStrip 8s linear infinite;
+  z-index: 5;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.1) inset;
+}
+
+@keyframes holoStrip {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* Teacher variant - different holographic strip */
+.id-card.id-card-teacher::after {
+  background: linear-gradient(
+    90deg,
+    #146149 0%,
+    #1f9670 15%,
+    #34b085 30%,
+    #4fa9b8 45%,
+    #34889b 60%,
+    #276b7c 75%,
+    #1f9670 90%,
+    #146149 100%
+  );
+  background-size: 200% 100%;
+}
+
+/* Watermark - big faint logo behind content */
+.id-card .id-card-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  font-size: 18rem;
+  font-weight: 900;
+  color: rgba(47, 90, 163, 0.04);
+  pointer-events: none;
+  z-index: 0;
+  line-height: 1;
+  user-select: none;
+}
+
+/* ------------------------------------------------------------
+   HEADER - Academy Brand
+   ------------------------------------------------------------ */
+.id-card-header {
+  position: relative;
+  padding: 28px 26px 22px;
+  background:
+    linear-gradient(135deg, #1c3b70 0%, #244a8b 40%, #34889b 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  overflow: hidden;
+  z-index: 2;
+}
+
+/* Diagonal pattern overlay on header */
+.id-card-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.04) 0px,
+      rgba(255, 255, 255, 0.04) 2px,
+      transparent 2px,
+      transparent 20px
+    );
+  pointer-events: none;
+}
+
+/* Soft radial glow */
+.id-card-header::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  right: -20%;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12), transparent 65%);
+  pointer-events: none;
+}
+
+/* Teacher header variant */
+.id-card.id-card-teacher .id-card-header {
+  background: linear-gradient(135deg, #0e4c39 0%, #146149 40%, #34889b 100%);
+}
+
 .id-card-logo {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.10));
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
   display: grid;
   place-items: center;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   flex-shrink: 0;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  position: relative;
+  z-index: 1;
 }
 
-.id-card-brand { flex: 1; position: relative; z-index: 1; }
+.id-card-brand {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
 .id-card-academy {
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   font-weight: 900;
   letter-spacing: -0.02em;
-  line-height: 1.2;
-  margin-bottom: 2px;
+  line-height: 1.15;
+  margin-bottom: 4px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 .id-card-tagline {
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   opacity: 0.85;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.id-card-tagline::before {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.7);
 }
 
-/* Body */
+/* ------------------------------------------------------------
+   BODY
+   ------------------------------------------------------------ */
 .id-card-body {
   flex: 1;
-  padding: 22px 24px;
+  padding: 26px 24px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   position: relative;
+  z-index: 1;
 }
 
+/* PHOTO FRAME */
 .id-card-photo {
-  width: 100px;
-  height: 120px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #eef3fa, #d9e4f3);
-  border: 3px solid #fff;
+  position: relative;
+  width: 120px;
+  height: 140px;
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, #eef3fa, #dde6f3);
+  border: 4px solid #ffffff;
   box-shadow:
-    0 8px 20px rgba(47, 90, 163, 0.15),
-    0 2px 6px rgba(17, 24, 39, 0.08);
+    0 12px 28px -6px rgba(47, 90, 163, 0.25),
+    0 4px 12px -2px rgba(17, 24, 39, 0.10),
+    inset 0 0 0 1px rgba(17, 24, 39, 0.04);
   overflow: hidden;
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  position: relative;
+  z-index: 1;
+}
+
+/* Photo corner accents */
+.id-card-photo::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg,
+    rgba(47, 90, 163, 0.5),
+    rgba(109, 95, 189, 0.4) 50%,
+    rgba(52, 136, 155, 0.5));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  z-index: 2;
 }
 
 .photo-placeholder {
@@ -3419,177 +3627,296 @@ input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 
   height: 100%;
   display: grid;
   place-items: center;
-  font-size: 3rem;
+  font-size: 3.5rem;
   font-weight: 900;
-  color: #fff;
-  background: linear-gradient(135deg, #2f5aa3, #6d5fbd);
-  letter-spacing: 0;
+  color: #ffffff;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.20), transparent 40%),
+    linear-gradient(135deg, #2f5aa3, #564aa0);
+  letter-spacing: -0.02em;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.20);
+  position: relative;
+}
+
+/* Photo shine */
+.photo-placeholder::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.10) 45%,
+    transparent 55%,
+    rgba(255, 255, 255, 0.08) 100%);
+  pointer-events: none;
 }
 
 .photo-placeholder.photo-teacher {
-  background: linear-gradient(135deg, #146149, #34b085);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.20), transparent 40%),
+    linear-gradient(135deg, #146149, #1f9670);
 }
 
-/* Details */
+/* DETAILS */
 .id-card-details {
   text-align: center;
   width: 100%;
+  z-index: 1;
 }
 
 .id-card-name {
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   font-weight: 900;
-  letter-spacing: -0.02em;
-  color: var(--ink-950);
-  margin-bottom: 6px;
+  letter-spacing: -0.025em;
+  color: #0c1220;
+  margin-bottom: 8px;
   line-height: 1.2;
+  font-family: var(--font-sans);
 }
 
 .id-card-role-badge {
-  display: inline-block;
-  padding: 3px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
   border-radius: 999px;
-  font-size: 0.62rem;
+  font-size: 0.65rem;
   font-weight: 900;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  background: linear-gradient(135deg, #244a8b, #34889b);
-  color: #fff;
-  margin-bottom: 14px;
-  box-shadow: 0 4px 12px rgba(36, 74, 139, 0.30);
+  background: linear-gradient(135deg, #244a8b 0%, #34889b 100%);
+  color: #ffffff;
+  margin-bottom: 16px;
+  box-shadow:
+    0 4px 12px rgba(36, 74, 139, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.id-card-role-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+  animation: pulse 2s ease-in-out infinite;
 }
 
 .id-card-role-badge.role-teacher-badge {
-  background: linear-gradient(135deg, #146149, #34b085);
-  box-shadow: 0 4px 12px rgba(20, 97, 73, 0.30);
+  background: linear-gradient(135deg, #146149 0%, #34b085 100%);
+  box-shadow:
+    0 4px 12px rgba(20, 97, 73, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
+/* INFO ROWS */
 .id-card-info {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: var(--bg-recessed);
-  border: 1px solid var(--border-subtle);
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(238, 243, 250, 0.9), rgba(217, 228, 243, 0.6));
+  border: 1px solid rgba(47, 90, 163, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 2px 6px rgba(17, 24, 39, 0.03);
 }
 
 .id-card-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  padding: 3px 0;
-  border-bottom: 1px dashed rgba(17, 24, 39, 0.06);
+  gap: 10px;
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(47, 90, 163, 0.12);
+  font-size: 0.8rem;
 }
-.id-card-row:last-child { border-bottom: none; }
+.id-card-row:last-child { border-bottom: none; padding-bottom: 0; }
+.id-card-row:first-child { padding-top: 0; }
 
 .id-card-label {
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ink-500);
+  color: #5a80b3;
+  flex-shrink: 0;
 }
 
 .id-card-value {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--ink-900);
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #0c1220;
   text-align: right;
-  max-width: 60%;
+  max-width: 62%;
   word-break: break-word;
+  font-variant-numeric: tabular-nums;
 }
 
-/* QR */
-.id-card-qr { margin-top: 4px; }
+.id-card-value.mono {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: #244a8b;
+}
+
+/* ------------------------------------------------------------
+   QR CODE — Realistic looking
+   ------------------------------------------------------------ */
+.id-card-qr {
+  margin-top: 6px;
+  display: flex;
+  justify-content: center;
+  z-index: 1;
+}
 
 .qr-box {
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
-  background:
-    repeating-linear-gradient(0deg, #1f2937 0, #1f2937 4px, transparent 4px, transparent 8px),
-    repeating-linear-gradient(90deg, #1f2937 0, #1f2937 4px, transparent 4px, transparent 8px),
-    #fff;
-  border: 2px solid var(--ink-900);
-  display: grid;
-  place-items: center;
   position: relative;
-  overflow: hidden;
+  width: 76px;
+  height: 76px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 2px solid #0c1220;
+  padding: 5px;
+  box-shadow:
+    0 4px 12px rgba(17, 24, 39, 0.10),
+    inset 0 0 0 1px rgba(17, 24, 39, 0.05);
 }
 
-.qr-box .qr-label {
+/* Actual QR pattern using SVG data URI */
+.qr-box::before {
+  content: "";
   position: absolute;
-  bottom: -18px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.55rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  color: var(--ink-500);
+  inset: 5px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 33 33' shape-rendering='crispEdges'><rect width='33' height='33' fill='white'/><g fill='%230c1220'><rect x='0' y='0' width='7' height='7'/><rect x='1' y='1' width='5' height='5' fill='white'/><rect x='2' y='2' width='3' height='3'/><rect x='26' y='0' width='7' height='7'/><rect x='27' y='1' width='5' height='5' fill='white'/><rect x='28' y='2' width='3' height='3'/><rect x='0' y='26' width='7' height='7'/><rect x='1' y='27' width='5' height='5' fill='white'/><rect x='2' y='28' width='3' height='3'/><rect x='8' y='0' width='1' height='1'/><rect x='10' y='0' width='2' height='1'/><rect x='13' y='0' width='1' height='2'/><rect x='15' y='0' width='1' height='1'/><rect x='18' y='0' width='2' height='1'/><rect x='21' y='0' width='1' height='2'/><rect x='23' y='1' width='2' height='1'/><rect x='8' y='2' width='2' height='1'/><rect x='11' y='2' width='1' height='1'/><rect x='14' y='2' width='2' height='1'/><rect x='17' y='3' width='1' height='1'/><rect x='19' y='3' width='2' height='1'/><rect x='9' y='4' width='1' height='2'/><rect x='12' y='4' width='2' height='1'/><rect x='16' y='4' width='1' height='2'/><rect x='20' y='4' width='1' height='1'/><rect x='23' y='5' width='2' height='1'/><rect x='8' y='6' width='1' height='1'/><rect x='11' y='6' width='2' height='1'/><rect x='15' y='6' width='1' height='1'/><rect x='18' y='6' width='2' height='1'/><rect x='22' y='7' width='1' height='2'/><rect x='8' y='8' width='2' height='1'/><rect x='11' y='8' width='3' height='1'/><rect x='15' y='8' width='1' height='1'/><rect x='17' y='8' width='2' height='1'/><rect x='20' y='8' width='2' height='1'/><rect x='24' y='8' width='1' height='2'/><rect x='10' y='10' width='2' height='1'/><rect x='13' y='10' width='2' height='1'/><rect x='16' y='10' width='1' height='2'/><rect x='19' y='10' width='2' height='1'/><rect x='22' y='10' width='1' height='1'/><rect x='8' y='11' width='1' height='2'/><rect x='11' y='12' width='2' height='1'/><rect x='15' y='12' width='1' height='1'/><rect x='18' y='12' width='2' height='1'/><rect x='21' y='13' width='2' height='1'/><rect x='24' y='13' width='1' height='1'/><rect x='9' y='14' width='2' height='1'/><rect x='12' y='14' width='1' height='2'/><rect x='14' y='14' width='2' height='1'/><rect x='17' y='14' width='1' height='1'/><rect x='20' y='15' width='1' height='1'/><rect x='22' y='15' width='2' height='1'/><rect x='8' y='16' width='2' height='1'/><rect x='11' y='16' width='1' height='1'/><rect x='13' y='17' width='2' height='1'/><rect x='16' y='17' width='1' height='2'/><rect x='19' y='17' width='1' height='1'/><rect x='21' y='17' width='2' height='1'/><rect x='24' y='17' width='1' height='2'/><rect x='9' y='19' width='1' height='1'/><rect x='11' y='19' width='2' height='1'/><rect x='15' y='19' width='2' height='1'/><rect x='18' y='19' width='1' height='1'/><rect x='20' y='19' width='1' height='2'/><rect x='23' y='20' width='2' height='1'/><rect x='8' y='21' width='2' height='1'/><rect x='11' y='21' width='1' height='2'/><rect x='14' y='21' width='1' height='1'/><rect x='16' y='21' width='2' height='1'/><rect x='19' y='21' width='2' height='1'/><rect x='22' y='22' width='1' height='1'/><rect x='9' y='23' width='2' height='1'/><rect x='13' y='23' width='2' height='1'/><rect x='17' y='23' width='1' height='1'/><rect x='19' y='23' width='1' height='2'/><rect x='21' y='24' width='2' height='1'/><rect x='24' y='24' width='1' height='1'/><rect x='8' y='25' width='1' height='1'/><rect x='10' y='25' width='2' height='1'/><rect x='14' y='25' width='1' height='1'/><rect x='16' y='25' width='2' height='1'/><rect x='20' y='25' width='1' height='2'/><rect x='23' y='26' width='1' height='1'/><rect x='8' y='28' width='2' height='1'/><rect x='12' y='28' width='1' height='2'/><rect x='14' y='28' width='2' height='1'/><rect x='17' y='28' width='1' height='1'/><rect x='19' y='28' width='2' height='1'/><rect x='22' y='28' width='2' height='1'/><rect x='9' y='30' width='1' height='2'/><rect x='11' y='31' width='2' height='1'/><rect x='15' y='30' width='1' height='2'/><rect x='18' y='31' width='2' height='1'/><rect x='21' y='30' width='1' height='1'/><rect x='23' y='31' width='2' height='1'/><rect x='8' y='32' width='2' height='1'/><rect x='12' y='32' width='3' height='1'/><rect x='16' y='32' width='1' height='1'/><rect x='19' y='32' width='2' height='1'/><rect x='22' y='32' width='3' height='1'/></g></svg>");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
-/* Footer */
+/* ------------------------------------------------------------
+   FOOTER
+   ------------------------------------------------------------ */
 .id-card-footer {
   padding: 12px 24px;
-  background: linear-gradient(180deg, #f8fafc, #eef3fa);
-  border-top: 1px solid var(--border-subtle);
+  background:
+    linear-gradient(180deg, rgba(248, 250, 252, 0.9), rgba(238, 240, 244, 0.8));
+  border-top: 1px solid rgba(17, 24, 39, 0.06);
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  font-size: 0.68rem;
-  color: var(--ink-600);
-  font-weight: 600;
+  gap: 5px;
+  font-size: 0.7rem;
+  color: #4b5563;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
 }
 
 .id-card-footer-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  font-size: 0.72rem;
 }
 
 .footer-icon {
-  font-size: 0.75rem;
-  filter: grayscale(0.3);
+  font-size: 0.8rem;
+  filter: grayscale(0.4);
+  opacity: 0.85;
+  width: 14px;
+  text-align: center;
 }
 
-/* Bottom signature strip */
+/* ------------------------------------------------------------
+   BOTTOM STRIP — Signature + Barcode
+   ------------------------------------------------------------ */
 .id-card-bottom {
-  padding: 14px 24px 18px;
+  padding: 16px 24px 20px;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  background: #fff;
-  border-top: 1px solid var(--border-subtle);
+  background: #ffffff;
+  border-top: 1px solid rgba(17, 24, 39, 0.06);
+  position: relative;
+  z-index: 1;
 }
 
 .id-card-sign {
   flex: 1;
-  max-width: 60%;
+  max-width: 55%;
 }
+
+/* Signature font style (handwritten look via styling) */
+.id-card-sign .sign-value {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: #244a8b;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+  opacity: 0.75;
+  transform: rotate(-2deg);
+  line-height: 1;
+}
+
 .sign-line {
   height: 1px;
-  background: var(--ink-400);
-  margin-bottom: 4px;
+  background: linear-gradient(90deg, #98a1ac, rgba(152, 161, 172, 0.3));
+  margin-bottom: 5px;
 }
+
 .sign-label {
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 800;
-  letter-spacing: 0.10em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--ink-400);
+  color: #98a1ac;
 }
 
 .id-card-serial {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 2px;
+  gap: 4px;
 }
 
-/* Print styles */
+/* Realistic barcode */
+.barcode {
+  display: flex;
+  align-items: stretch;
+  gap: 1.5px;
+  height: 28px;
+  padding: 0 2px;
+}
+
+.barcode .bar {
+  background: #0c1220;
+  border-radius: 0.5px;
+}
+
+.barcode .bar.thin   { width: 1px; }
+.barcode .bar.med    { width: 2px; }
+.barcode .bar.thick  { width: 3px; }
+.barcode .bar.space  { background: transparent; }
+
+.id-card-serial .serial-text {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: #4b5563;
+  letter-spacing: 0.06em;
+  text-align: right;
+}
+
+/* ------------------------------------------------------------
+   PRINT STYLES — Perfect physical card
+   ------------------------------------------------------------ */
 @media print {
   body * { visibility: hidden; }
   .id-card-wrapper,
@@ -3603,12 +3930,18 @@ input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 
     background: #fff;
     border-radius: 0;
     margin: 0;
+    min-height: auto;
+    perspective: none;
   }
+  .id-card-wrapper::before,
+  .id-card-wrapper::after { display: none; }
   .id-card {
     box-shadow: none;
-    border: 1.5px solid #333;
+    border: 2px solid #0c1220;
+    transform: none !important;
     page-break-inside: avoid;
   }
+  .id-card::before { display: none; } /* hide shine on print */
   .no-print,
   .navbar,
   .page-header,
@@ -3616,16 +3949,21 @@ input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 
   .footer { display: none !important; }
 
   @page {
-    margin: 10mm;
+    margin: 15mm;
     size: A4 portrait;
   }
 }
 
-/* Mobile */
+/* ------------------------------------------------------------
+   MOBILE
+   ------------------------------------------------------------ */
 @media (max-width: 520px) {
-  .id-card { width: 100%; max-width: 340px; height: auto; min-height: 520px; }
-  .id-card-wrapper { padding: 20px 12px; }
+  .id-card-wrapper { padding: 30px 14px; min-height: auto; }
+  .id-card { width: 100%; max-width: 340px; height: auto; min-height: 560px; }
+  .id-card-header { padding: 22px 20px 18px; }
+  .id-card-logo { width: 48px; height: 48px; font-size: 1.5rem; }
+  .id-card-academy { font-size: 0.92rem; }
+  .id-card-photo { width: 100px; height: 120px; }
+  .id-card-name { font-size: 1.2rem; }
+  .qr-box { width: 64px; height: 64px; }
 }
-/* ============================================================
-   END OF STYLESHEET v6.0
-   ============================================================ */
