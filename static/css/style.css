@@ -3284,5 +3284,348 @@ input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 
   .progress-bar-mini { min-width: 100px; }
 }
 /* ============================================================
+   ID CARD SYSTEM
+   ============================================================ */
+.id-card-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(47, 90, 163, 0.05), transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(52, 136, 155, 0.05), transparent 50%),
+    var(--bg-recessed);
+  border-radius: var(--r-xl);
+  margin-bottom: 24px;
+}
+
+.id-card {
+  position: relative;
+  width: 360px;
+  height: 560px;
+  border-radius: 20px;
+  background: linear-gradient(155deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid var(--border-soft);
+  box-shadow:
+    0 1px 2px rgba(17, 24, 39, 0.06),
+    0 10px 24px -8px rgba(17, 24, 39, 0.15),
+    0 40px 80px -20px rgba(47, 90, 163, 0.20);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top colored strip */
+.id-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #2f5aa3, #6d5fbd, #34889b, #1f9670, #2f5aa3);
+  background-size: 200% 100%;
+  animation: chartStripe 6s linear infinite;
+}
+
+/* Different accent for teacher */
+.id-card.id-card-teacher::before {
+  background: linear-gradient(90deg, #1f9670, #34b085, #4fa9b8, #1f9670);
+  background-size: 200% 100%;
+  animation: chartStripe 6s linear infinite;
+}
+
+/* Header */
+.id-card-header {
+  padding: 22px 24px 18px;
+  background: linear-gradient(135deg, #244a8b 0%, #34889b 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.id-card.id-card-teacher .id-card-header {
+  background: linear-gradient(135deg, #146149 0%, #34889b 100%);
+}
+
+.id-card-header::after {
+  content: "";
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.id-card-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  backdrop-filter: blur(10px);
+}
+
+.id-card-brand { flex: 1; position: relative; z-index: 1; }
+.id-card-academy {
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+.id-card-tagline {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+/* Body */
+.id-card-body {
+  flex: 1;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+}
+
+.id-card-photo {
+  width: 100px;
+  height: 120px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #eef3fa, #d9e4f3);
+  border: 3px solid #fff;
+  box-shadow:
+    0 8px 20px rgba(47, 90, 163, 0.15),
+    0 2px 6px rgba(17, 24, 39, 0.08);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  font-size: 3rem;
+  font-weight: 900;
+  color: #fff;
+  background: linear-gradient(135deg, #2f5aa3, #6d5fbd);
+  letter-spacing: 0;
+}
+
+.photo-placeholder.photo-teacher {
+  background: linear-gradient(135deg, #146149, #34b085);
+}
+
+/* Details */
+.id-card-details {
+  text-align: center;
+  width: 100%;
+}
+
+.id-card-name {
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--ink-950);
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+
+.id-card-role-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #244a8b, #34889b);
+  color: #fff;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 12px rgba(36, 74, 139, 0.30);
+}
+
+.id-card-role-badge.role-teacher-badge {
+  background: linear-gradient(135deg, #146149, #34b085);
+  box-shadow: 0 4px 12px rgba(20, 97, 73, 0.30);
+}
+
+.id-card-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--bg-recessed);
+  border: 1px solid var(--border-subtle);
+}
+
+.id-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+  border-bottom: 1px dashed rgba(17, 24, 39, 0.06);
+}
+.id-card-row:last-child { border-bottom: none; }
+
+.id-card-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+}
+
+.id-card-value {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink-900);
+  text-align: right;
+  max-width: 60%;
+  word-break: break-word;
+}
+
+/* QR */
+.id-card-qr { margin-top: 4px; }
+
+.qr-box {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  background:
+    repeating-linear-gradient(0deg, #1f2937 0, #1f2937 4px, transparent 4px, transparent 8px),
+    repeating-linear-gradient(90deg, #1f2937 0, #1f2937 4px, transparent 4px, transparent 8px),
+    #fff;
+  border: 2px solid var(--ink-900);
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.qr-box .qr-label {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.55rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: var(--ink-500);
+}
+
+/* Footer */
+.id-card-footer {
+  padding: 12px 24px;
+  background: linear-gradient(180deg, #f8fafc, #eef3fa);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.68rem;
+  color: var(--ink-600);
+  font-weight: 600;
+}
+
+.id-card-footer-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-icon {
+  font-size: 0.75rem;
+  filter: grayscale(0.3);
+}
+
+/* Bottom signature strip */
+.id-card-bottom {
+  padding: 14px 24px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  background: #fff;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.id-card-sign {
+  flex: 1;
+  max-width: 60%;
+}
+.sign-line {
+  height: 1px;
+  background: var(--ink-400);
+  margin-bottom: 4px;
+}
+.sign-label {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--ink-400);
+}
+
+.id-card-serial {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+/* Print styles */
+@media print {
+  body * { visibility: hidden; }
+  .id-card-wrapper,
+  .id-card-wrapper * { visibility: visible; }
+  .id-card-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 0;
+    background: #fff;
+    border-radius: 0;
+    margin: 0;
+  }
+  .id-card {
+    box-shadow: none;
+    border: 1.5px solid #333;
+    page-break-inside: avoid;
+  }
+  .no-print,
+  .navbar,
+  .page-header,
+  .flash-container,
+  .footer { display: none !important; }
+
+  @page {
+    margin: 10mm;
+    size: A4 portrait;
+  }
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+  .id-card { width: 100%; max-width: 340px; height: auto; min-height: 520px; }
+  .id-card-wrapper { padding: 20px 12px; }
+}
+/* ============================================================
    END OF STYLESHEET v6.0
    ============================================================ */
