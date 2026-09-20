@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}My ID Card{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>🎓 My ID Card</h1>
+    <div class="actions">
+      <button onclick="window.print()" class="btn">🖨️ Print Card</button>
+      <a href="{{ url_for('student.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+    </div>
+  </div>
+
+  <!-- ID CARD -->
+  <div class="id-card-wrapper">
+    <div class="id-card id-card-student">
+      <!-- Top brand strip -->
+      <div class="id-card-header">
+        <div class="id-card-logo">🎓</div>
+        <div class="id-card-brand">
+          <div class="id-card-academy">{{ academy.name }}</div>
+          <div class="id-card-tagline">{{ academy.tagline }}</div>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="id-card-body">
+        <!-- Photo -->
+        <div class="id-card-photo">
+          <div class="photo-placeholder">
+            {{ user.name[0] | upper if user.name else 'S' }}
+          </div>
+        </div>
+
+        <!-- Details -->
+        <div class="id-card-details">
+          <div class="id-card-name">{{ user.name }}</div>
+          <div class="id-card-role-badge">STUDENT</div>
+          
+          <div class="id-card-info">
+            <div class="id-card-row">
+              <span class="id-card-label">Roll No:</span>
+              <span class="id-card-value mono">{{ user.roll_number }}</span>
+            </div>
+            <div class="id-card-row">
+              <span class="id-card-label">Class:</span>
+              <span class="id-card-value">{{ class_name }} — {{ section_name }}</span>
+            </div>
+            <div class="id-card-row">
+              <span class="id-card-label">Roll in Class:</span>
+              <span class="id-card-value">{{ profile.roll_no_in_class or '-' }}</span>
+            </div>
+            <div class="id-card-row">
+              <span class="id-card-label">Session:</span>
+              <span class="id-card-value">{{ academy.session }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- QR placeholder -->
+        <div class="id-card-qr">
+          <div class="qr-box">
+            <div class="qr-pattern"></div>
+            <div class="qr-label">SCAN</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="id-card-footer">
+        <div class="id-card-footer-item">
+          <span class="footer-icon">📞</span>
+          <span>{{ academy.phone }}</span>
+        </div>
+        <div class="id-card-footer-item">
+          <span class="footer-icon">🌐</span>
+          <span>{{ academy.website }}</span>
+        </div>
+        <div class="id-card-footer-item">
+          <span class="footer-icon">📍</span>
+          <span>{{ academy.address }}</span>
+        </div>
+      </div>
+
+      <!-- Bottom bar (signature) -->
+      <div class="id-card-bottom">
+        <div class="id-card-sign">
+          <div class="sign-line"></div>
+          <div class="sign-label">Authorized Signature</div>
+        </div>
+        <div class="id-card-serial">
+          <span class="text-muted text-xs">Serial:</span>
+          <span class="mono text-xs">{{ user.roll_number }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Print instructions -->
+  <div class="card mt-4 no-print">
+    <h2 class="section-title">🖨️ How to Print</h2>
+    <ol style="padding-left: 20px; line-height: 1.9; color: var(--ink-600);">
+      <li>Click the <strong>🖨️ Print Card</strong> button above</li>
+      <li>Print dialog opens — choose <strong>Save as PDF</strong> or select printer</li>
+      <li>Recommended: <strong>Portrait</strong> orientation, <strong>A4</strong> paper</li>
+      <li>Card size: <strong>CR80 (85.6 × 53.98 mm)</strong> — real ID card size</li>
+    </ol>
+  </div>
+</div>
+{% endblock %}
