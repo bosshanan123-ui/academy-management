@@ -276,7 +276,55 @@ def _base_ctx(uid, profile):
         "fees": fees,
         "all_tt": all_tt,
     }
+# =====================================================
+# ID CARD
+# =====================================================
+@student_bp.route("/id-card")
+@role_required("student")
+def id_card():
+    """Student ID card — view + print."""
+    uid = session["user_id"]
+    profile = _profile(uid)
 
+    # Get student user info
+    user = _get_one("users", uid)
+
+    # Class and section names
+    classes = _safe_select("classes")
+    sections = _safe_select("sections")
+    cmap = {c["id"]: c["name"] for c in classes}
+    smap = {s["id"]: s["name"] for s in sections}
+
+    class_name = cmap.get(profile.get("class_id"), "-")
+    section_name = smap.get(profile.get("section_id"), "-")
+
+    # Academy info (from session or defaults)
+    academy = {
+        "name": "Academy Management System",
+        "tagline": "Excellence in Education",
+        "address": "123 Education Street, City",
+        "phone": "+92 300 0000000",
+        "website": "academy-ms.app",
+        "session": "2025-2026",
+    }
+
+    return render_template(
+        "id_cards/student_card.html",
+        user=user,
+        profile=profile,
+        class_name=class_name,
+        section_name=section_name,
+        academy=academy,
+    )
+
+
+def _get_one(table_name, pk):
+    """Fetch a single row by primary key."""
+    try:
+        res = table(table_name).select("*").eq("id", pk).limit(1).execute()
+        return res.data[0] if res.data else {}
+    except Exception:
+        return {}
 
 def _safe_select(table_name, **filters):
     try:
