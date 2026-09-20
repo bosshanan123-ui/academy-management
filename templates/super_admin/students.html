@@ -14,7 +14,6 @@
       <div class="form-group"><label>Name</label><input type="text" name="name" required /></div>
       <div class="form-group"><label>Phone</label><input type="tel" name="phone" /></div>
       <div class="form-group"><label>Password</label><input type="password" name="password" required /></div>
-
       <div class="form-group">
         <label>Class</label>
         <select id="classSelect" name="class_id" required>
@@ -31,24 +30,10 @@
           {% endfor %}
         </select>
       </div>
-
-      <div class="form-group">
-        <label>Roll No in Class</label>
-        <input type="number" name="roll_no_in_class" min="1" />
-      </div>
-      <div class="form-group">
-  <label>Custom Monthly Fee (optional override)</label>
-  <input type="number" step="0.01" name="custom_fee" 
-         placeholder="Leave empty to use class default" />
-</div>
-      <div class="form-group">
-        <label>Guardian Name</label>
-        <input type="text" name="guardian_name" />
-      </div>
-      <div class="form-group">
-        <label>Guardian Phone</label>
-        <input type="tel" name="guardian_phone" />
-      </div>
+      <div class="form-group"><label>Roll No in Class</label><input type="number" name="roll_no_in_class" min="1" /></div>
+      <div class="form-group"><label>Custom Monthly Fee (optional)</label><input type="number" step="0.01" name="custom_fee" /></div>
+      <div class="form-group"><label>Guardian Name</label><input type="text" name="guardian_name" /></div>
+      <div class="form-group"><label>Guardian Phone</label><input type="tel" name="guardian_phone" /></div>
       <div class="form-group">
         <label>Link Parent (optional)</label>
         <select name="parent_user_id">
@@ -62,7 +47,6 @@
       </div>
       <button type="submit" class="btn">Create Student</button>
     </form>
-    <p class="text-muted mt-3">Roll number will be auto-generated (S-YYYY-NNNN).</p>
   </div>
 
   <div class="card">
@@ -71,21 +55,42 @@
     <div class="table-wrap">
       <table>
         <thead>
-          <tr><th>Roll No</th><th>Name</th><th>Class</th><th>Section</th><th>Roll in Class</th><th>Parent</th><th>Actions</th></tr>
+          <tr><th>Roll No</th><th>Name</th><th>Class</th><th>Parent</th><th>Custom Fee</th><th>Actions</th></tr>
         </thead>
         <tbody>
           {% for s in students %}
           <tr>
             <td><span class="roll-badge">{{ s.roll_number }}</span></td>
-            <td>{{ s.name }}</td>
-            <td>{{ s.class_name }}</td>
-            <td>{{ s.section_name }}</td>
-            <td>{{ s.roll_no_in_class }}</td>
+            <td>{{ s.name }}<br><small class="text-muted">{{ s.phone or '' }}</small></td>
+            <td>{{ s.class_name }} — {{ s.section_name }}</td>
             <td>{{ s.parent_roll }}</td>
             <td>
+              {% if s.custom_fee %}
+                <span class="pill pill-partial">PKR {{ s.custom_fee }}</span>
+              {% else %}
+                <span class="text-muted">Class default</span>
+              {% endif %}
+            </td>
+            <td class="actions">
+              <button type="button" class="btn btn-sm btn-ghost edit-student-btn" 
+                      data-id="{{ s.id }}" 
+                      data-name="{{ s.name }}"
+                      data-phone="{{ s.phone or '' }}"
+                      data-class-id="{{ s.class_id or '' }}"
+                      data-section-id="{{ s.section_id or '' }}"
+                      data-roll="{{ s.roll_no_in_class or '' }}"
+                      data-guardian-name="{{ s.guardian_name or '' }}"
+                      data-guardian-phone="{{ s.guardian_phone or '' }}"
+                      data-address="{{ s.address or '' }}"
+                      data-custom-fee="{{ s.custom_fee or '' }}"
+                      data-parent-user-id="{{ s.parent_user_id or '' }}">✏️ Edit</button>
+              
+              <button type="button" class="btn btn-sm btn-warning reset-pw-btn" 
+                      data-id="{{ s.id }}" data-name="{{ s.name }}">🔑 Reset</button>
+              
               <form method="POST" action="{{ url_for('super_admin.delete_student', uid=s.id) }}"
-                    data-confirm="Delete this student?">
-                <button class="btn btn-sm btn-danger">Delete</button>
+                    data-confirm="Delete this student?" style="display:inline;">
+                <button class="btn btn-sm btn-danger" type="submit">Delete</button>
               </form>
             </td>
           </tr>
@@ -96,4 +101,121 @@
     {% else %}<p class="empty-state">No students yet.</p>{% endif %}
   </div>
 </div>
+
+<!-- Edit Student Modal -->
+<div class="modal-backdrop" id="editModalBackdrop"></div>
+<div class="modal" id="editModal">
+  <div class="modal-header">
+    <h3>✏️ Edit Student</h3>
+    <button class="icon-btn" onclick="closeEditModal()">✕</button>
+  </div>
+  <form method="POST" id="editForm">
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Name</label><input type="text" name="name" id="edit_name" required /></div>
+        <div class="form-group"><label>Phone</label><input type="tel" name="phone" id="edit_phone" /></div>
+        <div class="form-group">
+          <label>Class</label>
+          <select name="class_id" id="edit_class_id" required>
+            {% for c in classes %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Section</label>
+          <select name="section_id" id="edit_section_id" required>
+            {% for s in sections %}
+              <option value="{{ s.id }}" data-class-id="{{ s.class_id }}">{{ s.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group"><label>Roll No in Class</label><input type="number" name="roll_no_in_class" id="edit_roll" /></div>
+        <div class="form-group"><label>Custom Fee</label><input type="number" step="0.01" name="custom_fee" id="edit_custom_fee" /></div>
+        <div class="form-group"><label>Guardian Name</label><input type="text" name="guardian_name" id="edit_guardian_name" /></div>
+        <div class="form-group"><label>Guardian Phone</label><input type="tel" name="guardian_phone" id="edit_guardian_phone" /></div>
+        <div class="form-group">
+          <label>Link Parent</label>
+          <select name="parent_user_id" id="edit_parent">
+            <option value="">— None —</option>
+            {% for p in parents %}<option value="{{ p.id }}">{{ p.roll_number }} — {{ p.name }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label>Address</label>
+          <textarea name="address" id="edit_address"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
+      <button type="submit" class="btn btn-success">Save Changes</button>
+    </div>
+  </form>
+</div>
+
+<!-- Reset Password Modal -->
+<div class="modal-backdrop" id="pwModalBackdrop"></div>
+<div class="modal" id="pwModal">
+  <div class="modal-header">
+    <h3>🔑 Reset Password</h3>
+    <button class="icon-btn" onclick="closePwModal()">✕</button>
+  </div>
+  <form method="POST" id="pwForm">
+    <div class="modal-body">
+      <p class="text-muted mb-3">Reset password for: <strong id="pwName"></strong></p>
+      <div class="form-group">
+        <label>New Password</label>
+        <input type="text" name="new_password" placeholder="Enter new password" required minlength="4" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-ghost" onclick="closePwModal()">Cancel</button>
+      <button type="submit" class="btn btn-success">Reset Password</button>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Edit student
+  document.querySelectorAll('.edit-student-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      document.getElementById('edit_name').value = btn.dataset.name || '';
+      document.getElementById('edit_phone').value = btn.dataset.phone || '';
+      document.getElementById('edit_class_id').value = btn.dataset.classId || '';
+      document.getElementById('edit_section_id').value = btn.dataset.sectionId || '';
+      document.getElementById('edit_roll').value = btn.dataset.roll || '';
+      document.getElementById('edit_custom_fee').value = btn.dataset.customFee || '';
+      document.getElementById('edit_guardian_name').value = btn.dataset.guardianName || '';
+      document.getElementById('edit_guardian_phone').value = btn.dataset.guardianPhone || '';
+      document.getElementById('edit_address').value = btn.dataset.address || '';
+      document.getElementById('edit_parent').value = btn.dataset.parentUserId || '';
+      
+      document.getElementById('editForm').action = `/super-admin/students/edit/${id}`;
+      document.getElementById('editModal').classList.add('open');
+      document.getElementById('editModalBackdrop').classList.add('open');
+    });
+  });
+
+  // Reset password
+  document.querySelectorAll('.reset-pw-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      document.getElementById('pwName').textContent = btn.dataset.name;
+      document.getElementById('pwForm').action = `/super-admin/students/reset-password/${id}`;
+      document.getElementById('pwModal').classList.add('open');
+      document.getElementById('pwModalBackdrop').classList.add('open');
+    });
+  });
+});
+
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('open');
+  document.getElementById('editModalBackdrop').classList.remove('open');
+}
+function closePwModal() {
+  document.getElementById('pwModal').classList.remove('open');
+  document.getElementById('pwModalBackdrop').classList.remove('open');
+}
+</script>
 {% endblock %}
