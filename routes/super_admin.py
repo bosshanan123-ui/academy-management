@@ -301,14 +301,12 @@ def edit_teacher(uid):
         return redirect(url_for("super_admin.teachers"))
 
     try:
-        # Update users table
         table("users").update({
             "name": name,
             "phone": phone,
             "email": email,
         }).eq("id", uid).execute()
 
-        # Update or insert teachers profile
         existing = table("teachers").select("id").eq("user_id", uid).execute().data
         if existing:
             table("teachers").update({
@@ -475,13 +473,11 @@ def edit_student(uid):
             custom_fee = None
 
     try:
-        # Update user
         table("users").update({
             "name": name,
             "phone": phone,
         }).eq("id", uid).execute()
 
-        # Update student profile
         payload = {
             "class_id": int(class_id),
             "section_id": int(section_id),
@@ -606,13 +602,11 @@ def edit_parent(uid):
             "phone": phone,
         }).eq("id", uid).execute()
 
-        # Unlink from any student currently linked
         all_profiles = _safe_select("students")
         for sp in all_profiles:
             if sp.get("parent_user_id") == uid:
                 table("students").update({"parent_user_id": None}).eq("id", sp["id"]).execute()
 
-        # Link to new student
         if student_user_id:
             table("students").update({"parent_user_id": uid}) \
                 .eq("user_id", int(student_user_id)).execute()
@@ -912,4 +906,194 @@ def fees():
                         "student_user_id": sid,
                         "month": month,
                         "amount": amount,
-                       
+                        "status": "unpaid",
+                    }).execute()
+                    count += 1
+                except Exception as e:
+                    failed.append(f"{u.get('name')} ({e})")
+
+            msg = f"{count} voucher(s) generated for {month}."
+            if skipped:
+                msg += f" {skipped} already existed."
+            if failed:
+                msg += f" {len(failed)} skipped (no fee set)."
+            flash(msg, "success")
+
+            if failed and count == 0:
+                flash(f"Could not generate for: {', '.join(failed[:5])}", "warning")
+            return redirect(url_for("super_admin.fees"))
+
+        if action == "delete_structure":
+            sid = request.form.get("structure_id")
+            try:
+                table("fee_structures").delete().eq("id", int(sid)).execute()
+                flash("Fee structure deleted.", "success")
+            except Exception as e:
+                flash(f"Error: {e}", "error")
+            return redirect(url_for("super_admin.fees"))
+
+        if action == "mark_paid":
+            fid = request.form.get("fee_id")
+            try:
+                table("fees").update({
+                    "status": "paid",
+                    "paid_date": str(date.today()),
+                }).eq("id", int(fid)).execute()
+                flash("Marked as paid.", "success")
+            except Exception as e:
+                flash(f"Error: {e}", "error")
+            return redirect(url_for("super_admin.fees"))
+
+        if action == "mark_unpaid":
+            fid = request.form.get("fee_id")
+            try:
+                table("fees").update({
+                    "status": "unpaid",
+                    "paid_date": None,
+                }).eq("id", int(fid)).execute()
+                flash("Marked as unpaid.", "success")
+            except Exception as e:
+                flash(f"Error: {e}", "error")
+            return redirect(url_for("super_admin.fees"))
+
+        if action == "delete_voucher":
+            fid = request.form.get("fee_id")
+            try:
+                table("fees").delete().eq("id", int(fid)).execute()
+                flash("Voucher deleted.", "success")
+            except Exception as e:
+                flash(f"Error: {e}", "error")
+            return redirect(url_for("super_admin.fees"))
+
+        return redirect(url_for("super_admin.fees"))
+
+    fees_list = _safe_select("fees")
+    students = _safe_select("users", role="student")
+    student_profiles = _safe_select("students")
+    classes = _safe_select("classes")
+    structures = _safe_select("fee_structures")
+
+    smap = {s["id"]: s for s in students}
+    cmap = {c["id"]: c for c in classes}
+    pmap = {p["user_id"]: p for p in student_profiles}
+
+    for f in fees_list:
+        stu = smap.get(f["student_user_id"], {})
+        profile = pmap.get(f["student_user_id"], {})
+        f["student_name"] = stu.get("name", "-")
+        f["student_roll"] = stu.get("roll_number", "-")
+        cls = cmap.get(profile.get("class_id"), {})
+        f["class_name"] = cls.get("name", "-")
+
+    for s in structures:
+        cls = cmap.get(s["class_id"], {})
+        s["class_name"] = cls.get("name", "-")
+
+    for u in students:
+        profile = pmap.get(u["id"], {})
+        u["custom_fee"] = profile.get("custom_fee")
+        u["class_id"] = profile.get("class_id")
+
+    months = {}
+    for f in fees_list:
+        m = f.get("month") or "-"
+        months.setdefault(m, {"paid": 0, "unpaid": 0})
+        amt = float(f.get("amount") or 0)
+        if f.get("status") == "paid":
+            months[m]["paid"] += amt
+        else:
+            months[m]["unpaid"] += amt
+
+    fee_labels = list(months.keys())
+    fee_paid = [months[m]["paid"] for m in fee_labels]
+    fee_unpaid = [months[m]["unpaid"] for m in fee_labels]
+
+    return render_template(
+        "super_admin/fees.html",
+        fees=fees_list,
+        students=students,
+        classes=classes,
+        structures=structures,
+        fee_labels=fee_labels,
+        fee_paid=fee_paid,
+        fee_unpaid=fee_unpaid,
+    )
+
+
+# =====================================================
+# NOTICES
+# =====================================================
+@super_admin_bp.route("/notices", methods=["GET", "POST"])
+@role_required("super_admin")
+def notices():
+    if request.method == "POST":
+        title = (request.form.get("title") or "").strip()
+        body = (request.form.get("body") or "").strip()
+        target = request.form.get("target_role") or "all"
+        if not title or not body:
+            flash("Title and body are required.", "error")
+        else:
+            try:
+                table("notices").insert({
+                    "title": title,
+                    "body": body,
+                    "posted_by_user_id": session["user_id"],
+                    "target_role": target,
+                }).execute()
+                flash("Notice posted.", "success")
+            except Exception as e:
+                flash(f"Error: {e}", "error")
+        return redirect(url_for("super_admin.notices"))
+
+    rows = _safe_select("notices")
+    users = _safe_select("users")
+    umap = {u["id"]: u["name"] for u in users}
+    for n in rows:
+        n["posted_by"] = umap.get(n["posted_by_user_id"], "-")
+    return render_template("super_admin/notices.html", notices=rows)
+
+
+@super_admin_bp.route("/notices/edit/<int:nid>", methods=["POST"])
+@role_required("super_admin")
+def edit_notice(nid):
+    title = (request.form.get("title") or "").strip()
+    body = (request.form.get("body") or "").strip()
+    target = request.form.get("target_role") or "all"
+    if not title or not body:
+        flash("Title and body are required.", "error")
+    else:
+        try:
+            table("notices").update({
+                "title": title,
+                "body": body,
+                "target_role": target,
+            }).eq("id", nid).execute()
+            flash("Notice updated.", "success")
+        except Exception as e:
+            flash(f"Error: {e}", "error")
+    return redirect(url_for("super_admin.notices"))
+
+
+@super_admin_bp.route("/notices/delete/<int:nid>", methods=["POST"])
+@role_required("super_admin")
+def delete_notice(nid):
+    try:
+        table("notices").delete().eq("id", nid).execute()
+        flash("Notice deleted.", "success")
+    except Exception as e:
+        flash(f"Error: {e}", "error")
+    return redirect(url_for("super_admin.notices"))
+
+
+# =====================================================
+# HELPERS
+# =====================================================
+def _safe_select(table_name: str, **filters):
+    try:
+        q = table(table_name).select("*")
+        for k, v in filters.items():
+            q = q.eq(k, v)
+        return q.execute().data or []
+    except Exception as e:
+        print(f"_safe_select error ({table_name}): {e}")
+        return []
