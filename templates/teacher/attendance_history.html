@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Attendance History{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>📊 Attendance History</h1>
+    <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+
+  <!-- STATS -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Sessions</div>
+      <div class="stat-value">{{ stats.total_sessions }}</div>
+      <div class="stat-hint">Attendance records</div>
+    </div>
+    <div class="stat-card accent-green">
+      <div class="stat-label">Total Present</div>
+      <div class="stat-value">{{ stats.total_present }}</div>
+      <div class="stat-hint">Out of {{ stats.total_students }}</div>
+    </div>
+    <div class="stat-card accent-blue">
+      <div class="stat-label">Avg Attendance</div>
+      <div class="stat-value">{{ stats.avg_percent }}%</div>
+      <div class="stat-hint">Across all sessions</div>
+    </div>
+  </div>
+
+  <!-- FILTER -->
+  <div class="card">
+    <h2 class="section-title">🔍 Filter</h2>
+    <form method="GET" class="form-grid">
+      <div class="form-group">
+        <label>From Date</label>
+        <input type="date" name="from" value="{{ from_date }}" />
+      </div>
+      <div class="form-group">
+        <label>To Date</label>
+        <input type="date" name="to" value="{{ to_date }}" />
+      </div>
+      <div class="form-group">
+        <label>Class</label>
+        <select name="class_id">
+          <option value="">All Classes</option>
+          {% for c in classes %}
+            <option value="{{ c.id }}" {% if class_filter == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Subject</label>
+        <select name="subject_id">
+          <option value="">All Subjects</option>
+          {% for s in subjects %}
+            <option value="{{ s.id }}" {% if subject_filter == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn">Apply Filter</button>
+      <a href="{{ url_for('teacher.attendance_history') }}" class="btn btn-ghost">Clear</a>
+    </form>
+  </div>
+
+  <!-- SESSIONS LIST -->
+  <div class="card">
+    <h2 class="section-title">📋 All Sessions ({{ sessions|length }})</h2>
+    {% if sessions %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Class</th>
+            <th>Subject</th>
+            <th>Present</th>
+            <th>Absent</th>
+            <th>Leave</th>
+            <th>Total</th>
+            <th>%</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in sessions %}
+          {% set pct = (s.P * 100 / s.total) | round(1) if s.total else 0 %}
+          <tr>
+            <td style="font-family: var(--font-mono); font-weight: 700;">{{ s.date }}</td>
+            <td><strong>{{ s.class_name }}-{{ s.section_name }}</strong></td>
+            <td>{{ s.subject_name }}</td>
+            <td><span class="pill pill-paid">{{ s.P }}</span></td>
+            <td><span class="pill pill-unpaid">{{ s.A }}</span></td>
+            <td><span class="pill pill-partial">{{ s.L }}</span></td>
+            <td><strong>{{ s.total }}</strong></td>
+            <td>
+              <span class="pill {% if pct >= 75 %}pill-paid{% elif pct >= 50 %}pill-partial{% else %}pill-unpaid{% endif %}">
+                {{ pct }}%
+              </span>
+            </td>
+            <td class="actions">
+              <a href="{{ url_for('teacher.attendance_view', date_str=s.date, class_id=s.class_id, section_id=s.section_id, subject_id=s.subject_id) }}"
+                 class="btn btn-sm btn-ghost">👁 View</a>
+              <a href="{{ url_for('teacher.attendance_edit', date_str=s.date, class_id=s.class_id, section_id=s.section_id, subject_id=s.subject_id) }}"
+                 class="btn btn-sm btn-warning">✏️ Edit</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No attendance records found for selected filters.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
