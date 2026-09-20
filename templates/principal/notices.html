@@ -30,16 +30,81 @@
 
   <div class="card">
     <h2 class="section-title">All Notices</h2>
-    {% for n in notices %}
-      <div class="schedule-item">
-        <div class="sched-info">
-          <strong>{{ n.title }}</strong>
-          <span>{{ n.body }}</span>
-          <span class="text-muted" style="font-size:.75rem;">Target: {{ n.target_role }}</span>
+    {% if notices %}
+      {% for n in notices %}
+        <div class="schedule-item">
+          <div class="sched-info" style="flex:1;">
+            <strong>{{ n.title }}</strong>
+            <span>{{ n.body }}</span>
+            <span class="text-muted" style="font-size:.75rem;">
+              By {{ n.posted_by }} • Target: {{ n.target_role }}
+              {% if n.can_edit %}<span class="pill pill-paid" style="margin-left:6px;">Yours</span>{% endif %}
+            </span>
+          </div>
+          {% if n.can_edit %}
+          <div class="actions">
+            <button type="button" class="btn btn-sm btn-ghost edit-notice-btn"
+                    data-id="{{ n.id }}"
+                    data-title="{{ n.title }}"
+                    data-body="{{ n.body }}"
+                    data-target="{{ n.target_role }}">✏️ Edit</button>
+            <form method="POST" action="{{ url_for('principal.delete_notice', nid=n.id) }}"
+                  data-confirm="Delete this notice?" style="display:inline;">
+              <button class="btn btn-sm btn-danger">Delete</button>
+            </form>
+          </div>
+          {% endif %}
         </div>
-      </div>
-    {% endfor %}
-    {% if not notices %}<p class="empty-state">No notices yet.</p>{% endif %}
+      {% endfor %}
+    {% else %}<p class="empty-state">No notices yet.</p>{% endif %}
   </div>
 </div>
+
+<!-- Edit Modal -->
+<div class="modal-backdrop" id="editModalBackdrop"></div>
+<div class="modal" id="editModal">
+  <div class="modal-header">
+    <h3>✏️ Edit Notice</h3>
+    <button class="icon-btn" onclick="closeEditModal()">✕</button>
+  </div>
+  <form method="POST" id="editForm">
+    <div class="modal-body">
+      <div class="form-group"><label>Title</label><input type="text" name="title" id="edit_title" required /></div>
+      <div class="form-group">
+        <label>Target</label>
+        <select name="target_role" id="edit_target">
+          <option value="all">All</option>
+          <option value="teacher">Teachers</option>
+          <option value="student">Students</option>
+          <option value="parent">Parents</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Body</label><textarea name="body" id="edit_body" required></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
+      <button type="submit" class="btn btn-success">Save</button>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.edit-notice-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById('edit_title').value = btn.dataset.title;
+      document.getElementById('edit_body').value = btn.dataset.body;
+      document.getElementById('edit_target').value = btn.dataset.target;
+      document.getElementById('editForm').action = `/principal/notices/edit/${btn.dataset.id}`;
+      document.getElementById('editModal').classList.add('open');
+      document.getElementById('editModalBackdrop').classList.add('open');
+    });
+  });
+});
+
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('open');
+  document.getElementById('editModalBackdrop').classList.remove('open');
+}
+</script>
 {% endblock %}
