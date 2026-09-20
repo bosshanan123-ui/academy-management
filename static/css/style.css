@@ -3967,3 +3967,230 @@ input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 
   .id-card-name { font-size: 1.2rem; }
   .qr-box { width: 64px; height: 64px; }
 }
+/* ============================================================
+   ATTENDANCE CONTEXT BANNER
+   ============================================================ */
+.attendance-context-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 26px;
+  border-radius: var(--r-xl);
+  background:
+    linear-gradient(135deg, #1c3b70 0%, #244a8b 40%, #34889b 100%);
+  color: #fff;
+  margin-bottom: 24px;
+  box-shadow:
+    0 8px 24px -6px rgba(28, 59, 112, 0.35),
+    0 2px 6px rgba(17, 24, 39, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  flex-wrap: wrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.attendance-context-banner::before {
+  content: "";
+  position: absolute;
+  top: -60%;
+  right: -10%;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.10), transparent 65%);
+  pointer-events: none;
+}
+
+.attendance-context-banner .context-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.attendance-context-banner .context-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 1.3rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(8px);
+  flex-shrink: 0;
+}
+
+.attendance-context-banner .context-label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  margin-bottom: 2px;
+}
+
+.attendance-context-banner .context-value {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.attendance-context-banner .context-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.20);
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 900px) {
+  .attendance-context-banner {
+    padding: 16px 18px;
+    gap: 10px;
+  }
+  .attendance-context-banner .context-divider { display: none; }
+  .attendance-context-banner .context-item {
+    flex: 1 1 45%;
+    min-width: 140px;
+  }
+  .attendance-context-banner .context-icon {
+    width: 36px; height: 36px; font-size: 1rem;
+  }
+  .attendance-context-banner .context-value { font-size: 0.9rem; }
+}
+
+/* ============================================================
+   ATTENDANCE STATUS PILLS
+   ============================================================ */
+.status-pills {
+  display: inline-flex;
+  gap: 6px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--bg-recessed);
+  border: 1px solid var(--border-subtle);
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  border: 1.5px solid transparent;
+  user-select: none;
+}
+
+.status-pill input { display: none; }
+
+.status-pill-p { color: var(--success-dark); }
+.status-pill-a { color: var(--danger-dark); }
+.status-pill-l { color: var(--warning-dark); }
+
+.status-pill-p:hover { background: var(--success-soft); }
+.status-pill-a:hover { background: var(--danger-soft); }
+.status-pill-l:hover { background: var(--warning-soft); }
+
+.status-pill-p:has(input:checked) {
+  background: var(--success);
+  color: #fff;
+  border-color: var(--success);
+  box-shadow: 0 4px 12px rgba(31, 150, 112, 0.35);
+}
+
+.status-pill-a:has(input:checked) {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+  box-shadow: 0 4px 12px rgba(192, 67, 63, 0.35);
+}
+
+.status-pill-l:has(input:checked) {
+  background: var(--warning);
+  color: #fff;
+  border-color: var(--warning);
+  box-shadow: 0 4px 12px rgba(177, 121, 26, 0.35);
+}
+
+/* Fallback for older browsers without :has() */
+.status-pill input:checked + span {
+  font-weight: 800;
+}
+
+/* ============================================================
+   ATTENDANCE FOOTER
+   ============================================================ */
+.attendance-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 20px 0 4px;
+  margin-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.attendance-summary {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.summary-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  background: var(--bg-recessed);
+  border: 1px solid var(--border-subtle);
+}
+
+.summary-present { color: var(--success-dark); background: var(--success-soft); border-color: rgba(31, 150, 112, 0.20); }
+.summary-absent  { color: var(--danger-dark); background: var(--danger-soft); border-color: rgba(192, 67, 63, 0.20); }
+.summary-leave   { color: var(--warning-dark); background: var(--warning-soft); border-color: rgba(177, 121, 26, 0.20); }
+
+.summary-chip .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot-p { background: var(--success); }
+.dot-a { background: var(--danger); }
+.dot-l { background: var(--warning); }
+
+.summary-chip strong {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 0.92rem;
+}
+
+@media (max-width: 768px) {
+  .attendance-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .attendance-footer .actions {
+    flex-direction: column;
+  }
+  .attendance-footer .actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .attendance-summary {
+    justify-content: center;
+  }
+  .status-pill { padding: 6px 10px; font-size: 0.72rem; }
+}
