@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container">
-  <div class="page-header">
+  <div class="page-header no-print">
     <h1>🎓 My ID Card</h1>
     <div class="actions">
       <button onclick="window.print()" class="btn">🖨️ Print Card</button>
@@ -13,13 +13,16 @@
 
   <!-- ID CARD -->
   <div class="id-card-wrapper">
-    <div class="id-card id-card-student">
-      <!-- Top brand strip -->
+    <div class="id-card">
+      <!-- Watermark -->
+      <div class="id-card-watermark">🎓</div>
+
+      <!-- Header -->
       <div class="id-card-header">
         <div class="id-card-logo">🎓</div>
         <div class="id-card-brand">
           <div class="id-card-academy">{{ academy.name }}</div>
-          <div class="id-card-tagline">{{ academy.tagline }}</div>
+          <div class="id-card-tagline">STUDENT ID</div>
         </div>
       </div>
 
@@ -36,33 +39,30 @@
         <div class="id-card-details">
           <div class="id-card-name">{{ user.name }}</div>
           <div class="id-card-role-badge">STUDENT</div>
-          
+
           <div class="id-card-info">
             <div class="id-card-row">
-              <span class="id-card-label">Roll No:</span>
+              <span class="id-card-label">Roll No</span>
               <span class="id-card-value mono">{{ user.roll_number }}</span>
             </div>
             <div class="id-card-row">
-              <span class="id-card-label">Class:</span>
+              <span class="id-card-label">Class</span>
               <span class="id-card-value">{{ class_name }} — {{ section_name }}</span>
             </div>
             <div class="id-card-row">
-              <span class="id-card-label">Roll in Class:</span>
+              <span class="id-card-label">Roll in Class</span>
               <span class="id-card-value">{{ profile.roll_no_in_class or '-' }}</span>
             </div>
             <div class="id-card-row">
-              <span class="id-card-label">Session:</span>
+              <span class="id-card-label">Session</span>
               <span class="id-card-value">{{ academy.session }}</span>
             </div>
           </div>
         </div>
 
-        <!-- QR placeholder -->
+        <!-- QR Code -->
         <div class="id-card-qr">
-          <div class="qr-box">
-            <div class="qr-pattern"></div>
-            <div class="qr-label">SCAN</div>
-          </div>
+          <div class="qr-box"></div>
         </div>
       </div>
 
@@ -82,15 +82,37 @@
         </div>
       </div>
 
-      <!-- Bottom bar (signature) -->
+      <!-- Bottom: Signature + Barcode -->
       <div class="id-card-bottom">
         <div class="id-card-sign">
+          <div class="sign-value">Principal</div>
           <div class="sign-line"></div>
           <div class="sign-label">Authorized Signature</div>
         </div>
         <div class="id-card-serial">
-          <span class="text-muted text-xs">Serial:</span>
-          <span class="mono text-xs">{{ user.roll_number }}</span>
+          <div class="barcode">
+            <div class="bar thick"></div>
+            <div class="bar thin"></div>
+            <div class="bar med"></div>
+            <div class="bar thin"></div>
+            <div class="bar thick"></div>
+            <div class="bar med"></div>
+            <div class="bar thin"></div>
+            <div class="bar thick"></div>
+            <div class="bar med"></div>
+            <div class="bar thin"></div>
+            <div class="bar med"></div>
+            <div class="bar thick"></div>
+            <div class="bar thin"></div>
+            <div class="bar med"></div>
+            <div class="bar thick"></div>
+            <div class="bar thin"></div>
+            <div class="bar med"></div>
+            <div class="bar thick"></div>
+            <div class="bar thin"></div>
+            <div class="bar med"></div>
+          </div>
+          <div class="serial-text">{{ user.roll_number }}</div>
         </div>
       </div>
     </div>
