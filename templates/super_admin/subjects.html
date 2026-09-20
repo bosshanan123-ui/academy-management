@@ -33,12 +33,29 @@
           {% for s in subjects %}
           <tr>
             <td>{{ s.id }}</td>
-            <td>{{ s.name }}</td>
-            <td>{{ s.code or '-' }}</td>
             <td>
+              <span class="edit-view" data-id="{{ s.id }}">{{ s.name }}</span>
+              <input type="text" class="edit-input" data-id="{{ s.id }}" 
+                     value="{{ s.name }}" style="display:none;" />
+            </td>
+            <td>
+              <span class="edit-view" data-id="{{ s.id }}">{{ s.code or '-' }}</span>
+              <input type="text" class="edit-input" data-id="{{ s.id }}" 
+                     value="{{ s.code or '' }}" style="display:none;" />
+            </td>
+            <td class="actions">
+              <button type="button" class="btn btn-sm btn-ghost edit-btn" data-id="{{ s.id }}">✏️ Edit</button>
+              
+              <form method="POST" action="{{ url_for('super_admin.edit_subject', sid=s.id) }}" 
+                    class="edit-form" data-id="{{ s.id }}" style="display:none;">
+                <input type="hidden" name="name" class="edit-name-{{ s.id }}" />
+                <input type="hidden" name="code" class="edit-code-{{ s.id }}" />
+                <button class="btn btn-sm btn-success" type="submit">💾 Save</button>
+              </form>
+              
               <form method="POST" action="{{ url_for('super_admin.delete_subject', sid=s.id) }}"
-                    data-confirm="Delete this subject?">
-                <button class="btn btn-sm btn-danger">Delete</button>
+                    data-confirm="Delete this subject?" style="display:inline;">
+                <button class="btn btn-sm btn-danger" type="submit">Delete</button>
               </form>
             </td>
           </tr>
@@ -49,4 +66,30 @@
     {% else %}<p class="empty-state">No subjects yet.</p>{% endif %}
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      // Toggle views/inputs
+      document.querySelectorAll(`.edit-view[data-id="${id}"]`).forEach(el => el.style.display = 'none');
+      document.querySelectorAll(`.edit-input[data-id="${id}"]`).forEach(el => el.style.display = 'inline-block');
+      document.querySelector(`.edit-form[data-id="${id}"]`).style.display = 'inline-flex';
+      btn.style.display = 'none';
+    });
+  });
+
+  // Sync input to hidden on form submit
+  document.querySelectorAll('.edit-form').forEach(form => {
+    form.addEventListener('submit', (e) => {
+      const id = form.dataset.id;
+      const inputs = form.closest('tr').querySelectorAll(`.edit-input[data-id="${id}"]`);
+      const values = Array.from(inputs).map(i => i.value);
+      form.querySelector(`.edit-name-${id}`).value = values[0];
+      form.querySelector(`.edit-code-${id}`).value = values[1];
+    });
+  });
+});
+</script>
 {% endblock %}
