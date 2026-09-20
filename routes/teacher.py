@@ -134,6 +134,33 @@ def attendance(class_id, section_id, subject_id):
         section_id=section_id,
         subject_id=subject_id,
     )
+    # =====================================================
+# ID CARD
+# =====================================================
+@teacher_bp.route("/id-card")
+@role_required("teacher")
+def id_card():
+    """Teacher ID card — view + print."""
+    uid = session["user_id"]
+
+    user = _get_one("users", uid)
+    teacher = _get_one("teachers", uid, field="user_id") or {}
+
+    academy = {
+        "name": "Academy Management System",
+        "tagline": "Excellence in Education",
+        "address": "123 Education Street, City",
+        "phone": "+92 300 0000000",
+        "website": "academy-ms.app",
+        "session": "2025-2026",
+    }
+
+    return render_template(
+        "id_cards/teacher_card.html",
+        user=user,
+        teacher=teacher,
+        academy=academy,
+    )
 
 
 # =====================================================
