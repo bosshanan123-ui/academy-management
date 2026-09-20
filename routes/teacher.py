@@ -1,6 +1,6 @@
 """
 routes/teacher.py
-Teacher dashboard, attendance, marks, timetable.
+Teacher dashboard, attendance, marks, timetable, ID card.
 """
 from datetime import date
 
@@ -20,7 +20,6 @@ teacher_bp = Blueprint("teacher", __name__)
 @teacher_bp.route("/dashboard")
 @role_required("teacher")
 def dashboard():
-    """Teacher dashboard: assigned classes + today's schedule."""
     tid = session["user_id"]
     assigns = _safe_select("teacher_assignments", teacher_user_id=tid)
     classes = _safe_select("classes")
@@ -63,10 +62,8 @@ def dashboard():
 )
 @role_required("teacher")
 def attendance(class_id, section_id, subject_id):
-    """Take attendance for a class+section+subject. Only if assigned."""
     tid = session["user_id"]
 
-    # Security check: teacher must be assigned to this class/section/subject
     if not _is_assigned(tid, class_id, section_id, subject_id):
         flash("You are not assigned to this class/section/subject.", "error")
         return redirect(url_for("teacher.dashboard"))
@@ -90,17 +87,14 @@ def attendance(class_id, section_id, subject_id):
 
             status = request.form.get(f"status_{user_id}")
             if status not in ("P", "A", "L"):
-                # Skip if no valid status selected
                 continue
 
             try:
-                # Delete existing record for today+subject (re-take attendance)
                 table("attendance").delete() \
                     .eq("student_user_id", user_id) \
                     .eq("subject_id", subject_id) \
                     .eq("date", today).execute()
 
-                # Insert fresh record
                 table("attendance").insert({
                     "student_user_id": user_id,
                     "class_id": class_id,
@@ -122,7 +116,6 @@ def attendance(class_id, section_id, subject_id):
 
         return redirect(url_for("teacher.dashboard"))
 
-    # GET: show attendance form
     students = _students_in(class_id, section_id)
     subject = _get_one("subjects", subject_id)
 
@@ -133,33 +126,6 @@ def attendance(class_id, section_id, subject_id):
         class_id=class_id,
         section_id=section_id,
         subject_id=subject_id,
-    )
-    # =====================================================
-# ID CARD
-# =====================================================
-@teacher_bp.route("/id-card")
-@role_required("teacher")
-def id_card():
-    """Teacher ID card — view + print."""
-    uid = session["user_id"]
-
-    user = _get_one("users", uid)
-    teacher = _get_one("teachers", uid, field="user_id") or {}
-
-    academy = {
-        "name": "Academy Management System",
-        "tagline": "Excellence in Education",
-        "address": "123 Education Street, City",
-        "phone": "+92 300 0000000",
-        "website": "academy-ms.app",
-        "session": "2025-2026",
-    }
-
-    return render_template(
-        "id_cards/teacher_card.html",
-        user=user,
-        teacher=teacher,
-        academy=academy,
     )
 
 
@@ -172,7 +138,6 @@ def id_card():
 )
 @role_required("teacher")
 def marks(class_id, section_id, subject_id):
-    """Enter marks for a class+section+subject. Only if assigned."""
     tid = session["user_id"]
 
     if not _is_assigned(tid, class_id, section_id, subject_id):
@@ -240,7 +205,6 @@ def marks(class_id, section_id, subject_id):
 @teacher_bp.route("/timetable")
 @role_required("teacher")
 def timetable():
-    """View teacher's own weekly timetable."""
     tid = session["user_id"]
     entries = _safe_select("timetable", teacher_user_id=tid)
     classes = _safe_select("classes")
@@ -260,6 +224,41 @@ def timetable():
     grid = {d: [e for e in entries if e["day"] == d] for d in days}
 
     return render_template("teacher/timetable.html", grid=grid, days=days)
+
+
+# =====================================================
+# ID CARD
+# =====================================================
+@teacher_bp.route("/id-card")
+@role_required("teacher")
+def id_card():
+    """Teacher ID card — view + print."""
+    uid = session["user_id"]
+
+    # Get user
+    user_rows = _safe_select("users", id=uid)
+    user = user_rows[0] if user_rows else {}
+
+    # Get teacher profile
+    teacher_rows = _safe_select("teachers", user_id=uid)
+    teacher = teacher_rows[0] if teacher_rows else {}
+
+    # Academy info
+    academy = {
+        "name": "Academy Management System",
+        "tagline": "Excellence in Education",
+        "address": "123 Education Street, City",
+        "phone": "+92 300 0000000",
+        "website": "academy-ms.app",
+        "session": "2025-2026",
+    }
+
+    return render_template(
+        "id_cards/teacher_card.html",
+        user=user,
+        teacher=teacher,
+        academy=academy,
+    )
 
 
 # =====================================================
@@ -302,12 +301,8 @@ def _is_assigned(teacher_id, class_id, section_id, subject_id):
 
 
 def _students_in(class_id, section_id):
-    """
-    Return list of student dicts for class+section.
-    Each dict includes user_id (which is the users.id) for form field binding.
-    """
+    """Return list of student dicts for class+section."""
     try:
-        # 1. Get all student profiles for this class+section
         profiles = table("students").select("*").eq(
             "class_id", class_id
         ).eq("section_id", section_id).execute().data or []
@@ -319,11 +314,9 @@ def _students_in(class_id, section_id):
         if not user_ids:
             return []
 
-        # 2. Fetch corresponding user records
         users = table("users").select("*").in_("id", user_ids).execute().data or []
         umap = {u["id"]: u for u in users}
 
-        # 3. Merge profiles + users into unified dicts
         out = []
         for p in profiles:
             u = umap.get(p.get("user_id"))
@@ -331,8 +324,8 @@ def _students_in(class_id, section_id):
                 continue
 
             merged = {
-                "user_id": u["id"],        # ⭐ used in form field names & inserts
-                "id": u["id"],             # kept for backwards compatibility
+                "user_id": u["id"],
+                "id": u["id"],
                 "roll_number": u.get("roll_number"),
                 "name": u.get("name"),
                 "role": u.get("role"),
@@ -342,7 +335,6 @@ def _students_in(class_id, section_id):
             }
             out.append(merged)
 
-        # 4. Sort by roll_no_in_class (fallback 9999)
         return sorted(out, key=lambda x: x.get("roll_no_in_class") or 9999)
     except Exception as e:
         print(f"_students_in error: {e}")
