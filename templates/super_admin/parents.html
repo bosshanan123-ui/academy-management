@@ -23,7 +23,6 @@
       </div>
       <button type="submit" class="btn">Create Parent</button>
     </form>
-    <p class="text-muted mt-3">Roll number will be auto-generated (PT-YYYY-NNNN).</p>
   </div>
 
   <div class="card">
@@ -36,13 +35,40 @@
           {% for p in parents %}
           <tr>
             <td><span class="roll-badge">{{ p.roll_number }}</span></td>
-            <td>{{ p.name }}</td>
-            <td>{{ p.phone or '-' }}</td>
-            <td>{{ p.linked_student }} ({{ p.linked_roll }})</td>
             <td>
+              <span class="edit-view" data-id="{{ p.id }}">{{ p.name }}</span>
+              <input type="text" class="edit-input" data-id="{{ p.id }}" value="{{ p.name }}" style="display:none;" />
+            </td>
+            <td>
+              <span class="edit-view" data-id="{{ p.id }}">{{ p.phone or '-' }}</span>
+              <input type="tel" class="edit-input" data-id="{{ p.id }}" value="{{ p.phone or '' }}" style="display:none;" />
+            </td>
+            <td>
+              <span class="edit-view" data-id="{{ p.id }}">{{ p.linked_student }} ({{ p.linked_roll }})</span>
+              <select class="edit-select" data-id="{{ p.id }}" style="display:none;">
+                <option value="">— None —</option>
+                {% for s in students %}
+                  <option value="{{ s.id }}" {% if s.id == p.linked_student_user_id %}selected{% endif %}>{{ s.roll_number }} — {{ s.name }}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <td class="actions">
+              <button type="button" class="btn btn-sm btn-ghost edit-btn" data-id="{{ p.id }}">✏️ Edit</button>
+              
+              <form method="POST" action="{{ url_for('super_admin.edit_parent', uid=p.id) }}" 
+                    class="edit-form" data-id="{{ p.id }}" style="display:none;">
+                <input type="hidden" name="name" class="edit-name-{{ p.id }}" />
+                <input type="hidden" name="phone" class="edit-phone-{{ p.id }}" />
+                <input type="hidden" name="student_user_id" class="edit-student-{{ p.id }}" />
+                <button class="btn btn-sm btn-success" type="submit">💾 Save</button>
+              </form>
+              
+              <button type="button" class="btn btn-sm btn-warning reset-pw-btn" 
+                      data-id="{{ p.id }}" data-name="{{ p.name }}">🔑 Reset</button>
+              
               <form method="POST" action="{{ url_for('super_admin.delete_parent', uid=p.id) }}"
-                    data-confirm="Delete this parent?">
-                <button class="btn btn-sm btn-danger">Delete</button>
+                    data-confirm="Delete this parent?" style="display:inline;">
+                <button class="btn btn-sm btn-danger" type="submit">Delete</button>
               </form>
             </td>
           </tr>
@@ -53,4 +79,65 @@
     {% else %}<p class="empty-state">No parents yet.</p>{% endif %}
   </div>
 </div>
+
+<!-- Reset Password Modal -->
+<div class="modal-backdrop" id="pwModalBackdrop"></div>
+<div class="modal" id="pwModal">
+  <div class="modal-header">
+    <h3>🔑 Reset Password</h3>
+    <button class="icon-btn" onclick="closePwModal()">✕</button>
+  </div>
+  <form method="POST" id="pwForm">
+    <div class="modal-body">
+      <p class="text-muted mb-3">Reset password for: <strong id="pwName"></strong></p>
+      <div class="form-group">
+        <label>New Password</label>
+        <input type="text" name="new_password" placeholder="Enter new password" required minlength="4" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-ghost" onclick="closePwModal()">Cancel</button>
+      <button type="submit" class="btn btn-success">Reset Password</button>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      document.querySelectorAll(`.edit-view[data-id="${id}"]`).forEach(el => el.style.display = 'none');
+      document.querySelectorAll(`.edit-input[data-id="${id}"], .edit-select[data-id="${id}"]`).forEach(el => el.style.display = 'inline-block');
+      document.querySelector(`.edit-form[data-id="${id}"]`).style.display = 'inline-flex';
+      btn.style.display = 'none';
+    });
+  });
+
+  document.querySelectorAll('.edit-form').forEach(form => {
+    form.addEventListener('submit', () => {
+      const id = form.dataset.id;
+      const row = form.closest('tr');
+      form.querySelector(`.edit-name-${id}`).value = row.querySelector(`.edit-input[data-id="${id}"]`).value;
+      form.querySelector(`.edit-phone-${id}`).value = row.querySelectorAll(`.edit-input[data-id="${id}"]`)[1].value;
+      form.querySelector(`.edit-student-${id}`).value = row.querySelector(`.edit-select[data-id="${id}"]`).value;
+    });
+  });
+
+  document.querySelectorAll('.reset-pw-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      document.getElementById('pwName').textContent = btn.dataset.name;
+      document.getElementById('pwForm').action = `/super-admin/parents/reset-password/${id}`;
+      document.getElementById('pwModal').classList.add('open');
+      document.getElementById('pwModalBackdrop').classList.add('open');
+    });
+  });
+});
+
+function closePwModal() {
+  document.getElementById('pwModal').classList.remove('open');
+  document.getElementById('pwModalBackdrop').classList.remove('open');
+}
+</script>
 {% endblock %}
