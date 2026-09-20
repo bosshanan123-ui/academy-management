@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Edit Attendance{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>✏️ Edit Attendance</h1>
+    <a href="{{ url_for('teacher.attendance_view', date_str=date_str, class_id=class_id, section_id=section_id, subject_id=subject_id) }}"
+       class="btn btn-ghost">← Back</a>
+  </div>
+
+  <div class="card">
+    <div class="row" style="gap: 20px; flex-wrap: wrap; margin-bottom: 20px;">
+      <div>
+        <div class="text-muted text-xs">DATE</div>
+        <strong style="font-family: var(--font-mono);">{{ date_str }}</strong>
+      </div>
+      <div>
+        <div class="text-muted text-xs">CLASS</div>
+        <strong>{{ class_name }} — {{ section_name }}</strong>
+      </div>
+      <div>
+        <div class="text-muted text-xs">SUBJECT</div>
+        <strong>{{ subject_name }}</strong>
+      </div>
+    </div>
+
+    <form method="POST">
+      {% if students %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Roll No</th>
+              <th>Name</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in students %}
+            {% set current = existing.get(s.user_id) %}
+            <tr>
+              <td>{{ s.roll_no_in_class or loop.index }}</td>
+              <td><span class="roll-badge">{{ s.roll_number }}</span></td>
+              <td>{{ s.name }}</td>
+              <td class="actions">
+                <label class="radio">
+                  <input type="radio" name="status_{{ s.user_id }}" value="P" {% if current == 'P' %}checked{% endif %} />
+                  <span>P</span>
+                </label>
+                <label class="radio">
+                  <input type="radio" name="status_{{ s.user_id }}" value="A" {% if current == 'A' %}checked{% endif %} />
+                  <span>A</span>
+                </label>
+                <label class="radio">
+                  <input type="radio" name="status_{{ s.user_id }}" value="L" {% if current == 'L' %}checked{% endif %} />
+                  <span>L</span>
+                </label>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <button type="submit" class="btn mt-4">💾 Save Changes</button>
+      {% else %}
+      <p class="empty-state">No students in this class.</p>
+      {% endif %}
+    </form>
+  </div>
+</div>
+{% endblock %}
