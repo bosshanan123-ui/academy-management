@@ -1,6 +1,6 @@
 """
 routes/principal.py
-Principal: read-only overview + notices.
+Principal: read-only overview + notices (post/edit/delete).
 """
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 
@@ -111,7 +111,54 @@ def notices():
         return redirect(url_for("principal.notices"))
 
     rows = _safe_select("notices")
+    users = _safe_select("users")
+    umap = {u["id"]: u["name"] for u in users}
+    for n in rows:
+        n["posted_by"] = umap.get(n["posted_by_user_id"], "-")
+        n["can_edit"] = (n["posted_by_user_id"] == session["user_id"])
     return render_template("principal/notices.html", notices=rows)
+
+
+@principal_bp.route("/notices/edit/<int:nid>", methods=["POST"])
+@role_required("principal")
+def edit_notice(nid):
+    # Only allow editing own notices
+    existing = table("notices").select("*").eq("id", nid).limit(1).execute().data
+    if not existing or existing[0]["posted_by_user_id"] != session["user_id"]:
+        flash("You can only edit your own notices.", "error")
+        return redirect(url_for("principal.notices"))
+
+    title = (request.form.get("title") or "").strip()
+    body = (request.form.get("body") or "").strip()
+    target = request.form.get("target_role") or "all"
+    if not title or not body:
+        flash("Title and body are required.", "error")
+    else:
+        try:
+            table("notices").update({
+                "title": title,
+                "body": body,
+                "target_role": target,
+            }).eq("id", nid).execute()
+            flash("Notice updated.", "success")
+        except Exception as e:
+            flash(f"Error: {e}", "error")
+    return redirect(url_for("principal.notices"))
+
+
+@principal_bp.route("/notices/delete/<int:nid>", methods=["POST"])
+@role_required("principal")
+def delete_notice(nid):
+    existing = table("notices").select("*").eq("id", nid).limit(1).execute().data
+    if not existing or existing[0]["posted_by_user_id"] != session["user_id"]:
+        flash("You can only delete your own notices.", "error")
+        return redirect(url_for("principal.notices"))
+    try:
+        table("notices").delete().eq("id", nid).execute()
+        flash("Notice deleted.", "success")
+    except Exception as e:
+        flash(f"Error: {e}", "error")
+    return redirect(url_for("principal.notices"))
 
 
 def _safe_select(table_name: str, **filters):
