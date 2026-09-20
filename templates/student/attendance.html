@@ -35,48 +35,75 @@
   </div>
 
   <!-- ============================================ -->
-  <!-- DOUGHNUT + SUBJECT-WISE -->
+  <!-- CHARTS ROW -->
   <!-- ============================================ -->
   <div class="charts-grid">
+    <!-- Doughnut -->
     <div class="chart-card">
       <h3>Overall Distribution</h3>
-      <div class="chart-container"><canvas id="attChart"></canvas></div>
+      <div class="chart-container att-doughnut-wrap">
+        <canvas id="attChart"></canvas>
+        <div class="doughnut-center">
+          <div class="doughnut-value">{{ att_percent }}%</div>
+          <div class="doughnut-label">Present</div>
+        </div>
+      </div>
     </div>
 
+    <!-- Subject-wise Bar -->
     <div class="chart-card">
-      <h3>Subject-wise Attendance</h3>
-      <div class="table-wrap" style="box-shadow:none;border:none;">
-        <table>
-          <thead>
-            <tr>
-              <th>Subject</th>
-              <th>P</th>
-              <th>A</th>
-              <th>L</th>
-              <th>%</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% if subject_rows %}
-              {% for s in subject_rows %}
-              <tr>
-                <td style="color: var(--ink-700); font-weight: 700;">{{ s.subject_name }}</td>
-                <td>{{ s.P }}</td>
-                <td>{{ s.A }}</td>
-                <td>{{ s.L }}</td>
-                <td>
-                  <span class="pill {% if s.percent >= 75 %}pill-paid{% elif s.percent >= 50 %}pill-partial{% else %}pill-unpaid{% endif %}">
-                    {{ s.percent }}%
-                  </span>
-                </td>
-              </tr>
-              {% endfor %}
-            {% else %}
-              <tr><td colspan="5" class="text-center text-muted">No data yet</td></tr>
-            {% endif %}
-          </tbody>
-        </table>
+      <h3>Subject-wise Attendance %</h3>
+      <div class="chart-container">
+        <canvas id="subjectChart"></canvas>
       </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- SUBJECT DETAILS TABLE -->
+  <!-- ============================================ -->
+  <div class="card">
+    <h2 class="section-title">📚 Subject Details</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Present</th>
+            <th>Absent</th>
+            <th>Leave</th>
+            <th>Total</th>
+            <th>%</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if subject_rows %}
+            {% for s in subject_rows %}
+            <tr>
+              <td style="color: var(--ink-700); font-weight: 700;">{{ s.subject_name }}</td>
+              <td>{{ s.P }}</td>
+              <td>{{ s.A }}</td>
+              <td>{{ s.L }}</td>
+              <td>{{ s.total }}</td>
+              <td>
+                <div class="progress-bar-mini">
+                  <div class="progress-fill
+                    {% if s.percent >= 75 %}progress-green
+                    {% elif s.percent >= 50 %}progress-amber
+                    {% else %}progress-red
+                    {% endif %}"
+                    style="width: {{ s.percent }}%;">
+                  </div>
+                  <span class="progress-text">{{ s.percent }}%</span>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="6" class="text-center text-muted">No data yet</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
     </div>
   </div>
 
@@ -87,7 +114,6 @@
     <h2 class="section-title">🗓️ {{ month_name }} {{ calendar_year }} — Daily View</h2>
 
     <div class="att-calendar">
-      <!-- Day headers -->
       <div class="cal-header">Mon</div>
       <div class="cal-header">Tue</div>
       <div class="cal-header">Wed</div>
@@ -96,12 +122,10 @@
       <div class="cal-header">Sat</div>
       <div class="cal-header">Sun</div>
 
-      <!-- Empty cells before day 1 -->
       {% for i in range(first_weekday) %}
         <div class="cal-cell cal-empty"></div>
       {% endfor %}
 
-      <!-- Days of month -->
       {% for day in range(1, days_in_month + 1) %}
         {% set status = month_log.get(day) %}
         <div class="cal-cell
@@ -126,7 +150,7 @@
   </div>
 
   <!-- ============================================ -->
-  <!-- DATE-WISE LOG -->
+  <!-- DETAILED LOG -->
   <!-- ============================================ -->
   <div class="card">
     <h2 class="section-title">📋 Detailed Log</h2>
@@ -173,8 +197,20 @@
 
 {% block scripts %}
 <script>
+  // Doughnut with premium look
   renderDoughnutChart('attChart',
     ['Present', 'Absent', 'Leave'],
     [{{ att_counts.P }}, {{ att_counts.A }}, {{ att_counts.L }}]);
+
+  // Subject-wise bar
+  {% if subject_rows %}
+  renderBarChart(
+    'subjectChart',
+    {{ subject_rows | map(attribute='subject_name') | list | tojson }},
+    {{ subject_rows | map(attribute='percent') | list | tojson }},
+    'Attendance %',
+    'indigo'
+  );
+  {% endif %}
 </script>
 {% endblock %}
