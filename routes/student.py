@@ -2,9 +2,9 @@
 routes/student.py
 Student dashboard, timetable, attendance, result, fee.
 """
-from datetime import date
+from datetime import date, datetime, timedelta
 
-from flask import Blueprint, render_template, session
+from flask import Blueprint, render_template, session, request
 
 from utils.supabase_client import table
 from utils.decorators import role_required
@@ -35,23 +35,63 @@ def timetable():
 @student_bp.route("/attendance")
 @role_required("student")
 def attendance():
-    """Attendance page: overall % + subject-wise + date-wise log."""
+    """Attendance page with date-range + subject filter."""
     uid = session["user_id"]
     profile = _profile(uid)
     ctx = _base_ctx(uid, profile)
 
-    # Get all attendance records for this student
+    # Get all attendance records
     all_att = _safe_select("attendance", student_user_id=uid)
 
-    # Fetch subjects + teachers for name mapping
+    # Fetch subjects
     subjects = _safe_select("subjects")
     submap = {s["id"]: s["name"] for s in subjects}
+
+    # Users map for teachers
     users = _safe_select("users")
     umap = {u["id"]: u.get("name", "-") for u in users}
 
+    # -------- Filters from query string --------
+    date_from = (request.args.get("from") or "").strip()
+    date_to = (request.args.get("to") or "").strip()
+    subject_filter = (request.args.get("subject") or "").strip()
+    month_filter = (request.args.get("month") or "").strip()
+
+    # Default month = current month (YYYY-MM)
+    today = date.today()
+    if not month_filter and not date_from and not date_to:
+        month_filter = today.strftime("%Y-%m")
+
+    # Apply filters
+    filtered = []
+    for a in all_att:
+        a_date = str(a.get("date") or "")
+        a_subject = str(a.get("subject_id") or "")
+
+        # Month filter
+        if month_filter and not a_date.startswith(month_filter):
+            continue
+        # Date range filter
+        if date_from and a_date < date_from:
+            continue
+        if date_to and a_date > date_to:
+            continue
+        # Subject filter
+        if subject_filter and a_subject != subject_filter:
+            continue
+
+        filtered.append(a)
+
+    # Compute stats from filtered
+    p = sum(1 for a in filtered if a["status"] == "P")
+    ab = sum(1 for a in filtered if a["status"] == "A")
+    lv = sum(1 for a in filtered if a["status"] == "L")
+    total = p + ab + lv or 1
+    att_percent = round(p * 100 / total, 1)
+
     # Subject-wise breakdown
     subject_stats = {}
-    for a in all_att:
+    for a in filtered:
         sid = a.get("subject_id")
         if not sid:
             continue
@@ -63,18 +103,17 @@ def attendance():
         subject_stats[sid][status] = subject_stats[sid].get(status, 0) + 1
         subject_stats[sid]["total"] += 1
 
-    # Add percentage per subject
     subject_rows = []
     for sid, stats in subject_stats.items():
-        total = stats["total"] or 1
-        stats["percent"] = round(stats["P"] * 100 / total, 1)
+        t = stats["total"] or 1
+        stats["percent"] = round(stats["P"] * 100 / t, 1)
         stats["subject_id"] = sid
         subject_rows.append(stats)
     subject_rows.sort(key=lambda x: x["subject_name"])
 
-    # Date-wise log (recent first)
+    # Date-wise log
     log_rows = []
-    for a in all_att:
+    for a in filtered:
         log_rows.append({
             "date": a.get("date"),
             "subject_name": submap.get(a.get("subject_id"), "-"),
@@ -83,13 +122,14 @@ def attendance():
         })
     log_rows.sort(key=lambda x: x["date"] or "", reverse=True)
 
-    # Monthly calendar data (current month)
-    from datetime import date as _date
-    import calendar
-    today = _date.today()
-    year, month = today.year, today.month
+    # Calendar data — use selected month or current
+    cal_month_str = month_filter or today.strftime("%Y-%m")
+    try:
+        cal_year, cal_month = [int(x) for x in cal_month_str.split("-")]
+    except Exception:
+        cal_year, cal_month = today.year, today.month
 
-    # Group by date for this month
+    import calendar
     month_log = {}
     for a in all_att:
         d = a.get("date")
@@ -97,20 +137,34 @@ def attendance():
             continue
         try:
             y, m, day = str(d).split("-")
-            if int(y) == year and int(m) == month:
+            if int(y) == cal_year and int(m) == cal_month:
                 month_log[int(day)] = a.get("status", "-")
         except Exception:
             continue
+
+    # Previous / next month links
+    prev_month = (date(cal_year, cal_month, 1) - timedelta(days=1)).strftime("%Y-%m")
+    next_month = (date(cal_year, cal_month, 28) + timedelta(days=7)).strftime("%Y-%m")
 
     ctx.update({
         "subject_rows": subject_rows,
         "log_rows": log_rows,
         "month_log": month_log,
-        "calendar_year": year,
-        "calendar_month": month,
-        "month_name": calendar.month_name[month],
-        "days_in_month": calendar.monthrange(year, month)[1],
-        "first_weekday": calendar.monthrange(year, month)[0],  # 0=Mon
+        "calendar_year": cal_year,
+        "calendar_month": cal_month,
+        "month_name": calendar.month_name[cal_month],
+        "days_in_month": calendar.monthrange(cal_year, cal_month)[1],
+        "first_weekday": calendar.monthrange(cal_year, cal_month)[0],
+        "prev_month": prev_month,
+        "next_month": next_month,
+        "current_month_param": cal_month_str,
+        "date_from": date_from,
+        "date_to": date_to,
+        "subject_filter": subject_filter,
+        "subjects": subjects,
+        # Filtered counts (override base ones)
+        "att_percent": att_percent,
+        "att_counts": {"P": p, "A": ab, "L": lv},
     })
 
     return render_template("student/attendance.html", **ctx)
@@ -154,7 +208,7 @@ def _base_ctx(uid, profile):
     smap = {s["id"]: s["name"] for s in sections}
     submap = {s["id"]: s["name"] for s in subjects}
 
-    # Timetable for class+section
+    # Timetable
     all_tt = []
     today_tt = []
     today_name = date.today().strftime("%A")
@@ -178,7 +232,7 @@ def _base_ctx(uid, profile):
         if e["day"] == today_name:
             today_tt.append(e)
 
-    # My teachers via assignments
+    # My teachers
     my_teachers = []
     if class_id and section_id:
         assigns = _safe_select("teacher_assignments",
