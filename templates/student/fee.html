@@ -4,21 +4,62 @@
 {% block content %}
 <div class="container">
   <div class="page-header">
-    <h1>My Fees</h1>
+    <h1>💰 My Fees</h1>
     <a href="{{ url_for('student.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
   </div>
 
+  <!-- STATS -->
+  <div class="stat-grid">
+    <div class="stat-card accent-green">
+      <div class="stat-label">Total Paid</div>
+      <div class="stat-value" style="font-size:1.5rem;">PKR {{ total_paid }}</div>
+      <div class="stat-hint">{{ paid_count }} voucher(s)</div>
+    </div>
+    <div class="stat-card accent-red">
+      <div class="stat-label">Total Pending</div>
+      <div class="stat-value" style="font-size:1.5rem;">PKR {{ total_unpaid }}</div>
+      <div class="stat-hint">{{ unpaid_count }} voucher(s)</div>
+    </div>
+    <div class="stat-card accent-blue">
+      <div class="stat-label">This Month</div>
+      <div class="stat-value" style="font-size:1.2rem;">
+        {% if current_fee %}
+          <span class="pill pill-{{ current_fee.status }}">{{ current_fee.status }}</span>
+        {% else %}-{% endif %}
+      </div>
+      <div class="stat-hint">{{ current_month }}</div>
+    </div>
+  </div>
+
+  <!-- CURRENT MONTH BANNER -->
+  {% if current_fee and current_fee.status != 'paid' %}
+  <div class="card" style="border-left: 4px solid var(--danger); background: var(--danger-soft);">
+    <strong style="color: var(--danger-dark); font-size: 1.02rem;">⚠️ Fee Pending for {{ current_month }}</strong>
+    <p class="text-muted" style="margin-top: 4px; font-size: 0.88rem;">
+      Amount: <strong>PKR {{ current_fee.amount }}</strong> — Please pay to avoid late fees.
+    </p>
+  </div>
+  {% endif %}
+
+  <!-- FEE HISTORY -->
   <div class="card">
-    <h2 class="section-title">💰 Fee Records</h2>
+    <h2 class="section-title">📋 Fee History</h2>
     {% if fees %}
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Month</th><th>Amount</th><th>Status</th><th>Paid Date</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Paid Date</th>
+          </tr>
+        </thead>
         <tbody>
           {% for f in fees %}
           <tr>
-            <td>{{ f.month }}</td>
-            <td>{{ f.amount }}</td>
+            <td style="font-family: var(--font-mono); font-weight: 700;">{{ f.month }}</td>
+            <td><strong>PKR {{ f.amount }}</strong></td>
             <td><span class="pill pill-{{ f.status }}">{{ f.status }}</span></td>
             <td>{{ f.paid_date or '-' }}</td>
           </tr>
@@ -26,7 +67,20 @@
         </tbody>
       </table>
     </div>
-    {% else %}<p class="empty-state">No fee records yet.</p>{% endif %}
+    {% else %}
+    <p class="empty-state">No fee records yet.</p>
+    {% endif %}
   </div>
+
+  <!-- PAY NOW INFO -->
+  {% if total_unpaid > 0 %}
+  <div class="card">
+    <h2 class="section-title">💳 Pay Online</h2>
+    <p class="text-muted mb-3">You have PKR {{ total_unpaid }} pending. Contact admin to pay online.</p>
+    <button type="button" class="btn btn-lg" onclick="alert('Online payment coming soon! Contact academy office.')">
+      💳 Pay Now — PKR {{ total_unpaid }}
+    </button>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}
