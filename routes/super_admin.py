@@ -1,3 +1,4 @@
+
 """
 routes/super_admin.py
 All Super Admin functionality with full EDIT support.
@@ -28,12 +29,8 @@ def dashboard():
     classes = _safe_select("classes")
     fees = _safe_select("fees")
 
-    total_collected = sum(
-        float(f.get("amount") or 0) for f in fees if f.get("status") == "paid"
-    )
-    total_pending = sum(
-        float(f.get("amount") or 0) for f in fees if f.get("status") != "paid"
-    )
+    total_collected = sum(float(f.get("amount") or 0) for f in fees if f.get("status") == "paid")
+    total_pending = sum(float(f.get("amount") or 0) for f in fees if f.get("status") != "paid")
 
     student_profiles = _safe_select("students")
     class_labels = []
@@ -143,9 +140,7 @@ def sections():
             flash("Class and section name are required.", "error")
         else:
             try:
-                table("sections").insert(
-                    {"class_id": int(class_id), "name": name}
-                ).execute()
+                table("sections").insert({"class_id": int(class_id), "name": name}).execute()
                 flash("Section created.", "success")
             except Exception as e:
                 flash(f"Error: {e}", "error")
@@ -168,10 +163,7 @@ def edit_section(sid):
         flash("Class and section name are required.", "error")
     else:
         try:
-            table("sections").update({
-                "class_id": int(class_id),
-                "name": name,
-            }).eq("id", sid).execute()
+            table("sections").update({"class_id": int(class_id), "name": name}).eq("id", sid).execute()
             flash("Section updated.", "success")
         except Exception as e:
             flash(f"Error: {e}", "error")
@@ -220,10 +212,7 @@ def edit_subject(sid):
         flash("Subject name is required.", "error")
     else:
         try:
-            table("subjects").update({
-                "name": name,
-                "code": code,
-            }).eq("id", sid).execute()
+            table("subjects").update({"name": name, "code": code}).eq("id", sid).execute()
             flash("Subject updated.", "success")
         except Exception as e:
             flash(f"Error: {e}", "error")
@@ -301,24 +290,12 @@ def edit_teacher(uid):
         return redirect(url_for("super_admin.teachers"))
 
     try:
-        table("users").update({
-            "name": name,
-            "phone": phone,
-            "email": email,
-        }).eq("id", uid).execute()
-
+        table("users").update({"name": name, "phone": phone, "email": email}).eq("id", uid).execute()
         existing = table("teachers").select("id").eq("user_id", uid).execute().data
         if existing:
-            table("teachers").update({
-                "qualification": qualification,
-            }).eq("user_id", uid).execute()
+            table("teachers").update({"qualification": qualification}).eq("user_id", uid).execute()
         else:
-            table("teachers").insert({
-                "user_id": uid,
-                "qualification": qualification,
-                "joining_date": str(date.today()),
-            }).execute()
-
+            table("teachers").insert({"user_id": uid, "qualification": qualification, "joining_date": str(date.today())}).execute()
         flash("Teacher updated.", "success")
     except Exception as e:
         flash(f"Error: {e}", "error")
@@ -333,9 +310,7 @@ def reset_teacher_password(uid):
         flash("Password must be at least 4 characters.", "error")
     else:
         try:
-            table("users").update({
-                "password_hash": hash_password(new_password),
-            }).eq("id", uid).execute()
+            table("users").update({"password_hash": hash_password(new_password)}).eq("id", uid).execute()
             flash("Password reset successfully.", "success")
         except Exception as e:
             flash(f"Error: {e}", "error")
@@ -406,8 +381,8 @@ def students():
                 student_payload["parent_user_id"] = int(parent_user_id)
             if custom_fee is not None:
                 student_payload["custom_fee"] = custom_fee
-
             table("students").insert(student_payload).execute()
+
             flash(f"Student created. Roll Number: {roll}", "success")
         except Exception as e:
             flash(f"Error: {e}", "error")
@@ -438,13 +413,7 @@ def students():
         u["guardian_phone"] = p.get("guardian_phone", "")
         u["address"] = p.get("address", "")
 
-    return render_template(
-        "super_admin/students.html",
-        students=student_users,
-        classes=cls,
-        sections=secs,
-        parents=parents,
-    )
+    return render_template("super_admin/students.html", students=student_users, classes=cls, sections=secs, parents=parents)
 
 
 @super_admin_bp.route("/students/edit/<int:uid>", methods=["POST"])
@@ -473,11 +442,7 @@ def edit_student(uid):
             custom_fee = None
 
     try:
-        table("users").update({
-            "name": name,
-            "phone": phone,
-        }).eq("id", uid).execute()
-
+        table("users").update({"name": name, "phone": phone}).eq("id", uid).execute()
         payload = {
             "class_id": int(class_id),
             "section_id": int(section_id),
@@ -491,7 +456,6 @@ def edit_student(uid):
             payload["parent_user_id"] = int(parent_user_id)
         else:
             payload["parent_user_id"] = None
-
         table("students").update(payload).eq("user_id", uid).execute()
         flash("Student updated.", "success")
     except Exception as e:
@@ -507,9 +471,7 @@ def reset_student_password(uid):
         flash("Password must be at least 4 characters.", "error")
     else:
         try:
-            table("users").update({
-                "password_hash": hash_password(new_password),
-            }).eq("id", uid).execute()
+            table("users").update({"password_hash": hash_password(new_password)}).eq("id", uid).execute()
             flash("Password reset successfully.", "success")
         except Exception as e:
             flash(f"Error: {e}", "error")
@@ -554,8 +516,7 @@ def parents():
             }).execute().data[0]
 
             if student_user_id:
-                table("students").update({"parent_user_id": user["id"]}) \
-                    .eq("user_id", int(student_user_id)).execute()
+                table("students").update({"parent_user_id": user["id"]}).eq("user_id", int(student_user_id)).execute()
 
             flash(f"Parent created. Roll Number: {roll}", "success")
         except Exception as e:
@@ -578,11 +539,7 @@ def parents():
             p["linked_roll"] = "-"
             p["linked_student_user_id"] = None
 
-    return render_template(
-        "super_admin/parents.html",
-        parents=parents_list,
-        students=students_list,
-    )
+    return render_template("super_admin/parents.html", parents=parents_list, students=students_list)
 
 
 @super_admin_bp.route("/parents/edit/<int:uid>", methods=["POST"])
@@ -597,20 +554,13 @@ def edit_parent(uid):
         return redirect(url_for("super_admin.parents"))
 
     try:
-        table("users").update({
-            "name": name,
-            "phone": phone,
-        }).eq("id", uid).execute()
-
+        table("users").update({"name": name, "phone": phone}).eq("id", uid).execute()
         all_profiles = _safe_select("students")
         for sp in all_profiles:
             if sp.get("parent_user_id") == uid:
                 table("students").update({"parent_user_id": None}).eq("id", sp["id"]).execute()
-
         if student_user_id:
-            table("students").update({"parent_user_id": uid}) \
-                .eq("user_id", int(student_user_id)).execute()
-
+            table("students").update({"parent_user_id": uid}).eq("user_id", int(student_user_id)).execute()
         flash("Parent updated.", "success")
     except Exception as e:
         flash(f"Error: {e}", "error")
@@ -625,9 +575,7 @@ def reset_parent_password(uid):
         flash("Password must be at least 4 characters.", "error")
     else:
         try:
-            table("users").update({
-                "password_hash": hash_password(new_password),
-            }).eq("id", uid).execute()
+            table("users").update({"password_hash": hash_password(new_password)}).eq("id", uid).execute()
             flash("Password reset successfully.", "success")
         except Exception as e:
             flash(f"Error: {e}", "error")
@@ -692,14 +640,7 @@ def assignments():
         a["section_name"] = sec.get("name", "-")
         a["subject_name"] = submap.get(a["subject_id"], "-")
 
-    return render_template(
-        "super_admin/assignments.html",
-        assignments=assigns,
-        teachers=teachers,
-        classes=classes,
-        sections=sections,
-        subjects=subjects,
-    )
+    return render_template("super_admin/assignments.html", assignments=assigns, teachers=teachers, classes=classes, sections=sections, subjects=subjects)
 
 
 @super_admin_bp.route("/assignments/delete/<int:aid>", methods=["POST"])
@@ -759,15 +700,7 @@ def timetable():
         key = f"{e['class_name']}-{e['section_name']}"
         grid.setdefault(key, []).append(e)
 
-    return render_template(
-        "super_admin/timetable.html",
-        entries=entries,
-        grid=grid,
-        classes=classes,
-        sections=sections,
-        subjects=subjects,
-        teachers=teachers,
-    )
+    return render_template("super_admin/timetable.html", entries=entries, grid=grid, classes=classes, sections=sections, subjects=subjects, teachers=teachers)
 
 
 @super_admin_bp.route("/timetable/edit/<int:tid>", methods=["POST"])
@@ -830,14 +763,9 @@ def fees():
                     "exam_fee": float(exam_fee),
                     "notes": notes,
                 }
-                existing = table("fee_structures").select("id").eq(
-                    "class_id", int(class_id)
-                ).execute().data
-
+                existing = table("fee_structures").select("id").eq("class_id", int(class_id)).execute().data
                 if existing:
-                    table("fee_structures").update(payload).eq(
-                        "class_id", int(class_id)
-                    ).execute()
+                    table("fee_structures").update(payload).eq("class_id", int(class_id)).execute()
                     flash("Fee structure updated.", "success")
                 else:
                     table("fee_structures").insert(payload).execute()
@@ -918,9 +846,6 @@ def fees():
             if failed:
                 msg += f" {len(failed)} skipped (no fee set)."
             flash(msg, "success")
-
-            if failed and count == 0:
-                flash(f"Could not generate for: {', '.join(failed[:5])}", "warning")
             return redirect(url_for("super_admin.fees"))
 
         if action == "delete_structure":
@@ -935,10 +860,7 @@ def fees():
         if action == "mark_paid":
             fid = request.form.get("fee_id")
             try:
-                table("fees").update({
-                    "status": "paid",
-                    "paid_date": str(date.today()),
-                }).eq("id", int(fid)).execute()
+                table("fees").update({"status": "paid", "paid_date": str(date.today())}).eq("id", int(fid)).execute()
                 flash("Marked as paid.", "success")
             except Exception as e:
                 flash(f"Error: {e}", "error")
@@ -947,10 +869,7 @@ def fees():
         if action == "mark_unpaid":
             fid = request.form.get("fee_id")
             try:
-                table("fees").update({
-                    "status": "unpaid",
-                    "paid_date": None,
-                }).eq("id", int(fid)).execute()
+                table("fees").update({"status": "unpaid", "paid_date": None}).eq("id", int(fid)).execute()
                 flash("Marked as unpaid.", "success")
             except Exception as e:
                 flash(f"Error: {e}", "error")
@@ -963,6 +882,42 @@ def fees():
                 flash("Voucher deleted.", "success")
             except Exception as e:
                 flash(f"Error: {e}", "error")
+            return redirect(url_for("super_admin.fees"))
+
+        if action == "bulk_paid":
+            ids = request.form.getlist("fee_ids")
+            count = 0
+            for fid in ids:
+                try:
+                    table("fees").update({"status": "paid", "paid_date": str(date.today())}).eq("id", int(fid)).execute()
+                    count += 1
+                except Exception:
+                    pass
+            flash(f"{count} voucher(s) marked paid.", "success")
+            return redirect(url_for("super_admin.fees"))
+
+        if action == "bulk_unpaid":
+            ids = request.form.getlist("fee_ids")
+            count = 0
+            for fid in ids:
+                try:
+                    table("fees").update({"status": "unpaid", "paid_date": None}).eq("id", int(fid)).execute()
+                    count += 1
+                except Exception:
+                    pass
+            flash(f"{count} voucher(s) marked unpaid.", "success")
+            return redirect(url_for("super_admin.fees"))
+
+        if action == "bulk_delete":
+            ids = request.form.getlist("fee_ids")
+            count = 0
+            for fid in ids:
+                try:
+                    table("fees").delete().eq("id", int(fid)).execute()
+                    count += 1
+                except Exception:
+                    pass
+            flash(f"{count} voucher(s) deleted.", "success")
             return redirect(url_for("super_admin.fees"))
 
         return redirect(url_for("super_admin.fees"))
@@ -1008,6 +963,15 @@ def fees():
     fee_paid = [months[m]["paid"] for m in fee_labels]
     fee_unpaid = [months[m]["unpaid"] for m in fee_labels]
 
+    total_paid_amount = sum(float(f.get("amount") or 0) for f in fees_list if f.get("status") == "paid")
+    total_unpaid_amount = sum(float(f.get("amount") or 0) for f in fees_list if f.get("status") != "paid")
+
+    pending_by_student = {}
+    for f in fees_list:
+        if f.get("status") != "paid":
+            sid = f["student_user_id"]
+            pending_by_student[sid] = pending_by_student.get(sid, 0) + float(f.get("amount") or 0)
+
     return render_template(
         "super_admin/fees.html",
         fees=fees_list,
@@ -1017,6 +981,9 @@ def fees():
         fee_labels=fee_labels,
         fee_paid=fee_paid,
         fee_unpaid=fee_unpaid,
+        total_paid_amount=round(total_paid_amount, 2),
+        total_unpaid_amount=round(total_unpaid_amount, 2),
+        pending_by_student=pending_by_student,
     )
 
 
@@ -1063,11 +1030,7 @@ def edit_notice(nid):
         flash("Title and body are required.", "error")
     else:
         try:
-            table("notices").update({
-                "title": title,
-                "body": body,
-                "target_role": target,
-            }).eq("id", nid).execute()
+            table("notices").update({"title": title, "body": body, "target_role": target}).eq("id", nid).execute()
             flash("Notice updated.", "success")
         except Exception as e:
             flash(f"Error: {e}", "error")
