@@ -4,68 +4,39 @@
 {% block content %}
 <div class="container">
   <div class="page-header">
-    <h1>Fees Management</h1>
+    <h1>💰 Fees Management</h1>
     <a href="{{ url_for('super_admin.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
   </div>
 
-  <!-- ============================================== -->
-  <!-- SECTION 1: CLASS-WISE FEE STRUCTURES -->
-  <!-- ============================================== -->
-  <div class="card">
-    <h2 class="section-title">💰 Class Fee Structures</h2>
-    <p class="text-muted mb-3" style="font-size:0.85rem;">
-      Set monthly fee for each class. New students will automatically get this fee.
-    </p>
+  <div class="stat-grid">
+    <div class="stat-card accent-green"><div class="stat-label">Collected</div><div class="stat-value" style="font-size:1.4rem;">PKR {{ total_paid_amount }}</div></div>
+    <div class="stat-card accent-red"><div class="stat-label">Pending</div><div class="stat-value" style="font-size:1.4rem;">PKR {{ total_unpaid_amount }}</div></div>
+    <div class="stat-card"><div class="stat-label">Vouchers</div><div class="stat-value">{{ fees|length }}</div></div>
+    <div class="stat-card accent-amber"><div class="stat-label">Pending Students</div><div class="stat-value">{{ pending_by_student|length }}</div></div>
+  </div>
 
+  <div class="card">
+    <h2 class="section-title">📋 Class Fee Structures</h2>
     <form method="POST" class="form-grid mb-4">
       <input type="hidden" name="action" value="save_structure" />
-
       <div class="form-group">
         <label>Class</label>
         <select name="class_id" required>
-          <option value="">— Select class —</option>
-          {% for c in classes %}
-            <option value="{{ c.id }}">{{ c.name }}</option>
-          {% endfor %}
+          <option value="">— Select —</option>
+          {% for c in classes %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
         </select>
       </div>
-
-      <div class="form-group">
-        <label>Monthly Fee (PKR)</label>
-        <input type="number" step="0.01" name="monthly_fee" placeholder="3000" required />
-      </div>
-
-      <div class="form-group">
-        <label>Admission Fee (optional)</label>
-        <input type="number" step="0.01" name="admission_fee" placeholder="0" />
-      </div>
-
-      <div class="form-group">
-        <label>Exam Fee (optional)</label>
-        <input type="number" step="0.01" name="exam_fee" placeholder="0" />
-      </div>
-
-      <div class="form-group">
-        <label>Notes (optional)</label>
-        <input type="text" name="notes" placeholder="e.g. Standard monthly" />
-      </div>
-
-      <button type="submit" class="btn btn-success">💾 Save Structure</button>
+      <div class="form-group"><label>Monthly Fee</label><input type="number" step="0.01" name="monthly_fee" required /></div>
+      <div class="form-group"><label>Admission</label><input type="number" step="0.01" name="admission_fee" /></div>
+      <div class="form-group"><label>Exam</label><input type="number" step="0.01" name="exam_fee" /></div>
+      <div class="form-group"><label>Notes</label><input type="text" name="notes" /></div>
+      <button type="submit" class="btn btn-success">💾 Save</button>
     </form>
 
     {% if structures %}
     <div class="table-wrap">
       <table>
-        <thead>
-          <tr>
-            <th>Class</th>
-            <th>Monthly Fee</th>
-            <th>Admission Fee</th>
-            <th>Exam Fee</th>
-            <th>Notes</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Class</th><th>Monthly</th><th>Admission</th><th>Exam</th><th>Actions</th></tr></thead>
         <tbody>
           {% for s in structures %}
           <tr>
@@ -73,9 +44,8 @@
             <td>PKR {{ s.monthly_fee }}</td>
             <td>PKR {{ s.admission_fee or 0 }}</td>
             <td>PKR {{ s.exam_fee or 0 }}</td>
-            <td class="text-muted">{{ s.notes or '-' }}</td>
             <td>
-              <form method="POST" data-confirm="Delete this fee structure?">
+              <form method="POST" data-confirm="Delete?">
                 <input type="hidden" name="action" value="delete_structure" />
                 <input type="hidden" name="structure_id" value="{{ s.id }}" />
                 <button class="btn btn-sm btn-danger">Delete</button>
@@ -86,72 +56,41 @@
         </tbody>
       </table>
     </div>
-    {% else %}
-    <p class="empty-state">No fee structures yet. Add one above.</p>
     {% endif %}
   </div>
 
-  <!-- ============================================== -->
-  <!-- SECTION 2: GENERATE VOUCHERS -->
-  <!-- ============================================== -->
   <div class="card">
-    <h2 class="section-title">🧾 Generate Fee Vouchers</h2>
-    <p class="text-muted mb-3" style="font-size:0.85rem;">
-      Pick a month. Choose "All Students" for bulk, or "Single Class" / "Single Student" for specific cases.
-    </p>
-
-    <form method="POST" class="form-grid mb-4">
+    <h2 class="section-title">🧾 Generate Vouchers</h2>
+    <form method="POST" class="form-grid">
       <input type="hidden" name="action" value="generate" />
-
-      <div class="form-group">
-        <label>Month (e.g. 2025-01 or January-2025)</label>
-        <input type="text" name="month" placeholder="2025-01" required />
-      </div>
-
+      <div class="form-group"><label>Month</label><input type="text" name="month" placeholder="2025-01" required /></div>
       <div class="form-group">
         <label>Mode</label>
         <select id="generateMode" name="mode" onchange="toggleTargetFields()">
           <option value="all">All Students</option>
-          <option value="class">Single Class Only</option>
-          <option value="student">Single Student Only</option>
+          <option value="class">Single Class</option>
+          <option value="student">Single Student</option>
         </select>
       </div>
-
       <div class="form-group" id="targetClassGroup" style="display:none;">
         <label>Target Class</label>
         <select name="target_class_id">
-          <option value="">— Select class —</option>
-          {% for c in classes %}
-            <option value="{{ c.id }}">{{ c.name }}</option>
-          {% endfor %}
+          <option value="">—</option>
+          {% for c in classes %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
         </select>
       </div>
-
       <div class="form-group" id="targetStudentGroup" style="display:none;">
         <label>Target Student</label>
         <select name="target_student_id">
-          <option value="">— Select student —</option>
-          {% for s in students %}
-            <option value="{{ s.id }}">
-              {{ s.roll_number }} — {{ s.name }}
-              {% if s.custom_fee %}(custom: {{ s.custom_fee }}){% endif %}
-            </option>
-          {% endfor %}
+          <option value="">—</option>
+          {% for s in students %}<option value="{{ s.id }}">{{ s.roll_number }} — {{ s.name }}</option>{% endfor %}
         </select>
       </div>
-
-      <div class="form-group">
-        <label>Override Amount (optional)</label>
-        <input type="number" step="0.01" name="override_amount" placeholder="Leave empty to auto-use class/custom fee" />
-      </div>
-
-      <button type="submit" class="btn">🚀 Generate Vouchers</button>
+      <div class="form-group"><label>Override Amount</label><input type="number" step="0.01" name="override_amount" /></div>
+      <button type="submit" class="btn">🚀 Generate</button>
     </form>
   </div>
 
-  <!-- ============================================== -->
-  <!-- SECTION 3: CHART -->
-  <!-- ============================================== -->
   <div class="charts-grid">
     <div class="chart-card">
       <h3>Fee Collection by Month</h3>
@@ -159,64 +98,53 @@
     </div>
   </div>
 
-  <!-- ============================================== -->
-  <!-- SECTION 4: VOUCHERS LIST -->
-  <!-- ============================================== -->
   <div class="card">
-    <h2 class="section-title">📋 Fee Vouchers</h2>
-    {% if fees %}
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Student</th>
-            <th>Roll No</th>
-            <th>Class</th>
-            <th>Month</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Paid Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for f in fees %}
-          <tr>
-            <td>{{ f.student_name }}</td>
-            <td><span class="roll-badge">{{ f.student_roll }}</span></td>
-            <td>{{ f.class_name }}</td>
-            <td>{{ f.month }}</td>
-            <td><strong>PKR {{ f.amount }}</strong></td>
-            <td><span class="pill pill-{{ f.status }}">{{ f.status }}</span></td>
-            <td>{{ f.paid_date or '-' }}</td>
-            <td class="actions">
-              {% if f.status != 'paid' %}
-              <form method="POST">
-                <input type="hidden" name="action" value="mark_paid" />
-                <input type="hidden" name="fee_id" value="{{ f.id }}" />
-                <button class="btn btn-sm btn-success">Mark Paid</button>
-              </form>
-              {% else %}
-              <form method="POST">
-                <input type="hidden" name="action" value="mark_unpaid" />
-                <input type="hidden" name="fee_id" value="{{ f.id }}" />
-                <button class="btn btn-sm btn-warning">Mark Unpaid</button>
-              </form>
-              {% endif %}
-              <form method="POST" data-confirm="Delete this voucher?">
-                <input type="hidden" name="action" value="delete_voucher" />
-                <input type="hidden" name="fee_id" value="{{ f.id }}" />
-                <button class="btn btn-sm btn-danger">Delete</button>
-              </form>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="between mb-3">
+      <h2 class="section-title mb-0">📋 Fee Vouchers</h2>
+      <div class="actions">
+        <button type="button" class="btn btn-sm btn-success" onclick="bulkAction('bulk_paid')">✅ Mark Paid</button>
+        <button type="button" class="btn btn-sm btn-warning" onclick="bulkAction('bulk_unpaid')">⚠️ Mark Unpaid</button>
+        <button type="button" class="btn btn-sm btn-danger" onclick="bulkAction('bulk_delete')">🗑 Delete</button>
+      </div>
     </div>
-    {% else %}
-    <p class="empty-state">No fee vouchers yet.</p>
-    {% endif %}
+
+    {% if fees %}
+    <form method="POST" id="bulkForm">
+      <input type="hidden" name="action" id="bulkActionInput" value="" />
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 40px;"><input type="checkbox" id="selectAll" /></th>
+              <th>Student</th><th>Roll No</th><th>Class</th><th>Month</th><th>Amount</th><th>Status</th><th>Paid Date</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for f in fees %}
+            <tr>
+              <td><input type="checkbox" name="fee_ids" value="{{ f.id }}" class="feeCheckbox" /></td>
+              <td>{{ f.student_name }}</td>
+              <td><span class="roll-badge">{{ f.student_roll }}</span></td>
+              <td>{{ f.class_name }}</td>
+              <td>{{ f.month }}</td>
+              <td><strong>PKR {{ f.amount }}</strong></td>
+              <td><span class="pill pill-{{ f.status }}">{{ f.status }}</span></td>
+              <td>{{ f.paid_date or '-' }}</td>
+              <td class="actions">
+                {% if f.status != 'paid' %}
+                <button type="button" class="btn btn-sm btn-success" onclick="singleAction('mark_paid', {{ f.id }})">Paid</button>
+                {% else %}
+                <button type="button" class="btn btn-sm btn-warning" onclick="singleAction('mark_unpaid', {{ f.id }})">Unpaid</button>
+                {% endif %}
+                <button type="button" class="btn btn-sm btn-danger" onclick="singleAction('delete_voucher', {{ f.id }})">Delete</button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </form>
+    {% else %}<p class="empty-state">No vouchers.</p>{% endif %}
   </div>
 </div>
 
@@ -227,16 +155,43 @@ function toggleTargetFields() {
   document.getElementById('targetStudentGroup').style.display = (mode === 'student') ? 'flex' : 'none';
 }
 document.addEventListener('DOMContentLoaded', toggleTargetFields);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const selectAll = document.getElementById('selectAll');
+  if (selectAll) {
+    selectAll.addEventListener('change', (e) => {
+      document.querySelectorAll('.feeCheckbox').forEach(c => c.checked = e.target.checked);
+    });
+  }
+});
+
+function bulkAction(action) {
+  const selected = document.querySelectorAll('.feeCheckbox:checked');
+  if (selected.length === 0) {
+    alert('Please select at least one voucher.');
+    return;
+  }
+  if (action === 'bulk_delete' && !confirm(`Delete ${selected.length} voucher(s)?`)) return;
+  document.getElementById('bulkActionInput').value = action;
+  document.getElementById('bulkForm').submit();
+}
+
+function singleAction(action, id) {
+  if (action === 'delete_voucher' && !confirm('Delete this voucher?')) return;
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.innerHTML = `<input name="action" value="${action}"><input name="fee_id" value="${id}">`;
+  document.body.appendChild(form);
+  form.submit();
+}
 </script>
 {% endblock %}
 
 {% block scripts %}
 <script>
-  renderMultiBarChart('feeChart',
-    {{ fee_labels | tojson }},
-    [
-      { label: 'Paid', data: {{ fee_paid | tojson }} },
-      { label: 'Unpaid', data: {{ fee_unpaid | tojson }} }
-    ]);
+  renderMultiBarChart('feeChart', {{ fee_labels | tojson }}, [
+    { label: 'Paid', data: {{ fee_paid | tojson }} },
+    { label: 'Unpaid', data: {{ fee_unpaid | tojson }} }
+  ]);
 </script>
 {% endblock %}
