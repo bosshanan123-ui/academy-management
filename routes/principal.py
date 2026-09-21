@@ -1,211 +1,183 @@
 """
-routes/principal.py
-Principal: read-only overview + notices (post/edit/delete).
+routes/parent.py
+Parent views for their linked child's data + notices.
 """
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from datetime import date
+
+from flask import Blueprint, render_template, session
 
 from utils.supabase_client import table
 from utils.decorators import role_required
 
-principal_bp = Blueprint("principal", __name__)
+parent_bp = Blueprint("parent", __name__)
 
 
-@principal_bp.route("/dashboard")
-@role_required("principal")
-def dashboard():
-    users = _safe_select("users")
-    students = [u for u in users if u["role"] == "student"]
-    teachers = [u for u in users if u["role"] == "teacher"]
+# =====================================================
+# HELPER: Get linked child
+# =====================================================
+def _get_child(parent_uid):
+    """Return (child_user, child_profile) or ({}, {})."""
+    try:
+        res = table("students").select("*").eq(
+            "parent_user_id", parent_uid
+        ).limit(1).execute()
+        profile = res.data[0] if res.data else {}
+        if not profile:
+            return {}, {}
+        u = table("users").select("*").eq("id", profile["user_id"]).limit(1).execute().data
+        child = u[0] if u else {}
+        return child, profile
+    except Exception:
+        return {}, {}
+
+
+# =====================================================
+# HELPER: Build context (child data + notices)
+# =====================================================
+def _build_ctx(parent_uid):
+    """Build template context with child's data + notices."""
+    child, profile = _get_child(parent_uid)
+    if not child:
+        return {"child": {}, "profile": {}, "has_child": False}
+
+    class_id = profile.get("class_id")
+    section_id = profile.get("section_id")
+
     classes = _safe_select("classes")
     sections = _safe_select("sections")
     subjects = _safe_select("subjects")
-    fees = _safe_select("fees")
+    cmap = {c["id"]: c["name"] for c in classes}
+    smap = {s["id"]: s["name"] for s in sections}
+    submap = {s["id"]: s["name"] for s in subjects}
 
-    collected = sum(float(f.get("amount") or 0) for f in fees if f.get("status") == "paid")
-
-    class_labels = [c["name"] for c in classes]
-    students_p = _safe_select("students")
-    class_counts = [sum(1 for s in students_p if s.get("class_id") == c["id"]) for c in classes]
-
-    return render_template(
-        "principal/dashboard.html",
-        stats={
-            "students": len(students),
-            "teachers": len(teachers),
-            "classes": len(classes),
-            "sections": len(sections),
-            "subjects": len(subjects),
-            "collected": round(collected, 2),
-        },
-        class_labels=class_labels,
-        class_counts=class_counts,
-    )
-
-
-@principal_bp.route("/reports")
-@role_required("principal")
-def reports():
-    attendance = _safe_select("attendance")
-    marks = _safe_select("marks")
-    fees = _safe_select("fees")
     users = _safe_select("users")
     umap = {u["id"]: u for u in users}
 
-    per_student = {}
-    for a in attendance:
-        sid = a["student_user_id"]
-        per_student.setdefault(sid, {"P": 0, "A": 0, "L": 0})
-        per_student[sid][a["status"]] = per_student[sid].get(a["status"], 0) + 1
+    # ---- Timetable ----
+    all_tt = _safe_select("timetable", class_id=class_id, section_id=section_id) \
+        if class_id and section_id else []
+    today_name = date.today().strftime("%A")
+    today_tt = []
+    for e in all_tt:
+        e["class_name"] = cmap.get(e["class_id"], "-")
+        e["section_name"] = smap.get(e["section_id"], "-")
+        e["subject_name"] = submap.get(e["subject_id"], "-")
+        e["teacher_name"] = umap.get(e["teacher_user_id"], {}).get("name", "-")
+        if e["day"] == today_name:
+            today_tt.append(e)
 
-    att_rows = []
-    for sid, counts in per_student.items():
-        u = umap.get(sid, {})
-        total = counts["P"] + counts["A"] + counts["L"] or 1
-        att_rows.append({
-            "name": u.get("name", "-"),
-            "roll": u.get("roll_number", "-"),
-            "present": counts["P"],
-            "absent": counts["A"],
-            "leave": counts["L"],
-            "percent": round(counts["P"] * 100 / total, 1),
-        })
+    # ---- My Teachers ----
+    my_teachers = []
+    if class_id and section_id:
+        assigns = _safe_select("teacher_assignments",
+                               class_id=class_id, section_id=section_id)
+        for a in assigns:
+            t = umap.get(a["teacher_user_id"], {})
+            my_teachers.append({
+                "subject": submap.get(a["subject_id"], "-"),
+                "teacher_name": t.get("name", "-"),
+            })
 
-    fee_summary = {}
-    for f in fees:
-        m = f.get("month") or "-"
-        fee_summary.setdefault(m, {"paid": 0, "unpaid": 0})
-        if f.get("status") == "paid":
-            fee_summary[m]["paid"] += float(f.get("amount") or 0)
-        else:
-            fee_summary[m]["unpaid"] += float(f.get("amount") or 0)
+    # ---- Attendance ----
+    att = _safe_select("attendance", student_user_id=child["id"])
+    this_month = date.today().strftime("%Y-%m")
+    monthly = [a for a in att if str(a.get("date", "")).startswith(this_month)]
+    p = sum(1 for a in monthly if a["status"] == "P")
+    ab = sum(1 for a in monthly if a["status"] == "A")
+    lv = sum(1 for a in monthly if a["status"] == "L")
+    total = p + ab + lv or 1
+    att_percent = round(p * 100 / total, 1)
 
-    return render_template("principal/reports.html", att_rows=att_rows, fee_summary=fee_summary)
+    # ---- Marks ----
+    marks = _safe_select("marks", student_user_id=child["id"])
+    for m in marks:
+        m["subject_name"] = submap.get(m["subject_id"], "-")
 
+    # ---- Fees ----
+    fees = _safe_select("fees", student_user_id=child["id"])
 
-@principal_bp.route("/notices", methods=["GET", "POST"])
-@role_required("principal")
-def notices():
-    if request.method == "POST":
-        title = (request.form.get("title") or "").strip()
-        body = (request.form.get("body") or "").strip()
-        target = request.form.get("target_role") or "all"
-        if not title or not body:
-            flash("Title and body required.", "error")
-        else:
-            try:
-                table("notices").insert({
-                    "title": title,
-                    "body": body,
-                    "posted_by_user_id": session["user_id"],
-                    "target_role": target,
-                }).execute()
-                flash("Notice posted.", "success")
-            except Exception as e:
-                flash(f"Error: {e}", "error")
-        return redirect(url_for("principal.notices"))
-
-    rows = _safe_select("notices")
-    users = _safe_select("users")
-    umap = {u["id"]: u["name"] for u in users}
-
+    # ---- Notices ---- (NEW)
+    notices = []
     try:
-        reads = _safe_select("notice_reads")
-    except Exception:
-        reads = []
+        raw_notices = table("notices").select("*").order(
+            "created_at", desc=True
+        ).limit(10).execute().data or []
+        for n in raw_notices:
+            target = n.get("target_role") or "all"
+            # Show only notices for parents / all
+            if target in ("all", "parent"):
+                n["posted_by"] = umap.get(n.get("posted_by_user_id"), {}).get("name", "Admin")
+                notices.append(n)
+    except Exception as e:
+        print(f"notices error: {e}")
+        notices = []
 
-    total_users_by_role = {
-        "all": sum(1 for u in users if u["role"] in ("student", "parent", "teacher")),
-        "student": sum(1 for u in users if u["role"] == "student"),
-        "parent": sum(1 for u in users if u["role"] == "parent"),
-        "teacher": sum(1 for u in users if u["role"] == "teacher"),
+    return {
+        "has_child": True,
+        "child": child,
+        "profile": profile,
+        "class_name": cmap.get(class_id, "-"),
+        "section_name": smap.get(section_id, "-"),
+        "today_tt": today_tt,
+        "today_name": today_name,
+        "my_teachers": my_teachers,
+        "att_percent": att_percent,
+        "att_counts": {"P": p, "A": ab, "L": lv},
+        "marks": marks,
+        "fees": fees,
+        "notices": notices,   # ← NEW
     }
 
-    for n in rows:
-        n["posted_by"] = umap.get(n["posted_by_user_id"], "-")
-        n["can_edit"] = (n["posted_by_user_id"] == session["user_id"])
-        n_reads = [r for r in reads if r["notice_id"] == n["id"]]
-        n["read_count"] = len(n_reads)
-        target = n.get("target_role") or "all"
-        n["total_target"] = total_users_by_role.get(target, 0)
-        n["read_percent"] = round(n["read_count"] * 100 / n["total_target"], 1) if n["total_target"] else 0
 
-    return render_template("principal/notices.html", notices=rows)
-
-
-@principal_bp.route("/notices/edit/<int:nid>", methods=["POST"])
-@role_required("principal")
-def edit_notice(nid):
-    existing = table("notices").select("*").eq("id", nid).limit(1).execute().data
-    if not existing or existing[0]["posted_by_user_id"] != session["user_id"]:
-        flash("You can only edit your own notices.", "error")
-        return redirect(url_for("principal.notices"))
-
-    title = (request.form.get("title") or "").strip()
-    body = (request.form.get("body") or "").strip()
-    target = request.form.get("target_role") or "all"
-    if not title or not body:
-        flash("Required.", "error")
-    else:
-        try:
-            table("notices").update({"title": title, "body": body, "target_role": target}).eq("id", nid).execute()
-            flash("Notice updated.", "success")
-        except Exception as e:
-            flash(f"Error: {e}", "error")
-    return redirect(url_for("principal.notices"))
+# =====================================================
+# DASHBOARD
+# =====================================================
+@parent_bp.route("/dashboard")
+@role_required("parent")
+def dashboard():
+    ctx = _build_ctx(session["user_id"])
+    return render_template("parent/dashboard.html", **ctx)
 
 
-@principal_bp.route("/notices/delete/<int:nid>", methods=["POST"])
-@role_required("principal")
-def delete_notice(nid):
-    existing = table("notices").select("*").eq("id", nid).limit(1).execute().data
-    if not existing or existing[0]["posted_by_user_id"] != session["user_id"]:
-        flash("You can only delete your own notices.", "error")
-        return redirect(url_for("principal.notices"))
-    try:
-        table("notices").delete().eq("id", nid).execute()
-        flash("Notice deleted.", "success")
-    except Exception as e:
-        flash(f"Error: {e}", "error")
-    return redirect(url_for("principal.notices"))
+# =====================================================
+# ATTENDANCE
+# =====================================================
+@parent_bp.route("/attendance")
+@role_required("parent")
+def attendance():
+    ctx = _build_ctx(session["user_id"])
+    return render_template("parent/attendance.html", **ctx)
 
 
-@principal_bp.route("/notices/readers/<int:nid>")
-@role_required("principal")
-def notice_readers(nid):
-    notice = _get_one("notices", nid)
-    readers = []
-    try:
-        reads = table("notice_reads").select("*").eq("notice_id", nid).execute().data or []
-        user_ids = [r["user_id"] for r in reads]
-        if user_ids:
-            users = table("users").select("*").in_("id", user_ids).execute().data or []
-            umap = {u["id"]: u for u in users}
-            for r in reads:
-                u = umap.get(r["user_id"], {})
-                readers.append({
-                    "name": u.get("name", "-"),
-                    "roll_number": u.get("roll_number", "-"),
-                    "role": u.get("role", "-"),
-                    "read_at": r.get("read_at", "-"),
-                })
-    except Exception:
-        pass
-    return render_template("principal/notice_readers.html", notice=notice, readers=readers)
+# =====================================================
+# RESULT
+# =====================================================
+@parent_bp.route("/result")
+@role_required("parent")
+def result():
+    ctx = _build_ctx(session["user_id"])
+    return render_template("parent/result.html", **ctx)
 
 
+# =====================================================
+# FEES
+# =====================================================
+@parent_bp.route("/fee")
+@role_required("parent")
+def fee():
+    ctx = _build_ctx(session["user_id"])
+    return render_template("parent/fee.html", **ctx)
+
+
+# =====================================================
+# HELPER: Safe select
+# =====================================================
 def _safe_select(table_name, **filters):
     try:
         q = table(table_name).select("*")
         for k, v in filters.items():
             q = q.eq(k, v)
         return q.execute().data or []
-    except Exception:
+    except Exception as e:
+        print(f"_safe_select error ({table_name}): {e}")
         return []
-
-
-def _get_one(table_name, pk):
-    try:
-        res = table(table_name).select("*").eq("id", pk).limit(1).execute()
-        return res.data[0] if res.data else {}
-    except Exception:
-        return {}
