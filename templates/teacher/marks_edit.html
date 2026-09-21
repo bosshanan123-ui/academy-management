@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Edit Marks{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>✏️ Edit Marks</h1>
+    <a href="{{ url_for('teacher.marks_view', exam_type=exam_type, class_id=class_id, subject_id=subject_id) }}" class="btn btn-ghost">← Back</a>
+  </div>
+
+  <div class="card">
+    <div class="row" style="gap: 24px; flex-wrap: wrap; margin-bottom: 20px;">
+      <div><div class="text-muted text-xs">CLASS</div><strong>{{ class_name }}</strong></div>
+      <div><div class="text-muted text-xs">SUBJECT</div><strong>{{ subject_name }}</strong></div>
+      <div><div class="text-muted text-xs">EXAM</div><strong>{{ exam_type }}</strong></div>
+    </div>
+
+    <form method="POST">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Roll No</th><th>Name</th><th>Obtained</th><th>Total</th></tr></thead>
+          <tbody>
+            {% for s in students %}
+            <tr>
+              <td>{{ s.roll_no_in_class }}</td>
+              <td><span class="roll-badge">{{ s.roll_number }}</span></td>
+              <td>{{ s.name }}</td>
+              <td><input type="number" name="marks_{{ s.user_id }}" value="{{ s.obtained }}" min="0" style="width: 100px;" /></td>
+              <td><input type="number" name="total_{{ s.user_id }}" value="{{ s.total }}" min="1" style="width: 100px;" /></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <button type="submit" class="btn mt-4">💾 Save Changes</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
