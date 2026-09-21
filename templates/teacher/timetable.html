@@ -4,8 +4,11 @@
 {% block content %}
 <div class="container">
   <div class="page-header">
-    <h1>My Timetable</h1>
-    <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+    <h1>📅 My Timetable</h1>
+    <div class="actions">
+      <button onclick="window.print()" class="btn btn-ghost no-print">🖨️ Print</button>
+      <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-ghost no-print">← Dashboard</a>
+    </div>
   </div>
 
   <div class="card">
@@ -14,10 +17,11 @@
       <div class="timetable-day">
         <h4>{{ d }}</h4>
         {% if grid[d] %}
-          {% for e in grid[d] %}
+          {% for e in grid[d] | sort(attribute='period_no') %}
             <div class="slot">
-              <strong>{{ e.subject_name }} — {{ e.class_name }}-{{ e.section_name }}</strong>
-              <span class="slot-time">{{ e.start_time }}–{{ e.end_time }}</span>
+              <strong>{{ e.subject_name }}</strong>
+              <span class="slot-time">Period {{ e.period_no }} • {{ e.start_time }}–{{ e.end_time }}</span>
+              <span class="slot-time">🏫 {{ e.class_name }}-{{ e.section_name }}</span>
             </div>
           {% endfor %}
         {% else %}
