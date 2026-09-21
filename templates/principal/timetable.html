@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Timetable{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>📅 Timetable</h1>
+    <a href="{{ url_for('principal.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">🔍 Select Class + Section</h2>
+    <form method="GET" class="form-grid">
+      <div class="form-group">
+        <label>Class</label>
+        <select id="classSelect" name="class_id" required>
+          <option value="">— Select Class —</option>
+          {% for c in classes %}
+            <option value="{{ c.id }}" {% if class_id == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Section</label>
+        <select id="sectionSelect" name="section_id" required>
+          <option value="">— Select Section —</option>
+          {% for s in sections %}
+            <option value="{{ s.id }}" data-class-id="{{ s.class_id }}" {% if section_id == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn">📅 Show Timetable</button>
+    </form>
+  </div>
+
+  {% if has_data %}
+  <div class="card">
+    <div class="between mb-3">
+      <h2 class="section-title mb-0">Weekly Schedule</h2>
+      <button onclick="window.print()" class="btn btn-sm btn-ghost no-print">🖨️ Print</button>
+    </div>
+    <div class="timetable-grid">
+      {% for d in days %}
+      <div class="timetable-day">
+        <h4>{{ d }}</h4>
+        {% if grid[d] %}
+          {% for e in grid[d] | sort(attribute='period_no') %}
+            <div class="slot">
+              <strong>{{ e.subject_name }}</strong>
+              <span class="slot-time">Period {{ e.period_no }} • {{ e.start_time }}–{{ e.end_time }}</span>
+              <span class="slot-time">👤 {{ e.teacher_name }}</span>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted" style="font-size:.8rem;">No classes</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% elif class_id and section_id %}
+  <div class="card"><p class="empty-state">No timetable found for this selection.</p></div>
+  {% else %}
+  <div class="card"><p class="empty-state">Select class and section.</p></div>
+  {% endif %}
+</div>
+{% endblock %}
