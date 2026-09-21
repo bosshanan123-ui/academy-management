@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Fees Report{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>💰 Fees Report</h1>
+    <a href="{{ url_for('principal.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">🔍 Select Class + Section + Month</h2>
+    <form method="GET" class="form-grid">
+      <div class="form-group">
+        <label>Class</label>
+        <select id="classSelect" name="class_id" required>
+          <option value="">— Select Class —</option>
+          {% for c in classes %}
+            <option value="{{ c.id }}" {% if class_id == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Section</label>
+        <select id="sectionSelect" name="section_id" required>
+          <option value="">— Select Section —</option>
+          {% for s in sections %}
+            <option value="{{ s.id }}" data-class-id="{{ s.class_id }}" {% if section_id == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Month</label>
+        <input type="month" name="month" value="{{ month }}" />
+      </div>
+      <button type="submit" class="btn">💰 Show Fees</button>
+    </form>
+  </div>
+
+  {% if rows %}
+  <div class="stat-grid">
+    <div class="stat-card accent-green">
+      <div class="stat-label">Paid</div>
+      <div class="stat-value">{{ stats.paid }}</div>
+    </div>
+    <div class="stat-card accent-red">
+      <div class="stat-label">Unpaid</div>
+      <div class="stat-value">{{ stats.unpaid }}</div>
+    </div>
+    <div class="stat-card accent-blue">
+      <div class="stat-label">Total Amount</div>
+      <div class="stat-value" style="font-size:1.3rem;">PKR {{ stats.total_amount }}</div>
+    </div>
+    <div class="stat-card accent-green">
+      <div class="stat-label">Collected</div>
+      <div class="stat-value" style="font-size:1.3rem;">PKR {{ stats.collected }}</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="between mb-3">
+      <h2 class="section-title mb-0">📋 Fees — {{ month }}</h2>
+      <button onclick="window.print()" class="btn btn-sm btn-ghost no-print">🖨️ Print</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Roll No</th>
+            <th>Name</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Paid Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.roll_no_in_class }}</td>
+            <td><span class="roll-badge">{{ r.roll_number }}</span></td>
+            <td>{{ r.name }}</td>
+            <td><strong>PKR {{ r.amount }}</strong></td>
+            <td>
+              {% if r.status == 'paid' %}
+                <span class="pill pill-paid">Paid</span>
+              {% elif r.status == 'unpaid' %}
+                <span class="pill pill-unpaid">Unpaid</span>
+              {% elif r.status == 'partial' %}
+                <span class="pill pill-partial">Partial</span>
+              {% else %}
+                <span class="pill">Not Generated</span>
+              {% endif %}
+            </td>
+            <td>{{ r.paid_date }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% elif class_id and section_id %}
+  <div class="card"><p class="empty-state">No fee records for this month.</p></div>
+  {% else %}
+  <div class="card"><p class="empty-state">Select class and section.</p></div>
+  {% endif %}
+</div>
+{% endblock %}
