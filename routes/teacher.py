@@ -493,7 +493,277 @@ def marks(class_id, section_id, subject_id):
         section_name=sec.get("name", "-"),
     )
 
+# =====================================================
+# MARKS — History
+# =====================================================
+@teacher_bp.route("/marks/history")
+@role_required("teacher")
+def marks_history():
+    """Show all marks entry sessions."""
+    tid = session["user_id"]
+    from_date = (request.args.get("from") or "").strip()
+    to_date = (request.args.get("to") or "").strip()
+    class_filter = (request.args.get("class_id") or "").strip()
+    subject_filter = (request.args.get("subject_id") or "").strip()
+    exam_filter = (request.args.get("exam_type") or "").strip()
 
+    if not from_date and not to_date:
+        to_date = str(date.today())
+        from_date = str(date.today() - timedelta(days=90))
+
+    classes = _safe_select("classes")
+    subjects = _safe_select("subjects")
+    cmap = {c["id"]: c["name"] for c in classes}
+    submap = {s["id"]: s["name"] for s in subjects}
+
+    try:
+        all_marks = table("marks").select("*").order("created_at", desc=True).limit(500).execute().data or []
+    except Exception:
+        all_marks = []
+
+    # Filter to teacher's assigned classes+subjects
+    assigns = _safe_select("teacher_assignments", teacher_user_id=tid)
+    valid_keys = {(a["class_id"], a["subject_id"]) for a in assigns}
+
+    # Get student profiles for class mapping
+    profiles = _safe_select("students")
+    pmap = {p["user_id"]: p for p in profiles}
+
+    filtered = []
+    for m in all_marks:
+        sid = m.get("student_user_id")
+        sub_id = m.get("subject_id")
+        profile = pmap.get(sid)
+        if not profile:
+            continue
+        cid = profile.get("class_id")
+        if (cid, sub_id) not in valid_keys:
+            continue
+
+        d = str(m.get("created_at") or "")[:10]
+        if from_date and d < from_date:
+            continue
+        if to_date and d > to_date:
+            continue
+        if class_filter and str(cid) != class_filter:
+            continue
+        if subject_filter and str(sub_id) != subject_filter:
+            continue
+        if exam_filter and m.get("exam_type") != exam_filter:
+            continue
+
+        filtered.append(m)
+
+    # Group by (exam_type, class_id, subject_id)
+    sessions = {}
+    for m in filtered:
+        sid = m.get("student_user_id")
+        profile = pmap.get(sid, {})
+        cid = profile.get("class_id")
+        key = (m.get("exam_type"), cid, m.get("subject_id"))
+        if key not in sessions:
+            sessions[key] = {
+                "exam_type": m.get("exam_type"),
+                "class_id": cid,
+                "class_name": cmap.get(cid, "-"),
+                "subject_id": m.get("subject_id"),
+                "subject_name": submap.get(m.get("subject_id"), "-"),
+                "count": 0,
+                "total_obtained": 0,
+                "total_possible": 0,
+                "latest_date": str(m.get("created_at") or "")[:10],
+            }
+        sessions[key]["count"] += 1
+        sessions[key]["total_obtained"] += int(m.get("obtained_marks") or 0)
+        sessions[key]["total_possible"] += int(m.get("total_marks") or 0)
+        ld = str(m.get("created_at") or "")[:10]
+        if ld > sessions[key]["latest_date"]:
+            sessions[key]["latest_date"] = ld
+
+    session_list = []
+    for s in sessions.values():
+        s["avg_percent"] = round(s["total_obtained"] * 100 / s["total_possible"], 1) if s["total_possible"] else 0
+        session_list.append(s)
+    session_list.sort(key=lambda x: x["latest_date"], reverse=True)
+
+    return render_template(
+        "teacher/marks_history.html",
+        sessions=session_list,
+        classes=classes,
+        subjects=subjects,
+        from_date=from_date,
+        to_date=to_date,
+        class_filter=class_filter,
+        subject_filter=subject_filter,
+        exam_filter=exam_filter,
+    )
+
+
+# =====================================================
+# MARKS — View specific session
+# =====================================================
+@teacher_bp.route("/marks/view/<exam_type>/<int:class_id>/<int:subject_id>")
+@role_required("teacher")
+def marks_view(exam_type, class_id, subject_id):
+    """View marks for a specific exam_type + class + subject."""
+    tid = session["user_id"]
+
+    # Get students in this class (all sections)
+    sections = _safe_select("sections", class_id=class_id)
+    section_ids = [s["id"] for s in sections]
+
+    # Get marks
+    try:
+        all_marks = table("marks").select("*").eq(
+            "subject_id", subject_id
+        ).eq("exam_type", exam_type).execute().data or []
+    except Exception:
+        all_marks = []
+
+    # Filter to students in this class
+    profiles = _safe_select("students", class_id=class_id)
+    student_ids = [p["user_id"] for p in profiles]
+    marks_map = {m["student_user_id"]: m for m in all_marks if m["student_user_id"] in student_ids}
+
+    # Get user info
+    users = _safe_select("users")
+    umap = {u["id"]: u for u in users}
+
+    rows = []
+    for p in profiles:
+        sid = p["user_id"]
+        u = umap.get(sid, {})
+        m = marks_map.get(sid)
+        rows.append({
+            "student_name": u.get("name", "-"),
+            "roll_number": u.get("roll_number", "-"),
+            "roll_no_in_class": p.get("roll_no_in_class", "-"),
+            "obtained": m.get("obtained_marks") if m else None,
+            "total": m.get("total_marks") if m else None,
+            "percent": round(int(m["obtained_marks"]) * 100 / int(m["total_marks"]), 1) if m and m.get("total_marks") else 0,
+        })
+    rows.sort(key=lambda x: x["roll_no_in_class"] if isinstance(x["roll_no_in_class"], int) else 9999)
+
+    cls = _get_one("classes", class_id)
+    sub = _get_one("subjects", subject_id)
+
+    # Stats
+    with_marks = [r for r in rows if r["obtained"] is not None]
+    avg = round(sum(r["percent"] for r in with_marks) / len(with_marks), 1) if with_marks else 0
+    highest = max(with_marks, key=lambda x: x["percent"]) if with_marks else None
+    lowest = min(with_marks, key=lambda x: x["percent"]) if with_marks else None
+
+    return render_template(
+        "teacher/marks_view.html",
+        exam_type=exam_type,
+        class_id=class_id,
+        subject_id=subject_id,
+        class_name=cls.get("name", "-"),
+        subject_name=sub.get("name", "-"),
+        rows=rows,
+        stats={
+            "count": len(with_marks),
+            "avg": avg,
+            "highest": highest,
+            "lowest": lowest,
+        },
+    )
+
+
+# =====================================================
+# MARKS — Edit specific session
+# =====================================================
+@teacher_bp.route("/marks/edit/<exam_type>/<int:class_id>/<int:subject_id>",
+                  methods=["GET", "POST"])
+@role_required("teacher")
+def marks_edit(exam_type, class_id, subject_id):
+    """Edit marks for a specific exam."""
+    tid = session["user_id"]
+
+    if request.method == "POST":
+        saved = 0
+        profiles = _safe_select("students", class_id=class_id)
+        for p in profiles:
+            sid = p["user_id"]
+            obtained = request.form.get(f"marks_{sid}")
+            total = request.form.get(f"total_{sid}")
+
+            if obtained is None or obtained == "":
+                continue
+
+            try:
+                obtained_int = int(obtained)
+                total_int = int(total) if total and total.strip() else 100
+            except ValueError:
+                continue
+
+            try:
+                # Delete existing then insert
+                table("marks").delete().eq(
+                    "student_user_id", sid
+                ).eq("subject_id", subject_id).eq("exam_type", exam_type).execute()
+
+                table("marks").insert({
+                    "student_user_id": sid,
+                    "subject_id": subject_id,
+                    "exam_type": exam_type,
+                    "total_marks": total_int,
+                    "obtained_marks": obtained_int,
+                }).execute()
+                saved += 1
+            except Exception as e:
+                print(f"marks edit error: {e}")
+
+        flash(f"Marks updated for {saved} student(s).", "success")
+        return redirect(url_for(
+            "teacher.marks_view",
+            exam_type=exam_type,
+            class_id=class_id,
+            subject_id=subject_id,
+        ))
+
+    # GET — load existing
+    profiles = _safe_select("students", class_id=class_id)
+    student_ids = [p["user_id"] for p in profiles]
+
+    try:
+        existing = table("marks").select("*").eq(
+            "subject_id", subject_id
+        ).eq("exam_type", exam_type).execute().data or []
+    except Exception:
+        existing = []
+    existing_map = {m["student_user_id"]: m for m in existing if m["student_user_id"] in student_ids}
+
+    users = _safe_select("users")
+    umap = {u["id"]: u for u in users}
+
+    students_data = []
+    for p in profiles:
+        sid = p["user_id"]
+        u = umap.get(sid, {})
+        m = existing_map.get(sid, {})
+        students_data.append({
+            "user_id": sid,
+            "name": u.get("name", "-"),
+            "roll_number": u.get("roll_number", "-"),
+            "roll_no_in_class": p.get("roll_no_in_class", "-"),
+            "obtained": m.get("obtained_marks", ""),
+            "total": m.get("total_marks", 100),
+        })
+    students_data.sort(key=lambda x: x["roll_no_in_class"] if isinstance(x["roll_no_in_class"], int) else 9999)
+
+    cls = _get_one("classes", class_id)
+    sub = _get_one("subjects", subject_id)
+
+    return render_template(
+        "teacher/marks_edit.html",
+        exam_type=exam_type,
+        class_id=class_id,
+        subject_id=subject_id,
+        class_name=cls.get("name", "-"),
+        subject_name=sub.get("name", "-"),
+        students=students_data,
+    )
 # =====================================================
 # TIMETABLE
 # =====================================================
