@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Marks Detail{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>👁 Marks Detail</h1>
+    <div class="actions">
+      <a href="{{ url_for('teacher.marks_edit', exam_type=exam_type, class_id=class_id, subject_id=subject_id) }}" class="btn btn-warning">✏️ Edit</a>
+      <a href="{{ url_for('teacher.marks_history') }}" class="btn btn-ghost">← History</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="gap: 24px; flex-wrap: wrap;">
+      <div><div class="text-muted text-xs">CLASS</div><strong>{{ class_name }}</strong></div>
+      <div><div class="text-muted text-xs">SUBJECT</div><strong>{{ subject_name }}</strong></div>
+      <div><div class="text-muted text-xs">EXAM</div><strong>{{ exam_type }}</strong></div>
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card accent-blue"><div class="stat-label">Students Graded</div><div class="stat-value">{{ stats.count }}</div></div>
+    <div class="stat-card accent-green"><div class="stat-label">Average</div><div class="stat-value">{{ stats.avg }}%</div></div>
+    {% if stats.highest %}<div class="stat-card accent-green"><div class="stat-label">Topper</div><div class="stat-value" style="font-size:1.1rem;">{{ stats.highest.student_name }}</div><div class="stat-hint">{{ stats.highest.percent }}%</div></div>{% endif %}
+    {% if stats.lowest %}<div class="stat-card accent-red"><div class="stat-label">Lowest</div><div class="stat-value" style="font-size:1.1rem;">{{ stats.lowest.student_name }}</div><div class="stat-hint">{{ stats.lowest.percent }}%</div></div>{% endif %}
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">📋 Students Marks</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Roll No</th><th>Name</th><th>Marks</th><th>Percent</th></tr></thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.roll_no_in_class }}</td>
+            <td><span class="roll-badge">{{ r.roll_number }}</span></td>
+            <td>{{ r.student_name }}</td>
+            <td>
+              {% if r.obtained is not none %}
+                <strong>{{ r.obtained }} / {{ r.total }}</strong>
+              {% else %}
+                <span class="text-muted">Not graded</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if r.obtained is not none %}
+                <span class="pill {% if r.percent >= 75 %}pill-paid{% elif r.percent >= 50 %}pill-partial{% else %}pill-unpaid{% endif %}">{{ r.percent }}%</span>
+              {% else %}-{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
