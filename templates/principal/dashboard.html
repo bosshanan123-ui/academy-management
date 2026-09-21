@@ -4,23 +4,76 @@
 {% block content %}
 <div class="container">
   <div class="page-header">
-    <h1>Principal Dashboard</h1>
-    <a href="{{ url_for('principal.reports') }}" class="btn">📊 Reports</a>
+    <h1>👑 Principal Dashboard</h1>
+    <a href="{{ url_for('principal.notices') }}" class="btn btn-ghost">📢 Notices</a>
   </div>
 
+  <!-- STATS -->
   <div class="stat-grid">
-    <div class="stat-card"><div class="stat-label">Students</div><div class="stat-value">{{ stats.students }}</div></div>
-    <div class="stat-card accent-green"><div class="stat-label">Teachers</div><div class="stat-value">{{ stats.teachers }}</div></div>
-    <div class="stat-card accent-blue"><div class="stat-label">Classes</div><div class="stat-value">{{ stats.classes }}</div></div>
-    <div class="stat-card accent-amber"><div class="stat-label">Sections</div><div class="stat-value">{{ stats.sections }}</div></div>
-    <div class="stat-card"><div class="stat-label">Subjects</div><div class="stat-value">{{ stats.subjects }}</div></div>
-    <div class="stat-card accent-green"><div class="stat-label">Collected</div><div class="stat-value">{{ stats.collected }}</div></div>
+    <div class="stat-card">
+      <div class="stat-label">Students</div>
+      <div class="stat-value">{{ stats.students }}</div>
+    </div>
+    <div class="stat-card accent-green">
+      <div class="stat-label">Teachers</div>
+      <div class="stat-value">{{ stats.teachers }}</div>
+    </div>
+    <div class="stat-card accent-blue">
+      <div class="stat-label">Classes</div>
+      <div class="stat-value">{{ stats.classes }}</div>
+    </div>
+    <div class="stat-card accent-amber">
+      <div class="stat-label">Sections</div>
+      <div class="stat-value">{{ stats.sections }}</div>
+    </div>
+    <div class="stat-card accent-green">
+      <div class="stat-label">Collected</div>
+      <div class="stat-value" style="font-size:1.3rem;">PKR {{ stats.collected }}</div>
+    </div>
+    <div class="stat-card accent-red">
+      <div class="stat-label">Pending</div>
+      <div class="stat-value" style="font-size:1.3rem;">PKR {{ stats.pending }}</div>
+    </div>
   </div>
 
+  <!-- QUICK ACTIONS -->
+  <div class="card">
+    <h2 class="section-title">⚡ Quick Actions</h2>
+    <div class="dashboard-grid">
+      <a href="{{ url_for('principal.attendance') }}" class="card">
+        <h3>✅ Attendance Report</h3>
+        <p>Class + section select → monthly attendance dekho</p>
+      </a>
+      <a href="{{ url_for('principal.fees') }}" class="card">
+        <h3>💰 Fees Report</h3>
+        <p>Kisne di, kisne nahi — month-wise check karo</p>
+      </a>
+      <a href="{{ url_for('principal.marks') }}" class="card">
+        <h3>📝 Marks Report</h3>
+        <p>Class + section → student result + ranking</p>
+      </a>
+      <a href="{{ url_for('principal.teachers') }}" class="card">
+        <h3>👨‍🏫 Teachers</h3>
+        <p>Har teacher ka weekly timetable dekho</p>
+      </a>
+      <a href="{{ url_for('principal.timetable') }}" class="card">
+        <h3>📅 Timetable</h3>
+        <p>Class + section → weekly schedule</p>
+      </a>
+      <a href="{{ url_for('principal.notices') }}" class="card">
+        <h3>📢 Notices</h3>
+        <p>Post, edit, delete notices</p>
+      </a>
+    </div>
+  </div>
+
+  <!-- CHART -->
   <div class="charts-grid">
     <div class="chart-card">
       <h3>Students per Class</h3>
-      <div class="chart-container"><canvas id="classChart"></canvas></div>
+      <div class="chart-container">
+        <canvas id="classChart"></canvas>
+      </div>
     </div>
   </div>
 </div>
@@ -31,6 +84,7 @@
   renderBarChart('classChart',
     {{ class_labels | tojson }},
     {{ class_counts | tojson }},
-    'Students');
+    'Students',
+    'indigo');
 </script>
 {% endblock %}
