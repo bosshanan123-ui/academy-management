@@ -4194,3 +4194,153 @@ input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 
   }
   .status-pill { padding: 6px 10px; font-size: 0.72rem; }
 }
+/* ============================================================
+   NOTICE ITEM — Read status + filters
+   ============================================================ */
+.notice-item {
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  border-radius: var(--r-lg);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--indigo-600);
+  box-shadow: var(--sh-1), var(--in-light);
+  transition: all var(--t-base) var(--ease-out);
+}
+.notice-item:hover {
+  transform: translateX(3px);
+  box-shadow: var(--sh-2);
+  border-color: var(--border-soft);
+}
+.notice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.notice-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--ink-950);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.notice-meta {
+  font-size: 0.75rem;
+  color: var(--ink-500);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.notice-read-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: var(--r-md);
+  min-width: 90px;
+  text-align: center;
+  border: 1.5px solid;
+}
+.notice-read-badge.read-high {
+  background: var(--success-soft);
+  border-color: rgba(31, 150, 112, 0.25);
+  color: var(--success-dark);
+}
+.notice-read-badge.read-mid {
+  background: var(--warning-soft);
+  border-color: rgba(177, 121, 26, 0.25);
+  color: var(--warning-dark);
+}
+.notice-read-badge.read-low {
+  background: var(--danger-soft);
+  border-color: rgba(192, 67, 63, 0.25);
+  color: var(--danger-dark);
+}
+.notice-read-badge .read-percent {
+  font-size: 1.4rem;
+  font-weight: 900;
+  line-height: 1;
+}
+.notice-read-badge .read-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.8;
+  margin-top: 3px;
+}
+.notice-body {
+  color: var(--ink-700);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  padding: 12px 0;
+  border-top: 1px dashed var(--border-subtle);
+  border-bottom: 1px dashed var(--border-subtle);
+  margin-bottom: 12px;
+  white-space: pre-wrap;
+}
+.notice-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* ============================================================
+   PRINT STYLES — Timetable + Notices
+   ============================================================ */
+@media print {
+  .no-print { display: none !important; }
+  .navbar, .page-header .actions, .flash-container { display: none !important; }
+
+  .timetable-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 12px !important;
+    page-break-inside: auto;
+  }
+
+  .timetable-day {
+    box-shadow: none !important;
+    border: 1px solid #333 !important;
+    page-break-inside: avoid;
+    background: #fff !important;
+  }
+
+  .slot {
+    background: #fff !important;
+    border: 1px solid #ccc !important;
+    border-left: 3px solid #1c3b70 !important;
+  }
+
+  .notice-item {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    page-break-inside: avoid;
+  }
+
+  h1, h2, h3 { color: #000 !important; }
+}
+
+/* ============================================================
+   MOBILE — Notices
+   ============================================================ */
+@media (max-width: 600px) {
+  .notice-header { flex-direction: column; }
+  .notice-read-badge {
+    flex-direction: row;
+    gap: 8px;
+    min-width: auto;
+    padding: 6px 12px;
+  }
+  .notice-read-badge .read-percent { font-size: 1rem; }
+  .notice-read-badge .read-label { font-size: 0.7rem; margin-top: 0; }
+  .notice-actions { justify-content: flex-start; }
+  .notice-actions .btn { flex: 1; }
+}
