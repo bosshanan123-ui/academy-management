@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Marks History{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>📝 Marks History</h1>
+    <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">🔍 Filter</h2>
+    <form method="GET" class="form-grid">
+      <div class="form-group"><label>From</label><input type="date" name="from" value="{{ from_date }}" /></div>
+      <div class="form-group"><label>To</label><input type="date" name="to" value="{{ to_date }}" /></div>
+      <div class="form-group">
+        <label>Class</label>
+        <select name="class_id">
+          <option value="">All</option>
+          {% for c in classes %}<option value="{{ c.id }}" {% if class_filter == c.id|string %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Subject</label>
+        <select name="subject_id">
+          <option value="">All</option>
+          {% for s in subjects %}<option value="{{ s.id }}" {% if subject_filter == s.id|string %}selected{% endif %}>{{ s.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Exam Type</label>
+        <select name="exam_type">
+          <option value="">All</option>
+          <option value="Monthly" {% if exam_filter == 'Monthly' %}selected{% endif %}>Monthly</option>
+          <option value="Midterm" {% if exam_filter == 'Midterm' %}selected{% endif %}>Midterm</option>
+          <option value="Final" {% if exam_filter == 'Final' %}selected{% endif %}>Final</option>
+        </select>
+      </div>
+      <button type="submit" class="btn">Filter</button>
+      <a href="{{ url_for('teacher.marks_history') }}" class="btn btn-ghost">Clear</a>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">📋 All Marks Sessions ({{ sessions|length }})</h2>
+    {% if sessions %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Date</th><th>Class</th><th>Subject</th><th>Exam</th><th>Students</th><th>Avg %</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for s in sessions %}
+          <tr>
+            <td style="font-family: var(--font-mono); font-weight: 700;">{{ s.latest_date }}</td>
+            <td><strong>{{ s.class_name }}</strong></td>
+            <td>{{ s.subject_name }}</td>
+            <td><span class="pill pill-partial">{{ s.exam_type }}</span></td>
+            <td>{{ s.count }}</td>
+            <td>
+              <span class="pill {% if s.avg_percent >= 75 %}pill-paid{% elif s.avg_percent >= 50 %}pill-partial{% else %}pill-unpaid{% endif %}">
+                {{ s.avg_percent }}%
+              </span>
+            </td>
+            <td class="actions">
+              <a href="{{ url_for('teacher.marks_view', exam_type=s.exam_type, class_id=s.class_id, subject_id=s.subject_id) }}" class="btn btn-sm btn-ghost">👁 View</a>
+              <a href="{{ url_for('teacher.marks_edit', exam_type=s.exam_type, class_id=s.class_id, subject_id=s.subject_id) }}" class="btn btn-sm btn-warning">✏️ Edit</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<p class="empty-state">No marks records found.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}
