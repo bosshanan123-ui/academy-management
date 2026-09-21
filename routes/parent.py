@@ -1,6 +1,6 @@
 """
 routes/parent.py
-Parent views for their linked child's data.
+Parent views for their linked child's data + notices.
 """
 from datetime import date
 
@@ -29,9 +29,10 @@ def _get_child(parent_uid):
 
 
 def _build_ctx(parent_uid):
+    """Build template context with child's data + notices."""
     child, profile = _get_child(parent_uid)
     if not child:
-        return {"child": {}, "profile": {}, "has_child": False}
+        return {"child": {}, "profile": {}, "has_child": False, "notices": []}
 
     class_id = profile.get("class_id")
     section_id = profile.get("section_id")
@@ -46,6 +47,7 @@ def _build_ctx(parent_uid):
     users = _safe_select("users")
     umap = {u["id"]: u for u in users}
 
+    # Timetable
     all_tt = _safe_select("timetable", class_id=class_id, section_id=section_id) \
         if class_id and section_id else []
     today_name = date.today().strftime("%A")
@@ -58,6 +60,7 @@ def _build_ctx(parent_uid):
         if e["day"] == today_name:
             today_tt.append(e)
 
+    # My Teachers
     my_teachers = []
     if class_id and section_id:
         assigns = _safe_select("teacher_assignments",
@@ -69,6 +72,7 @@ def _build_ctx(parent_uid):
                 "teacher_name": t.get("name", "-"),
             })
 
+    # Attendance
     att = _safe_select("attendance", student_user_id=child["id"])
     this_month = date.today().strftime("%Y-%m")
     monthly = [a for a in att if str(a.get("date", "")).startswith(this_month)]
@@ -78,11 +82,28 @@ def _build_ctx(parent_uid):
     total = p + ab + lv or 1
     att_percent = round(p * 100 / total, 1)
 
+    # Marks
     marks = _safe_select("marks", student_user_id=child["id"])
     for m in marks:
         m["subject_name"] = submap.get(m["subject_id"], "-")
 
+    # Fees
     fees = _safe_select("fees", student_user_id=child["id"])
+
+    # Notices (for parents / all)
+    notices = []
+    try:
+        raw_notices = table("notices").select("*").order(
+            "created_at", desc=True
+        ).limit(10).execute().data or []
+        for n in raw_notices:
+            target = n.get("target_role") or "all"
+            if target in ("all", "parent"):
+                n["posted_by"] = umap.get(n.get("posted_by_user_id"), {}).get("name", "Admin")
+                notices.append(n)
+    except Exception as e:
+        print(f"notices error: {e}")
+        notices = []
 
     return {
         "has_child": True,
@@ -97,6 +118,7 @@ def _build_ctx(parent_uid):
         "att_counts": {"P": p, "A": ab, "L": lv},
         "marks": marks,
         "fees": fees,
+        "notices": notices,
     }
 
 
@@ -134,5 +156,6 @@ def _safe_select(table_name, **filters):
         for k, v in filters.items():
             q = q.eq(k, v)
         return q.execute().data or []
-    except Exception:
+    except Exception as e:
+        print(f"_safe_select error ({table_name}): {e}")
         return []
