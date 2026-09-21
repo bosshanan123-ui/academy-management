@@ -1,6 +1,6 @@
 """
 routes/teacher.py
-Teacher dashboard, attendance (with context + history), marks, timetable, ID card.
+Teacher dashboard, attendance, marks, timetable, ID card.
 """
 from datetime import date, timedelta
 
@@ -20,7 +20,6 @@ teacher_bp = Blueprint("teacher", __name__)
 @teacher_bp.route("/dashboard")
 @role_required("teacher")
 def dashboard():
-    """Teacher dashboard: assigned classes + today's schedule + recent attendance."""
     tid = session["user_id"]
     assigns = _safe_select("teacher_assignments", teacher_user_id=tid)
     classes = _safe_select("classes")
@@ -44,9 +43,7 @@ def dashboard():
         t["subject_name"] = submap.get(t["subject_id"], "-")
 
     notices = _safe_select("notices")
-
-    # Recent attendance sessions
-    recent = _recent_attendance(tid, limit=5)
+    recent_attendance = _recent_attendance(tid, limit=5)
     recent_marks = _recent_marks(tid, limit=5)
 
     return render_template(
@@ -55,7 +52,7 @@ def dashboard():
         today_schedule=today,
         today_name=today_name,
         notices=notices,
-        recent_attendance=recent,
+        recent_attendance=recent_attendance,
         recent_marks=recent_marks,
     )
 
@@ -69,10 +66,7 @@ def dashboard():
 )
 @role_required("teacher")
 def attendance(class_id, section_id, subject_id):
-    """Take attendance for a class+section+subject. Only if assigned."""
     tid = session["user_id"]
-
-    # Security check: teacher must be assigned to this class/section/subject
     if not _is_assigned(tid, class_id, section_id, subject_id):
         flash("You are not assigned to this class/section/subject.", "error")
         return redirect(url_for("teacher.dashboard"))
@@ -80,32 +74,22 @@ def attendance(class_id, section_id, subject_id):
     if request.method == "POST":
         today = str(date.today())
         students = _students_in(class_id, section_id)
-
         if not students:
-            flash("No students found in this class/section.", "error")
+            flash("No students found.", "error")
             return redirect(url_for("teacher.dashboard"))
 
         saved = 0
         failed = 0
-
         for s in students:
             user_id = s.get("user_id")
             if not user_id:
                 failed += 1
                 continue
-
             status = request.form.get(f"status_{user_id}")
             if status not in ("P", "A", "L"):
                 continue
-
             try:
-                # Delete existing record for today+subject (re-take attendance)
-                table("attendance").delete() \
-                    .eq("student_user_id", user_id) \
-                    .eq("subject_id", subject_id) \
-                    .eq("date", today).execute()
-
-                # Insert fresh record
+                table("attendance").delete().eq("student_user_id", user_id).eq("subject_id", subject_id).eq("date", today).execute()
                 table("attendance").insert({
                     "student_user_id": user_id,
                     "class_id": class_id,
@@ -118,25 +102,18 @@ def attendance(class_id, section_id, subject_id):
                 saved += 1
             except Exception as e:
                 failed += 1
-                print(f"Attendance insert error for user {user_id}: {e}")
 
         if saved > 0:
             flash(f"Attendance saved for {saved} student(s).", "success")
         if failed > 0:
-            flash(f"Failed for {failed} student(s). Check logs.", "warning")
-
+            flash(f"Failed for {failed}.", "warning")
         return redirect(url_for("teacher.dashboard"))
 
-    # GET: show attendance form
     students = _students_in(class_id, section_id)
     subject = _get_one("subjects", subject_id)
     cls = _get_one("classes", class_id)
     sec = _get_one("sections", section_id)
-
-    # Check if attendance already exists for today
-    existing = _existing_attendance(
-        str(date.today()), class_id, section_id, subject_id
-    )
+    existing = _existing_attendance(str(date.today()), class_id, section_id, subject_id)
 
     return render_template(
         "teacher/attendance.html",
@@ -153,43 +130,32 @@ def attendance(class_id, section_id, subject_id):
 
 
 # =====================================================
-# ATTENDANCE — History (List all sessions)
+# ATTENDANCE — History
 # =====================================================
 @teacher_bp.route("/attendance/history")
 @role_required("teacher")
 def attendance_history():
-    """Show all attendance sessions for this teacher with filters."""
     tid = session["user_id"]
-
-    # Filters
     from_date = (request.args.get("from") or "").strip()
     to_date = (request.args.get("to") or "").strip()
     class_filter = (request.args.get("class_id") or "").strip()
     subject_filter = (request.args.get("subject_id") or "").strip()
 
-    # Default: last 30 days
     if not from_date and not to_date:
         to_date = str(date.today())
         from_date = str(date.today() - timedelta(days=30))
 
-    # Dropdown data
     classes = _safe_select("classes")
     subjects = _safe_select("subjects")
-
     cmap = {c["id"]: c["name"] for c in classes}
     smap = {s["id"]: s["name"] for s in _safe_select("sections")}
     submap = {s["id"]: s["name"] for s in subjects}
 
-    # Fetch all attendance records for this teacher
     try:
-        all_records = table("attendance").select("*").eq(
-            "teacher_user_id", tid
-        ).order("date", desc=True).execute().data or []
-    except Exception as e:
-        print(f"history error: {e}")
+        all_records = table("attendance").select("*").eq("teacher_user_id", tid).order("date", desc=True).execute().data or []
+    except Exception:
         all_records = []
 
-    # Apply filters
     filtered = []
     for r in all_records:
         d = str(r.get("date") or "")
@@ -203,15 +169,9 @@ def attendance_history():
             continue
         filtered.append(r)
 
-    # Group by (date, class_id, section_id, subject_id)
     sessions = {}
     for r in filtered:
-        key = (
-            str(r.get("date")),
-            r.get("class_id"),
-            r.get("section_id"),
-            r.get("subject_id"),
-        )
+        key = (str(r.get("date")), r.get("class_id"), r.get("section_id"), r.get("subject_id"))
         if key not in sessions:
             sessions[key] = {
                 "date": r.get("date"),
@@ -221,14 +181,12 @@ def attendance_history():
                 "class_name": cmap.get(r.get("class_id"), "-"),
                 "section_name": smap.get(r.get("section_id"), "-"),
                 "subject_name": submap.get(r.get("subject_id"), "-"),
-                "P": 0, "A": 0, "L": 0,
-                "total": 0,
+                "P": 0, "A": 0, "L": 0, "total": 0,
             }
         status = r.get("status")
         sessions[key][status] = sessions[key].get(status, 0) + 1
         sessions[key]["total"] += 1
 
-    # Convert to list, compute %, sort
     session_list = []
     for s in sessions.values():
         t = s["total"] or 1
@@ -236,7 +194,6 @@ def attendance_history():
         session_list.append(s)
     session_list.sort(key=lambda x: (str(x["date"]), x["class_name"]), reverse=True)
 
-    # Stats
     total_sessions = len(session_list)
     total_students = sum(s["total"] for s in session_list)
     total_present = sum(s["P"] for s in session_list)
@@ -251,44 +208,23 @@ def attendance_history():
         to_date=to_date,
         class_filter=class_filter,
         subject_filter=subject_filter,
-        stats={
-            "total_sessions": total_sessions,
-            "total_students": total_students,
-            "total_present": total_present,
-            "avg_percent": avg_percent,
-        },
+        stats={"total_sessions": total_sessions, "total_students": total_students, "total_present": total_present, "avg_percent": avg_percent},
     )
 
 
-# =====================================================
-# ATTENDANCE — View specific session
-# =====================================================
-@teacher_bp.route(
-    "/attendance/view/<date_str>/<int:class_id>/<int:section_id>/<int:subject_id>"
-)
+@teacher_bp.route("/attendance/view/<date_str>/<int:class_id>/<int:section_id>/<int:subject_id>")
 @role_required("teacher")
 def attendance_view(date_str, class_id, section_id, subject_id):
-    """View attendance details for a specific session."""
     tid = session["user_id"]
-
     if not _is_assigned(tid, class_id, section_id, subject_id):
-        flash("You are not assigned to this class/section/subject.", "error")
+        flash("Not assigned.", "error")
         return redirect(url_for("teacher.attendance_history"))
 
-    # Get records for this session
     try:
-        records = table("attendance").select("*").eq(
-            "teacher_user_id", tid
-        ).eq("class_id", class_id).eq(
-            "section_id", section_id
-        ).eq("subject_id", subject_id).eq(
-            "date", date_str
-        ).execute().data or []
-    except Exception as e:
-        print(f"view error: {e}")
+        records = table("attendance").select("*").eq("teacher_user_id", tid).eq("class_id", class_id).eq("section_id", section_id).eq("subject_id", subject_id).eq("date", date_str).execute().data or []
+    except Exception:
         records = []
 
-    # Fetch student names
     student_ids = [r["student_user_id"] for r in records]
     students_map = {}
     if student_ids:
@@ -296,7 +232,7 @@ def attendance_view(date_str, class_id, section_id, subject_id):
             users = table("users").select("*").in_("id", student_ids).execute().data or []
             students_map = {u["id"]: u for u in users}
         except Exception:
-            students_map = {}
+            pass
 
     enriched = []
     for r in records:
@@ -308,12 +244,10 @@ def attendance_view(date_str, class_id, section_id, subject_id):
         })
     enriched.sort(key=lambda x: x["roll_number"])
 
-    # Metadata
     cls = _get_one("classes", class_id)
     sec = _get_one("sections", section_id)
     sub = _get_one("subjects", subject_id)
 
-    # Stats
     p = sum(1 for e in enriched if e["status"] == "P")
     ab = sum(1 for e in enriched if e["status"] == "A")
     lv = sum(1 for e in enriched if e["status"] == "L")
@@ -332,40 +266,26 @@ def attendance_view(date_str, class_id, section_id, subject_id):
     )
 
 
-# =====================================================
-# ATTENDANCE — Edit specific session
-# =====================================================
-@teacher_bp.route(
-    "/attendance/edit/<date_str>/<int:class_id>/<int:section_id>/<int:subject_id>",
-    methods=["GET", "POST"],
-)
+@teacher_bp.route("/attendance/edit/<date_str>/<int:class_id>/<int:section_id>/<int:subject_id>", methods=["GET", "POST"])
 @role_required("teacher")
 def attendance_edit(date_str, class_id, section_id, subject_id):
-    """Edit attendance for a past date."""
     tid = session["user_id"]
-
     if not _is_assigned(tid, class_id, section_id, subject_id):
-        flash("You are not assigned to this class/section/subject.", "error")
+        flash("Not assigned.", "error")
         return redirect(url_for("teacher.attendance_history"))
 
     if request.method == "POST":
         students = _students_in(class_id, section_id)
         saved = 0
-
         for s in students:
             user_id = s.get("user_id")
             if not user_id:
                 continue
-
             status = request.form.get(f"status_{user_id}")
             if status not in ("P", "A", "L"):
                 continue
-
             try:
-                table("attendance").delete().eq(
-                    "student_user_id", user_id
-                ).eq("subject_id", subject_id).eq("date", date_str).execute()
-
+                table("attendance").delete().eq("student_user_id", user_id).eq("subject_id", subject_id).eq("date", date_str).execute()
                 table("attendance").insert({
                     "student_user_id": user_id,
                     "class_id": class_id,
@@ -376,28 +296,15 @@ def attendance_edit(date_str, class_id, section_id, subject_id):
                     "status": status,
                 }).execute()
                 saved += 1
-            except Exception as e:
-                print(f"edit insert error: {e}")
+            except Exception:
+                pass
+        flash(f"Updated for {saved}.", "success")
+        return redirect(url_for("teacher.attendance_view", date_str=date_str, class_id=class_id, section_id=section_id, subject_id=subject_id))
 
-        flash(f"Attendance updated for {saved} student(s).", "success")
-        return redirect(url_for(
-            "teacher.attendance_view",
-            date_str=date_str,
-            class_id=class_id,
-            section_id=section_id,
-            subject_id=subject_id,
-        ))
-
-    # GET — show form with existing values
     students = _students_in(class_id, section_id)
-
     existing = {}
     try:
-        recs = table("attendance").select("*").eq(
-            "class_id", class_id
-        ).eq("section_id", section_id).eq(
-            "subject_id", subject_id
-        ).eq("date", date_str).execute().data or []
+        recs = table("attendance").select("*").eq("class_id", class_id).eq("section_id", section_id).eq("subject_id", subject_id).eq("date", date_str).execute().data or []
         for r in recs:
             existing[r["student_user_id"]] = r["status"]
     except Exception:
@@ -424,17 +331,12 @@ def attendance_edit(date_str, class_id, section_id, subject_id):
 # =====================================================
 # MARKS
 # =====================================================
-@teacher_bp.route(
-    "/marks/<int:class_id>/<int:section_id>/<int:subject_id>",
-    methods=["GET", "POST"],
-)
+@teacher_bp.route("/marks/<int:class_id>/<int:section_id>/<int:subject_id>", methods=["GET", "POST"])
 @role_required("teacher")
 def marks(class_id, section_id, subject_id):
-    """Enter marks for a class+section+subject. Only if assigned."""
     tid = session["user_id"]
-
     if not _is_assigned(tid, class_id, section_id, subject_id):
-        flash("You are not assigned to this class/section/subject.", "error")
+        flash("Not assigned.", "error")
         return redirect(url_for("teacher.dashboard"))
 
     if request.method == "POST":
@@ -445,25 +347,18 @@ def marks(class_id, section_id, subject_id):
             total = 100
 
         students = _students_in(class_id, section_id)
-        if not students:
-            flash("No students found in this class/section.", "error")
-            return redirect(url_for("teacher.dashboard"))
-
         saved = 0
         for s in students:
             user_id = s.get("user_id")
             if not user_id:
                 continue
-
             obtained = request.form.get(f"marks_{user_id}")
             if obtained is None or obtained == "":
                 continue
-
             try:
                 obtained_int = int(obtained)
             except ValueError:
                 continue
-
             try:
                 table("marks").insert({
                     "student_user_id": user_id,
@@ -473,10 +368,9 @@ def marks(class_id, section_id, subject_id):
                     "obtained_marks": obtained_int,
                 }).execute()
                 saved += 1
-            except Exception as e:
-                print(f"Marks insert error for user {user_id}: {e}")
-
-        flash(f"Marks saved for {saved} student(s).", "success")
+            except Exception:
+                pass
+        flash(f"Marks saved for {saved}.", "success")
         return redirect(url_for("teacher.dashboard"))
 
     students = _students_in(class_id, section_id)
@@ -495,39 +389,31 @@ def marks(class_id, section_id, subject_id):
         section_name=sec.get("name", "-"),
     )
 
+
 # =====================================================
 # MARKS — History
 # =====================================================
 @teacher_bp.route("/marks/history")
 @role_required("teacher")
 def marks_history():
-    """Show all marks entry sessions."""
     tid = session["user_id"]
-    from_date = (request.args.get("from") or "").strip()
-    to_date = (request.args.get("to") or "").strip()
     class_filter = (request.args.get("class_id") or "").strip()
     subject_filter = (request.args.get("subject_id") or "").strip()
     exam_filter = (request.args.get("exam_type") or "").strip()
-
-    if not from_date and not to_date:
-        to_date = str(date.today())
-        from_date = str(date.today() - timedelta(days=90))
 
     classes = _safe_select("classes")
     subjects = _safe_select("subjects")
     cmap = {c["id"]: c["name"] for c in classes}
     submap = {s["id"]: s["name"] for s in subjects}
 
+    assigns = _safe_select("teacher_assignments", teacher_user_id=tid)
+    valid = {(a["class_id"], a["subject_id"]) for a in assigns}
+
     try:
         all_marks = table("marks").select("*").order("created_at", desc=True).limit(500).execute().data or []
     except Exception:
         all_marks = []
 
-    # Filter to teacher's assigned classes+subjects
-    assigns = _safe_select("teacher_assignments", teacher_user_id=tid)
-    valid_keys = {(a["class_id"], a["subject_id"]) for a in assigns}
-
-    # Get student profiles for class mapping
     profiles = _safe_select("students")
     pmap = {p["user_id"]: p for p in profiles}
 
@@ -539,13 +425,7 @@ def marks_history():
         if not profile:
             continue
         cid = profile.get("class_id")
-        if (cid, sub_id) not in valid_keys:
-            continue
-
-        d = str(m.get("created_at") or "")[:10]
-        if from_date and d < from_date:
-            continue
-        if to_date and d > to_date:
+        if (cid, sub_id) not in valid:
             continue
         if class_filter and str(cid) != class_filter:
             continue
@@ -553,10 +433,8 @@ def marks_history():
             continue
         if exam_filter and m.get("exam_type") != exam_filter:
             continue
-
         filtered.append(m)
 
-    # Group by (exam_type, class_id, subject_id)
     sessions = {}
     for m in filtered:
         sid = m.get("student_user_id")
@@ -593,41 +471,24 @@ def marks_history():
         sessions=session_list,
         classes=classes,
         subjects=subjects,
-        from_date=from_date,
-        to_date=to_date,
         class_filter=class_filter,
         subject_filter=subject_filter,
         exam_filter=exam_filter,
     )
 
 
-# =====================================================
-# MARKS — View specific session
-# =====================================================
 @teacher_bp.route("/marks/view/<exam_type>/<int:class_id>/<int:subject_id>")
 @role_required("teacher")
 def marks_view(exam_type, class_id, subject_id):
-    """View marks for a specific exam_type + class + subject."""
-    tid = session["user_id"]
-
-    # Get students in this class (all sections)
-    sections = _safe_select("sections", class_id=class_id)
-    section_ids = [s["id"] for s in sections]
-
-    # Get marks
     try:
-        all_marks = table("marks").select("*").eq(
-            "subject_id", subject_id
-        ).eq("exam_type", exam_type).execute().data or []
+        all_marks = table("marks").select("*").eq("subject_id", subject_id).eq("exam_type", exam_type).execute().data or []
     except Exception:
         all_marks = []
 
-    # Filter to students in this class
     profiles = _safe_select("students", class_id=class_id)
     student_ids = [p["user_id"] for p in profiles]
     marks_map = {m["student_user_id"]: m for m in all_marks if m["student_user_id"] in student_ids}
 
-    # Get user info
     users = _safe_select("users")
     umap = {u["id"]: u for u in users}
 
@@ -649,7 +510,6 @@ def marks_view(exam_type, class_id, subject_id):
     cls = _get_one("classes", class_id)
     sub = _get_one("subjects", subject_id)
 
-    # Stats
     with_marks = [r for r in rows if r["obtained"] is not None]
     avg = round(sum(r["percent"] for r in with_marks) / len(with_marks), 1) if with_marks else 0
     highest = max(with_marks, key=lambda x: x["percent"]) if with_marks else None
@@ -663,25 +523,13 @@ def marks_view(exam_type, class_id, subject_id):
         class_name=cls.get("name", "-"),
         subject_name=sub.get("name", "-"),
         rows=rows,
-        stats={
-            "count": len(with_marks),
-            "avg": avg,
-            "highest": highest,
-            "lowest": lowest,
-        },
+        stats={"count": len(with_marks), "avg": avg, "highest": highest, "lowest": lowest},
     )
 
 
-# =====================================================
-# MARKS — Edit specific session
-# =====================================================
-@teacher_bp.route("/marks/edit/<exam_type>/<int:class_id>/<int:subject_id>",
-                  methods=["GET", "POST"])
+@teacher_bp.route("/marks/edit/<exam_type>/<int:class_id>/<int:subject_id>", methods=["GET", "POST"])
 @role_required("teacher")
 def marks_edit(exam_type, class_id, subject_id):
-    """Edit marks for a specific exam."""
-    tid = session["user_id"]
-
     if request.method == "POST":
         saved = 0
         profiles = _safe_select("students", class_id=class_id)
@@ -689,22 +537,15 @@ def marks_edit(exam_type, class_id, subject_id):
             sid = p["user_id"]
             obtained = request.form.get(f"marks_{sid}")
             total = request.form.get(f"total_{sid}")
-
             if obtained is None or obtained == "":
                 continue
-
             try:
                 obtained_int = int(obtained)
                 total_int = int(total) if total and total.strip() else 100
             except ValueError:
                 continue
-
             try:
-                # Delete existing then insert
-                table("marks").delete().eq(
-                    "student_user_id", sid
-                ).eq("subject_id", subject_id).eq("exam_type", exam_type).execute()
-
+                table("marks").delete().eq("student_user_id", sid).eq("subject_id", subject_id).eq("exam_type", exam_type).execute()
                 table("marks").insert({
                     "student_user_id": sid,
                     "subject_id": subject_id,
@@ -713,25 +554,15 @@ def marks_edit(exam_type, class_id, subject_id):
                     "obtained_marks": obtained_int,
                 }).execute()
                 saved += 1
-            except Exception as e:
-                print(f"marks edit error: {e}")
+            except Exception:
+                pass
+        flash(f"Marks updated for {saved}.", "success")
+        return redirect(url_for("teacher.marks_view", exam_type=exam_type, class_id=class_id, subject_id=subject_id))
 
-        flash(f"Marks updated for {saved} student(s).", "success")
-        return redirect(url_for(
-            "teacher.marks_view",
-            exam_type=exam_type,
-            class_id=class_id,
-            subject_id=subject_id,
-        ))
-
-    # GET — load existing
     profiles = _safe_select("students", class_id=class_id)
     student_ids = [p["user_id"] for p in profiles]
-
     try:
-        existing = table("marks").select("*").eq(
-            "subject_id", subject_id
-        ).eq("exam_type", exam_type).execute().data or []
+        existing = table("marks").select("*").eq("subject_id", subject_id).eq("exam_type", exam_type).execute().data or []
     except Exception:
         existing = []
     existing_map = {m["student_user_id"]: m for m in existing if m["student_user_id"] in student_ids}
@@ -766,13 +597,14 @@ def marks_edit(exam_type, class_id, subject_id):
         subject_name=sub.get("name", "-"),
         students=students_data,
     )
+
+
 # =====================================================
 # TIMETABLE
 # =====================================================
 @teacher_bp.route("/timetable")
 @role_required("teacher")
 def timetable():
-    """View teacher's own weekly timetable."""
     tid = session["user_id"]
     entries = _safe_select("timetable", teacher_user_id=tid)
     classes = _safe_select("classes")
@@ -800,12 +632,9 @@ def timetable():
 @teacher_bp.route("/id-card")
 @role_required("teacher")
 def id_card():
-    """Teacher ID card — view + print."""
     uid = session["user_id"]
-
     user_rows = _safe_select("users", id=uid)
     user = user_rows[0] if user_rows else {}
-
     teacher_rows = _safe_select("teachers", user_id=uid)
     teacher = teacher_rows[0] if teacher_rows else {}
 
@@ -818,19 +647,13 @@ def id_card():
         "session": "2025-2026",
     }
 
-    return render_template(
-        "id_cards/teacher_card.html",
-        user=user,
-        teacher=teacher,
-        academy=academy,
-    )
+    return render_template("id_cards/teacher_card.html", user=user, teacher=teacher, academy=academy)
 
 
 # =====================================================
 # HELPERS
 # =====================================================
 def _safe_select(table_name, **filters):
-    """Select rows from a table with optional equality filters."""
     try:
         q = table(table_name).select("*")
         for k, v in filters.items():
@@ -842,55 +665,36 @@ def _safe_select(table_name, **filters):
 
 
 def _get_one(table_name, pk):
-    """Fetch a single row by primary key."""
     try:
         res = table(table_name).select("*").eq("id", pk).limit(1).execute()
         return res.data[0] if res.data else {}
-    except Exception as e:
-        print(f"_get_one error ({table_name}, id={pk}): {e}")
+    except Exception:
         return {}
 
 
 def _is_assigned(teacher_id, class_id, section_id, subject_id):
-    """Check if teacher is assigned to this class/section/subject."""
     try:
-        res = table("teacher_assignments").select("id").eq(
-            "teacher_user_id", teacher_id
-        ).eq("class_id", class_id).eq(
-            "section_id", section_id
-        ).eq("subject_id", subject_id).limit(1).execute()
+        res = table("teacher_assignments").select("id").eq("teacher_user_id", teacher_id).eq("class_id", class_id).eq("section_id", section_id).eq("subject_id", subject_id).limit(1).execute()
         return bool(res.data)
-    except Exception as e:
-        print(f"_is_assigned error: {e}")
+    except Exception:
         return False
 
 
 def _students_in(class_id, section_id):
-    """
-    Return list of student dicts for class+section.
-    Each dict includes user_id (which is the users.id) for form field binding.
-    """
     try:
-        profiles = table("students").select("*").eq(
-            "class_id", class_id
-        ).eq("section_id", section_id).execute().data or []
-
+        profiles = table("students").select("*").eq("class_id", class_id).eq("section_id", section_id).execute().data or []
         if not profiles:
             return []
-
         user_ids = [p["user_id"] for p in profiles if p.get("user_id")]
         if not user_ids:
             return []
-
         users = table("users").select("*").in_("id", user_ids).execute().data or []
         umap = {u["id"]: u for u in users}
-
         out = []
         for p in profiles:
             u = umap.get(p.get("user_id"))
             if not u:
                 continue
-
             out.append({
                 "user_id": u["id"],
                 "id": u["id"],
@@ -901,7 +705,6 @@ def _students_in(class_id, section_id):
                 "phone": u.get("phone"),
                 "roll_no_in_class": p.get("roll_no_in_class"),
             })
-
         return sorted(out, key=lambda x: x.get("roll_no_in_class") or 9999)
     except Exception as e:
         print(f"_students_in error: {e}")
@@ -909,25 +712,16 @@ def _students_in(class_id, section_id):
 
 
 def _existing_attendance(date_str, class_id, section_id, subject_id):
-    """Return dict {student_user_id: status} for a specific session."""
     try:
-        recs = table("attendance").select("*").eq(
-            "class_id", class_id
-        ).eq("section_id", section_id).eq(
-            "subject_id", subject_id
-        ).eq("date", date_str).execute().data or []
+        recs = table("attendance").select("*").eq("class_id", class_id).eq("section_id", section_id).eq("subject_id", subject_id).eq("date", date_str).execute().data or []
         return {r["student_user_id"]: r["status"] for r in recs}
-    except Exception as e:
-        print(f"_existing_attendance error: {e}")
+    except Exception:
         return {}
 
 
 def _recent_attendance(tid, limit=5):
-    """Get last N distinct attendance sessions for dashboard."""
     try:
-        recs = table("attendance").select("*").eq(
-            "teacher_user_id", tid
-        ).order("date", desc=True).limit(500).execute().data or []
+        recs = table("attendance").select("*").eq("teacher_user_id", tid).order("date", desc=True).limit(500).execute().data or []
     except Exception:
         return []
 
@@ -956,29 +750,22 @@ def _recent_attendance(tid, limit=5):
         groups[key][status] = groups[key].get(status, 0) + 1
         groups[key]["total"] += 1
 
-    sorted_list = sorted(
-        groups.values(),
-        key=lambda x: str(x["date"]),
-        reverse=True
-    )[:limit]
-
+    sorted_list = sorted(groups.values(), key=lambda x: str(x["date"]), reverse=True)[:limit]
     for s in sorted_list:
         t = s["total"] or 1
         s["percent"] = round(s["P"] * 100 / t, 1)
-
     return sorted_list
+
+
 def _recent_marks(tid, limit=5):
-    """Get last N marks entry sessions."""
     try:
         assigns = _safe_select("teacher_assignments", teacher_user_id=tid)
         valid = {(a["class_id"], a["subject_id"]) for a in assigns}
         if not valid:
             return []
-
         all_marks = table("marks").select("*").order("created_at", desc=True).limit(300).execute().data or []
         profiles = _safe_select("students")
         pmap = {p["user_id"]: p for p in profiles}
-
         classes = _safe_select("classes")
         subjects = _safe_select("subjects")
         cmap = {c["id"]: c["name"] for c in classes}
@@ -994,7 +781,6 @@ def _recent_marks(tid, limit=5):
             sub_id = m.get("subject_id")
             if (cid, sub_id) not in valid:
                 continue
-
             key = (m.get("exam_type"), cid, sub_id)
             if key not in groups:
                 groups[key] = {
@@ -1008,8 +794,6 @@ def _recent_marks(tid, limit=5):
                 }
             groups[key]["count"] += 1
 
-        sorted_list = sorted(groups.values(), key=lambda x: x["latest_date"], reverse=True)[:limit]
-        return sorted_list
-    except Exception as e:
-        print(f"_recent_marks error: {e}")
+        return sorted(groups.values(), key=lambda x: x["latest_date"], reverse=True)[:limit]
+    except Exception:
         return []
