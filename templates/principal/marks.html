@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Marks Report{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>📝 Marks Report</h1>
+    <a href="{{ url_for('principal.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">🔍 Select Class + Section + Exam</h2>
+    <form method="GET" class="form-grid">
+      <div class="form-group">
+        <label>Class</label>
+        <select id="classSelect" name="class_id" required>
+          <option value="">— Select Class —</option>
+          {% for c in classes %}
+            <option value="{{ c.id }}" {% if class_id == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Section</label>
+        <select id="sectionSelect" name="section_id" required>
+          <option value="">— Select Section —</option>
+          {% for s in sections %}
+            <option value="{{ s.id }}" data-class-id="{{ s.class_id }}" {% if section_id == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Exam Type (optional)</label>
+        <select name="exam_type">
+          <option value="">All Exams</option>
+          <option value="Monthly" {% if exam_type == 'Monthly' %}selected{% endif %}>Monthly</option>
+          <option value="Midterm" {% if exam_type == 'Midterm' %}selected{% endif %}>Midterm</option>
+          <option value="Final" {% if exam_type == 'Final' %}selected{% endif %}>Final</option>
+        </select>
+      </div>
+      <button type="submit" class="btn">📊 Show Marks</button>
+    </form>
+  </div>
+
+  {% if rows %}
+  <div class="stat-grid">
+    <div class="stat-card accent-blue">
+      <div class="stat-label">Students Graded</div>
+      <div class="stat-value">{{ stats.students }}</div>
+    </div>
+    <div class="stat-card accent-green">
+      <div class="stat-label">Average %</div>
+      <div class="stat-value">{{ stats.avg_percent }}%</div>
+    </div>
+    {% if stats.topper %}
+    <div class="stat-card accent-green">
+      <div class="stat-label">🏆 Topper</div>
+      <div class="stat-value" style="font-size:1.1rem;">{{ stats.topper.name }}</div>
+      <div class="stat-hint">{{ stats.topper.percent }}%</div>
+    </div>
+    {% endif %}
+    {% if stats.lowest %}
+    <div class="stat-card accent-red">
+      <div class="stat-label">⚠️ Lowest</div>
+      <div class="stat-value" style="font-size:1.1rem;">{{ stats.lowest.name }}</div>
+      <div class="stat-hint">{{ stats.lowest.percent }}%</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="between mb-3">
+      <h2 class="section-title mb-0">📋 Marks Ranking {% if exam_type %}— {{ exam_type }}{% endif %}</h2>
+      <button onclick="window.print()" class="btn btn-sm btn-ghost no-print">🖨️ Print</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Roll No</th>
+            <th>Name</th>
+            <th>Obtained</th>
+            <th>Total</th>
+            <th>%</th>
+            <th>Grade</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.roll_no_in_class }}</td>
+            <td><span class="roll-badge">{{ r.roll_number }}</span></td>
+            <td>{{ r.name }}</td>
+            <td><strong>{{ r.total_obtained }}</strong></td>
+            <td>{{ r.total_possible }}</td>
+            <td>
+              <span class="pill {% if r.percent >= 75 %}pill-paid{% elif r.percent >= 50 %}pill-partial{% else %}pill-unpaid{% endif %}">
+                {{ r.percent }}%
+              </span>
+            </td>
+            <td><strong>{{ r.grade }}</strong></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% elif class_id and section_id %}
+  <div class="card"><p class="empty-state">No marks records found.</p></div>
+  {% else %}
+  <div class="card"><p class="empty-state">Select class and section.</p></div>
+  {% endif %}
+</div>
+{% endblock %}
