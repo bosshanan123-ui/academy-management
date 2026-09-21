@@ -1,6 +1,6 @@
 """
 routes/student.py
-Student dashboard, timetable, attendance, result, fee.
+Student dashboard, timetable, attendance, result, fee, ID card.
 """
 from datetime import date, timedelta
 import calendar
@@ -13,6 +13,9 @@ from utils.decorators import role_required
 student_bp = Blueprint("student", __name__)
 
 
+# =====================================================
+# DASHBOARD
+# =====================================================
 @student_bp.route("/dashboard")
 @role_required("student")
 def dashboard():
@@ -22,6 +25,9 @@ def dashboard():
     return render_template("student/dashboard.html", **ctx)
 
 
+# =====================================================
+# TIMETABLE
+# =====================================================
 @student_bp.route("/timetable")
 @role_required("student")
 def timetable():
@@ -33,6 +39,9 @@ def timetable():
     return render_template("student/timetable.html", grid=grid, days=days, **ctx)
 
 
+# =====================================================
+# ATTENDANCE
+# =====================================================
 @student_bp.route("/attendance")
 @role_required("student")
 def attendance():
@@ -147,6 +156,9 @@ def attendance():
     return render_template("student/attendance.html", **ctx)
 
 
+# =====================================================
+# RESULT
+# =====================================================
 @student_bp.route("/result")
 @role_required("student")
 def result():
@@ -213,6 +225,9 @@ def result():
     return render_template("student/result.html", **ctx)
 
 
+# =====================================================
+# FEE
+# =====================================================
 @student_bp.route("/fee")
 @role_required("student")
 def fee():
@@ -221,14 +236,11 @@ def fee():
     ctx = _base_ctx(uid, profile)
 
     fees = _safe_select("fees", student_user_id=uid)
-
-    # Sort by month
     fees = sorted(fees, key=lambda x: x.get("month") or "", reverse=True)
 
     total_paid = sum(float(f.get("amount") or 0) for f in fees if f.get("status") == "paid")
     total_unpaid = sum(float(f.get("amount") or 0) for f in fees if f.get("status") != "paid")
 
-    # Current month status
     current_month = date.today().strftime("%Y-%m")
     current_fee = next((f for f in fees if f.get("month") == current_month), None)
 
@@ -245,7 +257,47 @@ def fee():
     return render_template("student/fee.html", **ctx)
 
 
-# ---------- helpers ----------
+# =====================================================
+# ID CARD  ← NEW (fixes the 500 error)
+# =====================================================
+@student_bp.route("/id-card")
+@role_required("student")
+def id_card():
+    """Student ID card — view + print."""
+    uid = session["user_id"]
+    profile = _profile(uid)
+    user = _get_one("users", uid)
+
+    classes = _safe_select("classes")
+    sections = _safe_select("sections")
+    cmap = {c["id"]: c["name"] for c in classes}
+    smap = {s["id"]: s["name"] for s in sections}
+
+    class_name = cmap.get(profile.get("class_id"), "-")
+    section_name = smap.get(profile.get("section_id"), "-")
+
+    academy = {
+        "name": "Academy Management System",
+        "tagline": "Excellence in Education",
+        "address": "123 Education Street, City",
+        "phone": "+92 300 0000000",
+        "website": "academy-ms.app",
+        "session": "2025-2026",
+    }
+
+    return render_template(
+        "id_cards/student_card.html",
+        user=user,
+        profile=profile,
+        class_name=class_name,
+        section_name=section_name,
+        academy=academy,
+    )
+
+
+# =====================================================
+# HELPERS
+# =====================================================
 def _profile(uid):
     try:
         res = table("students").select("*").eq("user_id", uid).limit(1).execute()
@@ -333,5 +385,16 @@ def _safe_select(table_name, **filters):
         for k, v in filters.items():
             q = q.eq(k, v)
         return q.execute().data or []
-    except Exception:
+    except Exception as e:
+        print(f"_safe_select error ({table_name}): {e}")
         return []
+
+
+def _get_one(table_name, pk):
+    """Fetch a single row by primary key."""
+    try:
+        res = table(table_name).select("*").eq("id", pk).limit(1).execute()
+        return res.data[0] if res.data else {}
+    except Exception as e:
+        print(f"_get_one error ({table_name}, id={pk}): {e}")
+        return {}
