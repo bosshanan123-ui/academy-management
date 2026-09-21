@@ -47,6 +47,7 @@ def dashboard():
 
     # Recent attendance sessions
     recent = _recent_attendance(tid, limit=5)
+    recent_marks = _recent_marks(tid, limit=5)
 
     return render_template(
         "teacher/dashboard.html",
@@ -55,6 +56,7 @@ def dashboard():
         today_name=today_name,
         notices=notices,
         recent_attendance=recent,
+        recent_marks=recent_marks,
     )
 
 
@@ -965,3 +967,49 @@ def _recent_attendance(tid, limit=5):
         s["percent"] = round(s["P"] * 100 / t, 1)
 
     return sorted_list
+def _recent_marks(tid, limit=5):
+    """Get last N marks entry sessions."""
+    try:
+        assigns = _safe_select("teacher_assignments", teacher_user_id=tid)
+        valid = {(a["class_id"], a["subject_id"]) for a in assigns}
+        if not valid:
+            return []
+
+        all_marks = table("marks").select("*").order("created_at", desc=True).limit(300).execute().data or []
+        profiles = _safe_select("students")
+        pmap = {p["user_id"]: p for p in profiles}
+
+        classes = _safe_select("classes")
+        subjects = _safe_select("subjects")
+        cmap = {c["id"]: c["name"] for c in classes}
+        submap = {s["id"]: s["name"] for s in subjects}
+
+        groups = {}
+        for m in all_marks:
+            sid = m.get("student_user_id")
+            profile = pmap.get(sid)
+            if not profile:
+                continue
+            cid = profile.get("class_id")
+            sub_id = m.get("subject_id")
+            if (cid, sub_id) not in valid:
+                continue
+
+            key = (m.get("exam_type"), cid, sub_id)
+            if key not in groups:
+                groups[key] = {
+                    "exam_type": m.get("exam_type"),
+                    "class_id": cid,
+                    "class_name": cmap.get(cid, "-"),
+                    "subject_id": sub_id,
+                    "subject_name": submap.get(sub_id, "-"),
+                    "count": 0,
+                    "latest_date": str(m.get("created_at") or "")[:10],
+                }
+            groups[key]["count"] += 1
+
+        sorted_list = sorted(groups.values(), key=lambda x: x["latest_date"], reverse=True)[:limit]
+        return sorted_list
+    except Exception as e:
+        print(f"_recent_marks error: {e}")
+        return []
