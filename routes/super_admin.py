@@ -1,7 +1,6 @@
-
 """
 routes/super_admin.py
-All Super Admin functionality with full EDIT support.
+All Super Admin functionality.
 """
 from datetime import date
 
@@ -160,7 +159,7 @@ def edit_section(sid):
     class_id = request.form.get("class_id")
     name = (request.form.get("name") or "").strip().upper()
     if not class_id or not name:
-        flash("Class and section name are required.", "error")
+        flash("Required fields missing.", "error")
     else:
         try:
             table("sections").update({"class_id": int(class_id), "name": name}).eq("id", sid).execute()
@@ -244,7 +243,7 @@ def teachers():
         email = (request.form.get("email") or "").strip()
 
         if not name or not password:
-            flash("Name and password are required.", "error")
+            flash("Name and password required.", "error")
             return redirect(url_for("super_admin.teachers"))
 
         try:
@@ -284,11 +283,9 @@ def edit_teacher(uid):
     phone = (request.form.get("phone") or "").strip()
     email = (request.form.get("email") or "").strip()
     qualification = (request.form.get("qualification") or "").strip()
-
     if not name:
-        flash("Name is required.", "error")
+        flash("Name required.", "error")
         return redirect(url_for("super_admin.teachers"))
-
     try:
         table("users").update({"name": name, "phone": phone, "email": email}).eq("id", uid).execute()
         existing = table("teachers").select("id").eq("user_id", uid).execute().data
@@ -305,13 +302,13 @@ def edit_teacher(uid):
 @super_admin_bp.route("/teachers/reset-password/<int:uid>", methods=["POST"])
 @role_required("super_admin")
 def reset_teacher_password(uid):
-    new_password = request.form.get("new_password") or ""
-    if len(new_password) < 4:
-        flash("Password must be at least 4 characters.", "error")
+    np = request.form.get("new_password") or ""
+    if len(np) < 4:
+        flash("Min 4 chars.", "error")
     else:
         try:
-            table("users").update({"password_hash": hash_password(new_password)}).eq("id", uid).execute()
-            flash("Password reset successfully.", "success")
+            table("users").update({"password_hash": hash_password(np)}).eq("id", uid).execute()
+            flash("Password reset.", "success")
         except Exception as e:
             flash(f"Error: {e}", "error")
     return redirect(url_for("super_admin.teachers"))
@@ -348,7 +345,7 @@ def students():
         custom_fee_raw = request.form.get("custom_fee") or ""
 
         if not name or not password or not class_id or not section_id:
-            flash("Name, password, class and section are required.", "error")
+            flash("Name, password, class and section required.", "error")
             return redirect(url_for("super_admin.students"))
 
         custom_fee = None
@@ -368,7 +365,7 @@ def students():
                 "phone": phone,
             }).execute().data[0]
 
-            student_payload = {
+            payload = {
                 "user_id": user["id"],
                 "class_id": int(class_id),
                 "section_id": int(section_id),
@@ -378,10 +375,10 @@ def students():
                 "address": address,
             }
             if parent_user_id:
-                student_payload["parent_user_id"] = int(parent_user_id)
+                payload["parent_user_id"] = int(parent_user_id)
             if custom_fee is not None:
-                student_payload["custom_fee"] = custom_fee
-            table("students").insert(student_payload).execute()
+                payload["custom_fee"] = custom_fee
+            table("students").insert(payload).execute()
 
             flash(f"Student created. Roll Number: {roll}", "success")
         except Exception as e:
@@ -431,7 +428,7 @@ def edit_student(uid):
     custom_fee_raw = request.form.get("custom_fee") or ""
 
     if not name or not class_id or not section_id:
-        flash("Name, class and section are required.", "error")
+        flash("Name, class and section required.", "error")
         return redirect(url_for("super_admin.students"))
 
     custom_fee = None
@@ -466,13 +463,13 @@ def edit_student(uid):
 @super_admin_bp.route("/students/reset-password/<int:uid>", methods=["POST"])
 @role_required("super_admin")
 def reset_student_password(uid):
-    new_password = request.form.get("new_password") or ""
-    if len(new_password) < 4:
-        flash("Password must be at least 4 characters.", "error")
+    np = request.form.get("new_password") or ""
+    if len(np) < 4:
+        flash("Min 4 chars.", "error")
     else:
         try:
-            table("users").update({"password_hash": hash_password(new_password)}).eq("id", uid).execute()
-            flash("Password reset successfully.", "success")
+            table("users").update({"password_hash": hash_password(np)}).eq("id", uid).execute()
+            flash("Password reset.", "success")
         except Exception as e:
             flash(f"Error: {e}", "error")
     return redirect(url_for("super_admin.students"))
@@ -502,7 +499,7 @@ def parents():
         student_user_id = request.form.get("student_user_id")
 
         if not name or not password:
-            flash("Name and password are required.", "error")
+            flash("Name and password required.", "error")
             return redirect(url_for("super_admin.parents"))
 
         try:
@@ -548,11 +545,9 @@ def edit_parent(uid):
     name = (request.form.get("name") or "").strip()
     phone = (request.form.get("phone") or "").strip()
     student_user_id = request.form.get("student_user_id")
-
     if not name:
-        flash("Name is required.", "error")
+        flash("Name required.", "error")
         return redirect(url_for("super_admin.parents"))
-
     try:
         table("users").update({"name": name, "phone": phone}).eq("id", uid).execute()
         all_profiles = _safe_select("students")
@@ -570,13 +565,13 @@ def edit_parent(uid):
 @super_admin_bp.route("/parents/reset-password/<int:uid>", methods=["POST"])
 @role_required("super_admin")
 def reset_parent_password(uid):
-    new_password = request.form.get("new_password") or ""
-    if len(new_password) < 4:
-        flash("Password must be at least 4 characters.", "error")
+    np = request.form.get("new_password") or ""
+    if len(np) < 4:
+        flash("Min 4 chars.", "error")
     else:
         try:
-            table("users").update({"password_hash": hash_password(new_password)}).eq("id", uid).execute()
-            flash("Password reset successfully.", "success")
+            table("users").update({"password_hash": hash_password(np)}).eq("id", uid).execute()
+            flash("Password reset.", "success")
         except Exception as e:
             flash(f"Error: {e}", "error")
     return redirect(url_for("super_admin.parents"))
@@ -606,7 +601,7 @@ def assignments():
         subject_id = request.form.get("subject_id")
 
         if not all([teacher_user_id, class_id, section_id, subject_id]):
-            flash("All fields are required.", "error")
+            flash("All fields required.", "error")
         else:
             try:
                 table("teacher_assignments").insert({
@@ -678,6 +673,11 @@ def timetable():
             flash(f"Error: {e}", "error")
         return redirect(url_for("super_admin.timetable"))
 
+    # Filters
+    filter_class = (request.args.get("class_id") or "").strip()
+    filter_teacher = (request.args.get("teacher_user_id") or "").strip()
+    filter_day = (request.args.get("day") or "").strip()
+
     entries = _safe_select("timetable")
     classes = _safe_select("classes")
     sections = _safe_select("sections")
@@ -688,6 +688,14 @@ def timetable():
     smap = {s["id"]: s["name"] for s in sections}
     submap = {s["id"]: s["name"] for s in subjects}
     tmap = {t["id"]: t for t in teachers}
+
+    # Apply filters
+    if filter_class:
+        entries = [e for e in entries if str(e.get("class_id")) == filter_class]
+    if filter_teacher:
+        entries = [e for e in entries if str(e.get("teacher_user_id")) == filter_teacher]
+    if filter_day:
+        entries = [e for e in entries if e.get("day") == filter_day]
 
     for e in entries:
         e["class_name"] = cmap.get(e["class_id"], "-")
@@ -700,7 +708,21 @@ def timetable():
         key = f"{e['class_name']}-{e['section_name']}"
         grid.setdefault(key, []).append(e)
 
-    return render_template("super_admin/timetable.html", entries=entries, grid=grid, classes=classes, sections=sections, subjects=subjects, teachers=teachers)
+    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+    return render_template(
+        "super_admin/timetable.html",
+        entries=entries,
+        grid=grid,
+        classes=classes,
+        sections=sections,
+        subjects=subjects,
+        teachers=teachers,
+        days=days,
+        filter_class=filter_class,
+        filter_teacher=filter_teacher,
+        filter_day=filter_day,
+    )
 
 
 @super_admin_bp.route("/timetable/edit/<int:tid>", methods=["POST"])
@@ -750,19 +772,11 @@ def fees():
             admission_fee = request.form.get("admission_fee") or 0
             exam_fee = request.form.get("exam_fee") or 0
             notes = (request.form.get("notes") or "").strip()
-
             if not class_id:
                 flash("Class is required.", "error")
                 return redirect(url_for("super_admin.fees"))
-
             try:
-                payload = {
-                    "class_id": int(class_id),
-                    "monthly_fee": float(monthly_fee),
-                    "admission_fee": float(admission_fee),
-                    "exam_fee": float(exam_fee),
-                    "notes": notes,
-                }
+                payload = {"class_id": int(class_id), "monthly_fee": float(monthly_fee), "admission_fee": float(admission_fee), "exam_fee": float(exam_fee), "notes": notes}
                 existing = table("fee_structures").select("id").eq("class_id", int(class_id)).execute().data
                 if existing:
                     table("fee_structures").update(payload).eq("class_id", int(class_id)).execute()
@@ -771,7 +785,7 @@ def fees():
                     table("fee_structures").insert(payload).execute()
                     flash("Fee structure created.", "success")
             except Exception as e:
-                flash(f"Error saving structure: {e}", "error")
+                flash(f"Error: {e}", "error")
             return redirect(url_for("super_admin.fees"))
 
         if action == "generate":
@@ -780,25 +794,19 @@ def fees():
             target_class_id = request.form.get("target_class_id")
             target_student_id = request.form.get("target_student_id")
             override_amount = request.form.get("override_amount") or ""
-
             if not month:
                 flash("Month is required.", "error")
                 return redirect(url_for("super_admin.fees"))
 
             structures = _safe_select("fee_structures")
             struct_map = {s["class_id"]: s for s in structures}
-
             student_users = _safe_select("users", role="student")
             student_profiles = _safe_select("students")
             profile_map = {p["user_id"]: p for p in student_profiles}
-
             existing = _safe_select("fees")
             existing_set = {(f["student_user_id"], f["month"]) for f in existing}
 
-            count = 0
-            skipped = 0
-            failed = []
-
+            count, skipped, failed = 0, 0, []
             for u in student_users:
                 sid = u["id"]
                 if mode == "student" and str(sid) != str(target_student_id):
@@ -811,7 +819,6 @@ def fees():
                 if (sid, month) in existing_set:
                     skipped += 1
                     continue
-
                 amount = 0
                 if override_amount and str(override_amount).strip():
                     try:
@@ -824,27 +831,18 @@ def fees():
                     s = struct_map.get(profile.get("class_id"))
                     if s:
                         amount = float(s.get("monthly_fee") or 0)
-
                 if amount <= 0:
                     failed.append(u.get("name", "?"))
                     continue
-
                 try:
-                    table("fees").insert({
-                        "student_user_id": sid,
-                        "month": month,
-                        "amount": amount,
-                        "status": "unpaid",
-                    }).execute()
+                    table("fees").insert({"student_user_id": sid, "month": month, "amount": amount, "status": "unpaid"}).execute()
                     count += 1
                 except Exception as e:
                     failed.append(f"{u.get('name')} ({e})")
 
             msg = f"{count} voucher(s) generated for {month}."
             if skipped:
-                msg += f" {skipped} already existed."
-            if failed:
-                msg += f" {len(failed)} skipped (no fee set)."
+                msg += f" {skipped} existed."
             flash(msg, "success")
             return redirect(url_for("super_admin.fees"))
 
@@ -852,7 +850,7 @@ def fees():
             sid = request.form.get("structure_id")
             try:
                 table("fee_structures").delete().eq("id", int(sid)).execute()
-                flash("Fee structure deleted.", "success")
+                flash("Deleted.", "success")
             except Exception as e:
                 flash(f"Error: {e}", "error")
             return redirect(url_for("super_admin.fees"))
@@ -861,7 +859,7 @@ def fees():
             fid = request.form.get("fee_id")
             try:
                 table("fees").update({"status": "paid", "paid_date": str(date.today())}).eq("id", int(fid)).execute()
-                flash("Marked as paid.", "success")
+                flash("Marked paid.", "success")
             except Exception as e:
                 flash(f"Error: {e}", "error")
             return redirect(url_for("super_admin.fees"))
@@ -870,7 +868,7 @@ def fees():
             fid = request.form.get("fee_id")
             try:
                 table("fees").update({"status": "unpaid", "paid_date": None}).eq("id", int(fid)).execute()
-                flash("Marked as unpaid.", "success")
+                flash("Marked unpaid.", "success")
             except Exception as e:
                 flash(f"Error: {e}", "error")
             return redirect(url_for("super_admin.fees"))
@@ -893,7 +891,7 @@ def fees():
                     count += 1
                 except Exception:
                     pass
-            flash(f"{count} voucher(s) marked paid.", "success")
+            flash(f"{count} marked paid.", "success")
             return redirect(url_for("super_admin.fees"))
 
         if action == "bulk_unpaid":
@@ -905,7 +903,7 @@ def fees():
                     count += 1
                 except Exception:
                     pass
-            flash(f"{count} voucher(s) marked unpaid.", "success")
+            flash(f"{count} marked unpaid.", "success")
             return redirect(url_for("super_admin.fees"))
 
         if action == "bulk_delete":
@@ -917,7 +915,7 @@ def fees():
                     count += 1
                 except Exception:
                     pass
-            flash(f"{count} voucher(s) deleted.", "success")
+            flash(f"{count} deleted.", "success")
             return redirect(url_for("super_admin.fees"))
 
         return redirect(url_for("super_admin.fees"))
@@ -962,10 +960,8 @@ def fees():
     fee_labels = list(months.keys())
     fee_paid = [months[m]["paid"] for m in fee_labels]
     fee_unpaid = [months[m]["unpaid"] for m in fee_labels]
-
     total_paid_amount = sum(float(f.get("amount") or 0) for f in fees_list if f.get("status") == "paid")
     total_unpaid_amount = sum(float(f.get("amount") or 0) for f in fees_list if f.get("status") != "paid")
-
     pending_by_student = {}
     for f in fees_list:
         if f.get("status") != "paid":
@@ -998,7 +994,7 @@ def notices():
         body = (request.form.get("body") or "").strip()
         target = request.form.get("target_role") or "all"
         if not title or not body:
-            flash("Title and body are required.", "error")
+            flash("Title and body required.", "error")
         else:
             try:
                 table("notices").insert({
@@ -1015,8 +1011,28 @@ def notices():
     rows = _safe_select("notices")
     users = _safe_select("users")
     umap = {u["id"]: u["name"] for u in users}
+
+    # Read stats
+    try:
+        reads = _safe_select("notice_reads")
+    except Exception:
+        reads = []
+
+    total_users_by_role = {
+        "all": sum(1 for u in users if u["role"] in ("student", "parent", "teacher")),
+        "student": sum(1 for u in users if u["role"] == "student"),
+        "parent": sum(1 for u in users if u["role"] == "parent"),
+        "teacher": sum(1 for u in users if u["role"] == "teacher"),
+    }
+
     for n in rows:
         n["posted_by"] = umap.get(n["posted_by_user_id"], "-")
+        n_reads = [r for r in reads if r["notice_id"] == n["id"]]
+        n["read_count"] = len(n_reads)
+        target = n.get("target_role") or "all"
+        n["total_target"] = total_users_by_role.get(target, 0)
+        n["read_percent"] = round(n["read_count"] * 100 / n["total_target"], 1) if n["total_target"] else 0
+
     return render_template("super_admin/notices.html", notices=rows)
 
 
@@ -1027,7 +1043,7 @@ def edit_notice(nid):
     body = (request.form.get("body") or "").strip()
     target = request.form.get("target_role") or "all"
     if not title or not body:
-        flash("Title and body are required.", "error")
+        flash("Required.", "error")
     else:
         try:
             table("notices").update({"title": title, "body": body, "target_role": target}).eq("id", nid).execute()
@@ -1048,6 +1064,32 @@ def delete_notice(nid):
     return redirect(url_for("super_admin.notices"))
 
 
+@super_admin_bp.route("/notices/readers/<int:nid>")
+@role_required("super_admin")
+def notice_readers(nid):
+    """View who read a notice."""
+    notice = _get_one("notices", nid)
+    readers = []
+    try:
+        reads = table("notice_reads").select("*").eq("notice_id", nid).execute().data or []
+        user_ids = [r["user_id"] for r in reads]
+        if user_ids:
+            users = table("users").select("*").in_("id", user_ids).execute().data or []
+            umap = {u["id"]: u for u in users}
+            for r in reads:
+                u = umap.get(r["user_id"], {})
+                readers.append({
+                    "name": u.get("name", "-"),
+                    "roll_number": u.get("roll_number", "-"),
+                    "role": u.get("role", "-"),
+                    "read_at": r.get("read_at", "-"),
+                })
+    except Exception:
+        pass
+
+    return render_template("super_admin/notice_readers.html", notice=notice, readers=readers)
+
+
 # =====================================================
 # HELPERS
 # =====================================================
@@ -1060,3 +1102,11 @@ def _safe_select(table_name: str, **filters):
     except Exception as e:
         print(f"_safe_select error ({table_name}): {e}")
         return []
+
+
+def _get_one(table_name, pk):
+    try:
+        res = table(table_name).select("*").eq("id", pk).limit(1).execute()
+        return res.data[0] if res.data else {}
+    except Exception:
+        return {}
