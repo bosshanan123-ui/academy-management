@@ -43,7 +43,27 @@
         {% endfor %}
       {% else %}<p class="empty-state">No classes today.</p>{% endif %}
     </div>
-
+  <div class="card">
+    <h2 class="section-title">📢 Notices</h2>
+    {% if notices %}
+      {% for n in notices[:5] %}
+        <div class="notice-item">
+          <div class="notice-header">
+            <div>
+              <div class="notice-title">{{ n.title }}</div>
+              <div class="notice-meta">By {{ n.posted_by or 'Admin' }}</div>
+            </div>
+          </div>
+          <div class="notice-body">{{ n.body }}</div>
+        </div>
+      {% endfor %}
+      {% if notices|length > 5 %}
+        <p class="text-muted text-center mt-3">+ {{ notices|length - 5 }} more notices</p>
+      {% endif %}
+    {% else %}
+      <p class="empty-state">No notices.</p>
+    {% endif %}
+  </div>
     <div class="card">
       <h2 class="section-title">👩‍🏫 Child's Teachers</h2>
       {% if my_teachers %}
