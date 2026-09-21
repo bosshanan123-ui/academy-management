@@ -4,12 +4,12 @@
 {% block content %}
 <div class="container">
   <div class="page-header">
-    <h1>Notices</h1>
+    <h1>📢 Notices</h1>
     <a href="{{ url_for('super_admin.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
   </div>
 
   <div class="card">
-    <h2 class="section-title">Post Notice</h2>
+    <h2 class="section-title">📝 Post Notice</h2>
     <form method="POST" class="form-grid">
       <div class="form-group"><label>Title</label><input type="text" name="title" required /></div>
       <div class="form-group">
@@ -21,7 +21,7 @@
           <option value="parent">Parents</option>
         </select>
       </div>
-      <div class="form-group" style="grid-column:1/-1;">
+      <div class="form-group" style="grid-column: 1/-1;">
         <label>Body</label>
         <textarea name="body" required></textarea>
       </div>
@@ -30,35 +30,42 @@
   </div>
 
   <div class="card">
-    <h2 class="section-title">All Notices</h2>
+    <h2 class="section-title">📋 All Notices ({{ notices|length }})</h2>
     {% if notices %}
       {% for n in notices %}
-        <div class="schedule-item">
-          <div class="sched-info" style="flex:1;">
-            <strong>{{ n.title }}</strong>
-            <span>{{ n.body }}</span>
-            <span class="text-muted" style="font-size:.75rem;">
-              By {{ n.posted_by }} • Target: {{ n.target_role }}
-            </span>
+        <div class="notice-item">
+          <div class="notice-header">
+            <div>
+              <div class="notice-title">{{ n.title }}</div>
+              <div class="notice-meta">
+                By <strong>{{ n.posted_by }}</strong> • Target: <span class="pill pill-partial">{{ n.target_role }}</span>
+              </div>
+            </div>
+            <div class="notice-read-badge {% if n.read_percent >= 75 %}read-high{% elif n.read_percent >= 40 %}read-mid{% else %}read-low{% endif %}">
+              <div class="read-percent">{{ n.read_percent }}%</div>
+              <div class="read-label">{{ n.read_count }}/{{ n.total_target }} read</div>
+            </div>
           </div>
-          <div class="actions">
+          <div class="notice-body">{{ n.body }}</div>
+          <div class="notice-actions">
+            <a href="{{ url_for('super_admin.notice_readers', nid=n.id) }}" class="btn btn-sm btn-ghost">👁 View Readers</a>
             <button type="button" class="btn btn-sm btn-ghost edit-notice-btn"
                     data-id="{{ n.id }}"
                     data-title="{{ n.title }}"
                     data-body="{{ n.body }}"
                     data-target="{{ n.target_role }}">✏️ Edit</button>
-            <form method="POST" action="{{ url_for('super_admin.delete_notice', nid=n.id) }}"
-                  data-confirm="Delete this notice?" style="display:inline;">
-              <button class="btn btn-sm btn-danger">Delete</button>
+            <form method="POST" action="{{ url_for('super_admin.delete_notice', nid=n.id) }}" data-confirm="Delete?" style="display:inline;">
+              <button class="btn btn-sm btn-danger">🗑 Delete</button>
             </form>
           </div>
         </div>
       {% endfor %}
-    {% else %}<p class="empty-state">No notices yet.</p>{% endif %}
+    {% else %}
+      <p class="empty-state">No notices yet.</p>
+    {% endif %}
   </div>
 </div>
 
-<!-- Edit Notice Modal -->
 <div class="modal-backdrop" id="editModalBackdrop"></div>
 <div class="modal" id="editModal">
   <div class="modal-header">
@@ -99,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
-
 function closeEditModal() {
   document.getElementById('editModal').classList.remove('open');
   document.getElementById('editModalBackdrop').classList.remove('open');
