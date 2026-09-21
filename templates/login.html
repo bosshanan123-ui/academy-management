@@ -1,36 +1,77 @@
 {% extends "base.html" %}
-{% block title %}Login — Academy MS{% endblock %}
+{% block title %}Sign In — Academy Management System{% endblock %}
 
 {% block content %}
 <div class="auth-wrapper">
-  <!-- Floating orbs -->
+  <!-- Floating glowing orbs -->
   <div class="orb o1" aria-hidden="true"></div>
   <div class="orb o2" aria-hidden="true"></div>
   <div class="orb o3" aria-hidden="true"></div>
   <div class="orb o4" aria-hidden="true"></div>
 
   <div class="auth-card">
+    <!-- Logo -->
     <div class="auth-logo">🎓</div>
-    <h1 class="auth-title">Academy Management</h1>
-    <p class="auth-subtitle">Sign in with your Roll Number</p>
 
+    <!-- Title -->
+    <h1 class="auth-title">Academy Management</h1>
+    <p class="auth-subtitle">Sign in with your Roll Number to continue</p>
+
+    <!-- Form -->
     <form method="POST" action="{{ url_for('auth.login') }}">
       <div class="form-group">
         <label for="roll_number">Roll Number</label>
-        <input type="text" id="roll_number" name="roll_number"
-               placeholder="e.g. SA-2025-0001" required autofocus />
+        <input
+          type="text"
+          id="roll_number"
+          name="roll_number"
+          placeholder="e.g. SA-2025-0001"
+          autocomplete="username"
+          required
+          autofocus
+        />
       </div>
+
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" id="password" name="password"
-               placeholder="••••••••" required />
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+          required
+        />
       </div>
-      <button type="submit" class="btn btn-block mt-3">Sign In</button>
+
+      <button type="submit" class="btn btn-block">
+        Sign In →
+      </button>
     </form>
 
+    <!-- Hint -->
     <p class="auth-hint">
       Default admin: <strong>SA-2025-0001</strong> / <strong>admin123</strong>
     </p>
+
+    <!-- Role pills -->
+    <div class="login-roles">
+      <span class="login-role-pill role-pill-super_admin">
+        <span class="dot"></span>Super Admin
+      </span>
+      <span class="login-role-pill role-pill-principal">
+        <span class="dot"></span>Principal
+      </span>
+      <span class="login-role-pill role-pill-teacher">
+        <span class="dot"></span>Teacher
+      </span>
+      <span class="login-role-pill role-pill-student">
+        <span class="dot"></span>Student
+      </span>
+      <span class="login-role-pill role-pill-parent">
+        <span class="dot"></span>Parent
+      </span>
+    </div>
   </div>
 </div>
 {% endblock %}
