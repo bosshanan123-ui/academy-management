@@ -19,6 +19,7 @@
             <th>Name</th>
             <th>Phone</th>
             <th>Qualification</th>
+            <th>Salary</th>
             <th>Assignments</th>
             <th>Actions</th>
           </tr>
@@ -30,10 +31,20 @@
             <td><strong>{{ t.name }}</strong></td>
             <td>{{ t.phone }}</td>
             <td>{{ t.qualification }}</td>
-            <td><span class="pill pill-partial">{{ t.assignments_count }} classes</span></td>
             <td>
-              <a href="{{ url_for('principal.teacher_timetable', teacher_id=t.id) }}" class="btn btn-sm">
-                📅 View Timetable
+              {% if t.monthly_salary %}
+                <strong>PKR {{ t.monthly_salary }}</strong>
+              {% else %}
+                <span class="text-muted">Not set</span>
+              {% endif %}
+            </td>
+            <td><span class="pill pill-partial">{{ t.assignments_count }}</span></td>
+            <td class="actions">
+              <a href="{{ url_for('principal.teacher_detail', teacher_id=t.id) }}" class="btn btn-sm">
+                👁 Detail + Salary
+              </a>
+              <a href="{{ url_for('principal.teacher_timetable', teacher_id=t.id) }}" class="btn btn-sm btn-ghost">
+                📅 Timetable
               </a>
             </td>
           </tr>
