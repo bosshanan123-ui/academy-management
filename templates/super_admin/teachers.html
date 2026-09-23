@@ -4,68 +4,76 @@
 {% block content %}
 <div class="container">
   <div class="page-header">
-    <h1>Teachers</h1>
+    <h1>👨‍🏫 Teachers</h1>
     <a href="{{ url_for('super_admin.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
   </div>
 
   <div class="card">
-    <h2 class="section-title">Add Teacher</h2>
+    <h2 class="section-title">➕ Add Teacher</h2>
     <form method="POST" class="form-grid">
       <div class="form-group"><label>Name</label><input type="text" name="name" required /></div>
       <div class="form-group"><label>Phone</label><input type="tel" name="phone" /></div>
       <div class="form-group"><label>Email</label><input type="email" name="email" /></div>
       <div class="form-group"><label>Qualification</label><input type="text" name="qualification" /></div>
+      <div class="form-group"><label>Designation</label><input type="text" name="designation" placeholder="e.g. Senior Teacher" /></div>
+      <div class="form-group"><label>CNIC</label><input type="text" name="cnic" placeholder="e.g. 42101-1234567-1" /></div>
+      <div class="form-group"><label>Monthly Salary (PKR)</label><input type="number" name="monthly_salary" step="100" placeholder="e.g. 30000" /></div>
       <div class="form-group"><label>Password</label><input type="password" name="password" required /></div>
+      <div class="form-group" style="grid-column: 1/-1;"><label>Address</label><textarea name="address"></textarea></div>
       <button type="submit" class="btn">Create Teacher</button>
     </form>
   </div>
 
   <div class="card">
-    <h2 class="section-title">All Teachers</h2>
+    <h2 class="section-title">📋 All Teachers</h2>
     {% if teachers %}
     <div class="table-wrap">
       <table>
         <thead>
-          <tr><th>Roll No</th><th>Name</th><th>Phone</th><th>Email</th><th>Qualification</th><th>Actions</th></tr>
+          <tr>
+            <th>Roll No</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Designation</th>
+            <th>Salary</th>
+            <th>Actions</th>
+          </tr>
         </thead>
         <tbody>
           {% for t in teachers %}
           <tr>
             <td><span class="roll-badge">{{ t.roll_number }}</span></td>
             <td>
-              <span class="edit-view" data-id="{{ t.id }}">{{ t.name }}</span>
-              <input type="text" class="edit-input" data-id="{{ t.id }}" value="{{ t.name }}" style="display:none;" />
+              <strong>{{ t.name }}</strong>
+              <div class="text-muted" style="font-size:.75rem;">{{ t.email or '' }}</div>
             </td>
+            <td>{{ t.phone or '-' }}</td>
+            <td>{{ t.profile.designation or 'Teacher' }}</td>
             <td>
-              <span class="edit-view" data-id="{{ t.id }}">{{ t.phone or '-' }}</span>
-              <input type="tel" class="edit-input" data-id="{{ t.id }}" value="{{ t.phone or '' }}" style="display:none;" />
-            </td>
-            <td>
-              <span class="edit-view" data-id="{{ t.id }}">{{ t.email or '-' }}</span>
-              <input type="email" class="edit-input" data-id="{{ t.id }}" value="{{ t.email or '' }}" style="display:none;" />
-            </td>
-            <td>
-              <span class="edit-view" data-id="{{ t.id }}">{{ t.profile.qualification or '-' }}</span>
-              <input type="text" class="edit-input" data-id="{{ t.id }}" value="{{ t.profile.qualification or '' }}" style="display:none;" />
+              {% if t.profile.monthly_salary %}
+                <strong>PKR {{ t.profile.monthly_salary }}</strong>
+              {% else %}
+                <span class="text-muted">Not set</span>
+              {% endif %}
             </td>
             <td class="actions">
-              <button type="button" class="btn btn-sm btn-ghost edit-btn" data-id="{{ t.id }}">✏️ Edit</button>
-              
-              <form method="POST" action="{{ url_for('super_admin.edit_teacher', uid=t.id) }}" 
-                    class="edit-form" data-id="{{ t.id }}" style="display:none;">
-                <input type="hidden" name="name" class="edit-f0-{{ t.id }}" />
-                <input type="hidden" name="phone" class="edit-f1-{{ t.id }}" />
-                <input type="hidden" name="email" class="edit-f2-{{ t.id }}" />
-                <input type="hidden" name="qualification" class="edit-f3-{{ t.id }}" />
-                <button class="btn btn-sm btn-success" type="submit">💾 Save</button>
-              </form>
-              
-              <button type="button" class="btn btn-sm btn-warning reset-pw-btn" 
+              <button type="button" class="btn btn-sm btn-ghost edit-teacher-btn"
+                      data-id="{{ t.id }}"
+                      data-name="{{ t.name }}"
+                      data-phone="{{ t.phone or '' }}"
+                      data-email="{{ t.email or '' }}"
+                      data-qualification="{{ t.profile.qualification or '' }}"
+                      data-designation="{{ t.profile.designation or '' }}"
+                      data-cnic="{{ t.profile.cnic or '' }}"
+                      data-salary="{{ t.profile.monthly_salary or '' }}"
+                      data-address="{{ t.profile.address or '' }}">✏️ Edit</button>
+
+              <button type="button" class="btn btn-sm btn-warning reset-pw-btn"
                       data-id="{{ t.id }}" data-name="{{ t.name }}">🔑 Reset</button>
-              
+
               <form method="POST" action="{{ url_for('super_admin.delete_teacher', uid=t.id) }}"
                     data-confirm="Delete this teacher?" style="display:inline;">
-                <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                <button class="btn btn-sm btn-danger">Delete</button>
               </form>
             </td>
           </tr>
@@ -75,6 +83,33 @@
     </div>
     {% else %}<p class="empty-state">No teachers yet.</p>{% endif %}
   </div>
+</div>
+
+<!-- Edit Teacher Modal -->
+<div class="modal-backdrop" id="editModalBackdrop"></div>
+<div class="modal" id="editModal">
+  <div class="modal-header">
+    <h3>✏️ Edit Teacher</h3>
+    <button class="icon-btn" onclick="closeEditModal()">✕</button>
+  </div>
+  <form method="POST" id="editForm">
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Name</label><input type="text" name="name" id="edit_name" required /></div>
+        <div class="form-group"><label>Phone</label><input type="tel" name="phone" id="edit_phone" /></div>
+        <div class="form-group"><label>Email</label><input type="email" name="email" id="edit_email" /></div>
+        <div class="form-group"><label>Qualification</label><input type="text" name="qualification" id="edit_qualification" /></div>
+        <div class="form-group"><label>Designation</label><input type="text" name="designation" id="edit_designation" /></div>
+        <div class="form-group"><label>CNIC</label><input type="text" name="cnic" id="edit_cnic" /></div>
+        <div class="form-group"><label>Monthly Salary (PKR)</label><input type="number" name="monthly_salary" id="edit_salary" step="100" /></div>
+        <div class="form-group" style="grid-column: 1/-1;"><label>Address</label><textarea name="address" id="edit_address"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
+      <button type="submit" class="btn btn-success">Save</button>
+    </div>
+  </form>
 </div>
 
 <!-- Reset Password Modal -->
@@ -89,51 +124,48 @@
       <p class="text-muted mb-3">Reset password for: <strong id="pwName"></strong></p>
       <div class="form-group">
         <label>New Password</label>
-        <input type="text" name="new_password" placeholder="Enter new password" required minlength="4" />
+        <input type="text" name="new_password" required minlength="4" />
       </div>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-ghost" onclick="closePwModal()">Cancel</button>
-      <button type="submit" class="btn btn-success">Reset Password</button>
+      <button type="submit" class="btn btn-success">Reset</button>
     </div>
   </form>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.edit-btn').forEach(btn => {
+  document.querySelectorAll('.edit-teacher-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = btn.dataset.id;
-      document.querySelectorAll(`.edit-view[data-id="${id}"]`).forEach(el => el.style.display = 'none');
-      document.querySelectorAll(`.edit-input[data-id="${id}"]`).forEach(el => el.style.display = 'inline-block');
-      document.querySelector(`.edit-form[data-id="${id}"]`).style.display = 'inline-flex';
-      btn.style.display = 'none';
+      document.getElementById('edit_name').value = btn.dataset.name || '';
+      document.getElementById('edit_phone').value = btn.dataset.phone || '';
+      document.getElementById('edit_email').value = btn.dataset.email || '';
+      document.getElementById('edit_qualification').value = btn.dataset.qualification || '';
+      document.getElementById('edit_designation').value = btn.dataset.designation || '';
+      document.getElementById('edit_cnic').value = btn.dataset.cnic || '';
+      document.getElementById('edit_salary').value = btn.dataset.salary || '';
+      document.getElementById('edit_address').value = btn.dataset.address || '';
+      document.getElementById('editForm').action = `/super-admin/teachers/edit/${id}`;
+      document.getElementById('editModal').classList.add('open');
+      document.getElementById('editModalBackdrop').classList.add('open');
     });
   });
 
-  document.querySelectorAll('.edit-form').forEach(form => {
-    form.addEventListener('submit', () => {
-      const id = form.dataset.id;
-      const inputs = form.closest('tr').querySelectorAll(`.edit-input[data-id="${id}"]`);
-      const vals = Array.from(inputs).map(i => i.value);
-      ['name','phone','email','qualification'].forEach((key, i) => {
-        form.querySelector(`.edit-f${i}-${id}`).value = vals[i] || '';
-      });
-    });
-  });
-
-  // Reset password modal
   document.querySelectorAll('.reset-pw-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const id = btn.dataset.id;
       document.getElementById('pwName').textContent = btn.dataset.name;
-      document.getElementById('pwForm').action = `/super-admin/teachers/reset-password/${id}`;
+      document.getElementById('pwForm').action = `/super-admin/teachers/reset-password/${btn.dataset.id}`;
       document.getElementById('pwModal').classList.add('open');
       document.getElementById('pwModalBackdrop').classList.add('open');
     });
   });
 });
-
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('open');
+  document.getElementById('editModalBackdrop').classList.remove('open');
+}
 function closePwModal() {
   document.getElementById('pwModal').classList.remove('open');
   document.getElementById('pwModalBackdrop').classList.remove('open');
