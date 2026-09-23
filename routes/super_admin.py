@@ -1,6 +1,6 @@
 """
 routes/super_admin.py
-All Super Admin functionality.
+All Super Admin functionality with teacher salary support.
 """
 from datetime import date
 
@@ -241,9 +241,13 @@ def teachers():
         password = request.form.get("password") or ""
         qualification = (request.form.get("qualification") or "").strip()
         email = (request.form.get("email") or "").strip()
+        monthly_salary = request.form.get("monthly_salary") or 0
+        designation = (request.form.get("designation") or "").strip()
+        cnic = (request.form.get("cnic") or "").strip()
+        address = (request.form.get("address") or "").strip()
 
         if not name or not password:
-            flash("Name and password required.", "error")
+            flash("Name and password are required.", "error")
             return redirect(url_for("super_admin.teachers"))
 
         try:
@@ -257,11 +261,21 @@ def teachers():
                 "email": email,
             }).execute().data[0]
 
-            table("teachers").insert({
+            # Build teacher profile payload
+            teacher_payload = {
                 "user_id": user["id"],
                 "qualification": qualification,
                 "joining_date": str(date.today()),
-            }).execute()
+                "designation": designation,
+                "cnic": cnic,
+                "address": address,
+            }
+            try:
+                teacher_payload["monthly_salary"] = float(monthly_salary) if monthly_salary else 0
+            except (ValueError, TypeError):
+                teacher_payload["monthly_salary"] = 0
+
+            table("teachers").insert(teacher_payload).execute()
 
             flash(f"Teacher created. Roll Number: {roll}", "success")
         except Exception as e:
@@ -283,16 +297,37 @@ def edit_teacher(uid):
     phone = (request.form.get("phone") or "").strip()
     email = (request.form.get("email") or "").strip()
     qualification = (request.form.get("qualification") or "").strip()
+    designation = (request.form.get("designation") or "").strip()
+    cnic = (request.form.get("cnic") or "").strip()
+    address = (request.form.get("address") or "").strip()
+    monthly_salary = request.form.get("monthly_salary") or 0
+
     if not name:
-        flash("Name required.", "error")
+        flash("Name is required.", "error")
         return redirect(url_for("super_admin.teachers"))
+
     try:
         table("users").update({"name": name, "phone": phone, "email": email}).eq("id", uid).execute()
+
+        payload = {
+            "qualification": qualification,
+            "designation": designation,
+            "cnic": cnic,
+            "address": address,
+        }
+        try:
+            payload["monthly_salary"] = float(monthly_salary) if monthly_salary else 0
+        except (ValueError, TypeError):
+            payload["monthly_salary"] = 0
+
         existing = table("teachers").select("id").eq("user_id", uid).execute().data
         if existing:
-            table("teachers").update({"qualification": qualification}).eq("user_id", uid).execute()
+            table("teachers").update(payload).eq("user_id", uid).execute()
         else:
-            table("teachers").insert({"user_id": uid, "qualification": qualification, "joining_date": str(date.today())}).execute()
+            payload["user_id"] = uid
+            payload["joining_date"] = str(date.today())
+            table("teachers").insert(payload).execute()
+
         flash("Teacher updated.", "success")
     except Exception as e:
         flash(f"Error: {e}", "error")
@@ -302,13 +337,13 @@ def edit_teacher(uid):
 @super_admin_bp.route("/teachers/reset-password/<int:uid>", methods=["POST"])
 @role_required("super_admin")
 def reset_teacher_password(uid):
-    np = request.form.get("new_password") or ""
-    if len(np) < 4:
-        flash("Min 4 chars.", "error")
+    new_password = request.form.get("new_password") or ""
+    if len(new_password) < 4:
+        flash("Password must be at least 4 characters.", "error")
     else:
         try:
-            table("users").update({"password_hash": hash_password(np)}).eq("id", uid).execute()
-            flash("Password reset.", "success")
+            table("users").update({"password_hash": hash_password(new_password)}).eq("id", uid).execute()
+            flash("Password reset successfully.", "success")
         except Exception as e:
             flash(f"Error: {e}", "error")
     return redirect(url_for("super_admin.teachers"))
@@ -345,7 +380,7 @@ def students():
         custom_fee_raw = request.form.get("custom_fee") or ""
 
         if not name or not password or not class_id or not section_id:
-            flash("Name, password, class and section required.", "error")
+            flash("Name, password, class and section are required.", "error")
             return redirect(url_for("super_admin.students"))
 
         custom_fee = None
@@ -365,7 +400,7 @@ def students():
                 "phone": phone,
             }).execute().data[0]
 
-            payload = {
+            student_payload = {
                 "user_id": user["id"],
                 "class_id": int(class_id),
                 "section_id": int(section_id),
@@ -375,10 +410,10 @@ def students():
                 "address": address,
             }
             if parent_user_id:
-                payload["parent_user_id"] = int(parent_user_id)
+                student_payload["parent_user_id"] = int(parent_user_id)
             if custom_fee is not None:
-                payload["custom_fee"] = custom_fee
-            table("students").insert(payload).execute()
+                student_payload["custom_fee"] = custom_fee
+            table("students").insert(student_payload).execute()
 
             flash(f"Student created. Roll Number: {roll}", "success")
         except Exception as e:
@@ -428,7 +463,7 @@ def edit_student(uid):
     custom_fee_raw = request.form.get("custom_fee") or ""
 
     if not name or not class_id or not section_id:
-        flash("Name, class and section required.", "error")
+        flash("Name, class and section are required.", "error")
         return redirect(url_for("super_admin.students"))
 
     custom_fee = None
@@ -463,13 +498,13 @@ def edit_student(uid):
 @super_admin_bp.route("/students/reset-password/<int:uid>", methods=["POST"])
 @role_required("super_admin")
 def reset_student_password(uid):
-    np = request.form.get("new_password") or ""
-    if len(np) < 4:
-        flash("Min 4 chars.", "error")
+    new_password = request.form.get("new_password") or ""
+    if len(new_password) < 4:
+        flash("Password must be at least 4 characters.", "error")
     else:
         try:
-            table("users").update({"password_hash": hash_password(np)}).eq("id", uid).execute()
-            flash("Password reset.", "success")
+            table("users").update({"password_hash": hash_password(new_password)}).eq("id", uid).execute()
+            flash("Password reset successfully.", "success")
         except Exception as e:
             flash(f"Error: {e}", "error")
     return redirect(url_for("super_admin.students"))
@@ -499,7 +534,7 @@ def parents():
         student_user_id = request.form.get("student_user_id")
 
         if not name or not password:
-            flash("Name and password required.", "error")
+            flash("Name and password are required.", "error")
             return redirect(url_for("super_admin.parents"))
 
         try:
@@ -545,9 +580,11 @@ def edit_parent(uid):
     name = (request.form.get("name") or "").strip()
     phone = (request.form.get("phone") or "").strip()
     student_user_id = request.form.get("student_user_id")
+
     if not name:
-        flash("Name required.", "error")
+        flash("Name is required.", "error")
         return redirect(url_for("super_admin.parents"))
+
     try:
         table("users").update({"name": name, "phone": phone}).eq("id", uid).execute()
         all_profiles = _safe_select("students")
@@ -565,13 +602,13 @@ def edit_parent(uid):
 @super_admin_bp.route("/parents/reset-password/<int:uid>", methods=["POST"])
 @role_required("super_admin")
 def reset_parent_password(uid):
-    np = request.form.get("new_password") or ""
-    if len(np) < 4:
-        flash("Min 4 chars.", "error")
+    new_password = request.form.get("new_password") or ""
+    if len(new_password) < 4:
+        flash("Password must be at least 4 characters.", "error")
     else:
         try:
-            table("users").update({"password_hash": hash_password(np)}).eq("id", uid).execute()
-            flash("Password reset.", "success")
+            table("users").update({"password_hash": hash_password(new_password)}).eq("id", uid).execute()
+            flash("Password reset successfully.", "success")
         except Exception as e:
             flash(f"Error: {e}", "error")
     return redirect(url_for("super_admin.parents"))
@@ -601,7 +638,7 @@ def assignments():
         subject_id = request.form.get("subject_id")
 
         if not all([teacher_user_id, class_id, section_id, subject_id]):
-            flash("All fields required.", "error")
+            flash("All fields are required.", "error")
         else:
             try:
                 table("teacher_assignments").insert({
@@ -673,7 +710,6 @@ def timetable():
             flash(f"Error: {e}", "error")
         return redirect(url_for("super_admin.timetable"))
 
-    # Filters
     filter_class = (request.args.get("class_id") or "").strip()
     filter_teacher = (request.args.get("teacher_user_id") or "").strip()
     filter_day = (request.args.get("day") or "").strip()
@@ -689,7 +725,6 @@ def timetable():
     submap = {s["id"]: s["name"] for s in subjects}
     tmap = {t["id"]: t for t in teachers}
 
-    # Apply filters
     if filter_class:
         entries = [e for e in entries if str(e.get("class_id")) == filter_class]
     if filter_teacher:
@@ -994,7 +1029,7 @@ def notices():
         body = (request.form.get("body") or "").strip()
         target = request.form.get("target_role") or "all"
         if not title or not body:
-            flash("Title and body required.", "error")
+            flash("Title and body are required.", "error")
         else:
             try:
                 table("notices").insert({
@@ -1012,7 +1047,6 @@ def notices():
     users = _safe_select("users")
     umap = {u["id"]: u["name"] for u in users}
 
-    # Read stats
     try:
         reads = _safe_select("notice_reads")
     except Exception:
@@ -1043,7 +1077,7 @@ def edit_notice(nid):
     body = (request.form.get("body") or "").strip()
     target = request.form.get("target_role") or "all"
     if not title or not body:
-        flash("Required.", "error")
+        flash("Title and body are required.", "error")
     else:
         try:
             table("notices").update({"title": title, "body": body, "target_role": target}).eq("id", nid).execute()
@@ -1067,7 +1101,6 @@ def delete_notice(nid):
 @super_admin_bp.route("/notices/readers/<int:nid>")
 @role_required("super_admin")
 def notice_readers(nid):
-    """View who read a notice."""
     notice = _get_one("notices", nid)
     readers = []
     try:
@@ -1084,9 +1117,8 @@ def notice_readers(nid):
                     "role": u.get("role", "-"),
                     "read_at": r.get("read_at", "-"),
                 })
-    except Exception:
-        pass
-
+    except Exception as e:
+        print(f"readers error: {e}")
     return render_template("super_admin/notice_readers.html", notice=notice, readers=readers)
 
 
@@ -1104,9 +1136,10 @@ def _safe_select(table_name: str, **filters):
         return []
 
 
-def _get_one(table_name, pk):
+def _get_one(table_name, pk, field="id"):
     try:
-        res = table(table_name).select("*").eq("id", pk).limit(1).execute()
+        res = table(table_name).select("*").eq(field, pk).limit(1).execute()
         return res.data[0] if res.data else {}
-    except Exception:
+    except Exception as e:
+        print(f"_get_one error ({table_name}, {field}={pk}): {e}")
         return {}
