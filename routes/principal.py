@@ -1,8 +1,8 @@
 """
 routes/principal.py
-Principal: full read-only dashboard with reports.
+Principal: full dashboard, reports, teacher attendance + salary.
 """
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 import calendar
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
@@ -11,6 +11,12 @@ from utils.supabase_client import table
 from utils.decorators import role_required
 
 principal_bp = Blueprint("principal", __name__)
+
+# Salary deduction rules
+FREE_LEAVES = 1          # 1 free casual leave
+FREE_LATES = 4           # 4 free late comings
+LEAVE_DEDUCTION = 800    # PKR per extra leave
+LATE_DEDUCTION = 400     # PKR per extra late
 
 
 # =====================================================
@@ -51,7 +57,334 @@ def dashboard():
 
 
 # =====================================================
-# ATTENDANCE REPORT
+# TEACHER ATTENDANCE — Mark Daily
+# =====================================================
+@principal_bp.route("/teacher-attendance", methods=["GET", "POST"])
+@role_required("principal")
+def teacher_attendance():
+    """Mark daily attendance for all teachers."""
+    today = date.today().strftime("%Y-%m-%d")
+    selected_date = request.args.get("date") or today
+
+    if request.method == "POST":
+        selected_date = request.form.get("date") or today
+        teachers = _safe_select("users", role="teacher")
+        saved = 0
+
+        for t in teachers:
+            status = request.form.get(f"status_{t['id']}")
+            if status not in ("P", "A", "L", "H", "LV"):
+                continue
+
+            notes = request.form.get(f"notes_{t['id']}", "").strip()
+
+            try:
+                # Delete existing record for this date
+                table("teacher_attendance").delete().eq(
+                    "teacher_user_id", t["id"]
+                ).eq("date", selected_date).execute()
+
+                # Insert new
+                table("teacher_attendance").insert({
+                    "teacher_user_id": t["id"],
+                    "date": selected_date,
+                    "status": status,
+                    "notes": notes,
+                    "marked_by_user_id": session["user_id"],
+                }).execute()
+                saved += 1
+            except Exception as e:
+                print(f"teacher att error for {t['id']}: {e}")
+
+        flash(f"Attendance saved for {saved} teacher(s) on {selected_date}.", "success")
+        return redirect(url_for("principal.teacher_attendance", date=selected_date))
+
+    # GET
+    teachers = _safe_select("users", role="teacher")
+    teacher_profiles = _safe_select("teachers")
+    pmap = {t["user_id"]: t for t in teacher_profiles}
+
+    # Get existing attendance for selected date
+    existing = {}
+    try:
+        records = table("teacher_attendance").select("*").eq("date", selected_date).execute().data or []
+        existing = {r["teacher_user_id"]: r for r in records}
+    except Exception:
+        pass
+
+    teachers_data = []
+    for t in teachers:
+        p = pmap.get(t["id"], {})
+        att = existing.get(t["id"], {})
+        teachers_data.append({
+            "id": t["id"],
+            "name": t.get("name", "-"),
+            "roll_number": t.get("roll_number", "-"),
+            "phone": t.get("phone", "-"),
+            "qualification": p.get("qualification", "-"),
+            "monthly_salary": p.get("monthly_salary", 0),
+            "current_status": att.get("status", ""),
+            "current_notes": att.get("notes", ""),
+        })
+
+    return render_template(
+        "principal/teacher_attendance.html",
+        teachers=teachers_data,
+        selected_date=selected_date,
+        today=today,
+    )
+
+
+# =====================================================
+# TEACHER ATTENDANCE — History
+# =====================================================
+@principal_bp.route("/teacher-attendance/history")
+@role_required("principal")
+def teacher_attendance_history():
+    """View history of teacher attendance."""
+    from_date = request.args.get("from") or ""
+    to_date = request.args.get("to") or ""
+    teacher_filter = request.args.get("teacher_id") or ""
+
+    if not from_date and not to_date:
+        to_date = date.today().strftime("%Y-%m-%d")
+        from_date = (date.today() - timedelta(days=30)).strftime("%Y-%m-%d")
+
+    teachers = _safe_select("users", role="teacher")
+    tmap = {t["id"]: t for t in teachers}
+
+    try:
+        all_records = table("teacher_attendance").select("*").order("date", desc=True).execute().data or []
+    except Exception:
+        all_records = []
+
+    filtered = []
+    for r in all_records:
+        d = str(r.get("date") or "")
+        if from_date and d < from_date:
+            continue
+        if to_date and d > to_date:
+            continue
+        if teacher_filter and str(r.get("teacher_user_id")) != teacher_filter:
+            continue
+        filtered.append(r)
+
+    rows = []
+    for r in filtered:
+        t = tmap.get(r.get("teacher_user_id"), {})
+        rows.append({
+            "date": r.get("date"),
+            "teacher_name": t.get("name", "-"),
+            "teacher_roll": t.get("roll_number", "-"),
+            "status": r.get("status"),
+            "notes": r.get("notes", ""),
+        })
+
+    return render_template(
+        "principal/teacher_attendance_history.html",
+        rows=rows,
+        teachers=teachers,
+        from_date=from_date,
+        to_date=to_date,
+        teacher_filter=teacher_filter,
+    )
+
+
+# =====================================================
+# TEACHER DETAIL — Profile + Attendance + Salary
+# =====================================================
+@principal_bp.route("/teacher/<int:teacher_id>")
+@role_required("principal")
+def teacher_detail(teacher_id):
+    """Detailed view of a teacher with attendance + salary."""
+    teacher = _get_one("users", teacher_id)
+    profile = _get_one("teachers", teacher_id, field="user_id")
+
+    # Current month filter
+    month = request.args.get("month") or date.today().strftime("%Y-%m")
+
+    # Get attendance for this month
+    try:
+        all_att = table("teacher_attendance").select("*").eq(
+            "teacher_user_id", teacher_id
+        ).execute().data or []
+    except Exception:
+        all_att = []
+
+    month_att = [a for a in all_att if str(a.get("date", "")).startswith(month)]
+    month_att.sort(key=lambda x: x.get("date") or "")
+
+    # Count
+    present = sum(1 for a in month_att if a["status"] == "P")
+    absent = sum(1 for a in month_att if a["status"] == "A")
+    late = sum(1 for a in month_att if a["status"] == "L")
+    half_day = sum(1 for a in month_att if a["status"] == "H")
+    leave = sum(1 for a in month_att if a["status"] == "LV")
+
+    # Salary calculation
+    monthly_salary = float(profile.get("monthly_salary") or 0)
+
+    # Extra leaves (beyond free)
+    extra_leaves = max(0, leave - FREE_LEAVES)
+    extra_lates = max(0, late - FREE_LATES)
+
+    leave_deduction = extra_leaves * LEAVE_DEDUCTION
+    late_deduction = extra_lates * LATE_DEDUCTION
+    total_deduction = leave_deduction + late_deduction
+    net_salary = max(0, monthly_salary - total_deduction)
+
+    # Attendance %
+    total_days = present + absent + late + half_day + leave
+    att_percent = round((present + late) * 100 / total_days, 1) if total_days else 0
+
+    return render_template(
+        "principal/teacher_detail.html",
+        teacher=teacher,
+        profile=profile,
+        month=month,
+        month_name=datetime.strptime(month, "%Y-%m").strftime("%B %Y"),
+        month_att=month_att,
+        counts={
+            "present": present, "absent": absent, "late": late,
+            "half_day": half_day, "leave": leave, "total": total_days,
+        },
+        att_percent=att_percent,
+        salary={
+            "monthly": monthly_salary,
+            "free_leaves": FREE_LEAVES,
+            "free_lates": FREE_LATES,
+            "extra_leaves": extra_leaves,
+            "extra_lates": extra_lates,
+            "leave_deduction": leave_deduction,
+            "late_deduction": late_deduction,
+            "total_deduction": total_deduction,
+            "net_salary": net_salary,
+        },
+    )
+
+
+# =====================================================
+# TEACHER SALARY SLIP
+# =====================================================
+@principal_bp.route("/teacher/<int:teacher_id>/salary-slip")
+@role_required("principal")
+def teacher_salary_slip(teacher_id):
+    """Printable salary slip."""
+    teacher = _get_one("users", teacher_id)
+    profile = _get_one("teachers", teacher_id, field="user_id")
+
+    month = request.args.get("month") or date.today().strftime("%Y-%m")
+
+    try:
+        all_att = table("teacher_attendance").select("*").eq(
+            "teacher_user_id", teacher_id
+        ).execute().data or []
+    except Exception:
+        all_att = []
+
+    month_att = [a for a in all_att if str(a.get("date", "")).startswith(month)]
+
+    present = sum(1 for a in month_att if a["status"] == "P")
+    absent = sum(1 for a in month_att if a["status"] == "A")
+    late = sum(1 for a in month_att if a["status"] == "L")
+    half_day = sum(1 for a in month_att if a["status"] == "H")
+    leave = sum(1 for a in month_att if a["status"] == "LV")
+
+    monthly_salary = float(profile.get("monthly_salary") or 0)
+    extra_leaves = max(0, leave - FREE_LEAVES)
+    extra_lates = max(0, late - FREE_LATES)
+    leave_deduction = extra_leaves * LEAVE_DEDUCTION
+    late_deduction = extra_lates * LATE_DEDUCTION
+    total_deduction = leave_deduction + late_deduction
+    net_salary = max(0, monthly_salary - total_deduction)
+
+    return render_template(
+        "principal/teacher_salary_slip.html",
+        teacher=teacher,
+        profile=profile,
+        month=month,
+        month_name=datetime.strptime(month, "%Y-%m").strftime("%B %Y"),
+        counts={
+            "present": present, "absent": absent, "late": late,
+            "half_day": half_day, "leave": leave,
+        },
+        salary={
+            "monthly": monthly_salary,
+            "free_leaves": FREE_LEAVES,
+            "free_lates": FREE_LATES,
+            "extra_leaves": extra_leaves,
+            "extra_lates": extra_lates,
+            "leave_deduction": leave_deduction,
+            "late_deduction": late_deduction,
+            "total_deduction": total_deduction,
+            "net_salary": net_salary,
+        },
+        today=date.today().strftime("%d %B %Y"),
+    )
+
+
+# =====================================================
+# TEACHERS LIST
+# =====================================================
+@principal_bp.route("/teachers")
+@role_required("principal")
+def teachers():
+    teachers_list = _safe_select("users", role="teacher")
+    teacher_profiles = _safe_select("teachers")
+    pmap = {t["user_id"]: t for t in teacher_profiles}
+
+    teachers_data = []
+    for t in teachers_list:
+        p = pmap.get(t["id"], {})
+        assigns = _safe_select("teacher_assignments", teacher_user_id=t["id"])
+        teachers_data.append({
+            "id": t["id"],
+            "name": t.get("name", "-"),
+            "roll_number": t.get("roll_number", "-"),
+            "phone": t.get("phone", "-"),
+            "email": t.get("email", "-"),
+            "qualification": p.get("qualification", "-"),
+            "monthly_salary": p.get("monthly_salary", 0),
+            "assignments_count": len(assigns),
+        })
+
+    return render_template("principal/teachers.html", teachers=teachers_data)
+
+
+@principal_bp.route("/teachers/<int:teacher_id>/timetable")
+@role_required("principal")
+def teacher_timetable(teacher_id):
+    teacher_user = _get_one("users", teacher_id)
+    teacher_profile = _get_one("teachers", teacher_id, field="user_id")
+
+    classes = _safe_select("classes")
+    sections = _safe_select("sections")
+    subjects = _safe_select("subjects")
+    cmap = {c["id"]: c["name"] for c in classes}
+    smap = {s["id"]: s["name"] for s in sections}
+    submap = {s["id"]: s["name"] for s in subjects}
+
+    entries = _safe_select("timetable", teacher_user_id=teacher_id)
+    for e in entries:
+        e["class_name"] = cmap.get(e["class_id"], "-")
+        e["section_name"] = smap.get(e["section_id"], "-")
+        e["subject_name"] = submap.get(e["subject_id"], "-")
+
+    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    grid = {d: [e for e in entries if e["day"] == d] for d in days}
+
+    return render_template(
+        "principal/teacher_timetable.html",
+        teacher=teacher_user,
+        teacher_profile=teacher_profile,
+        grid=grid,
+        days=days,
+        entries_count=len(entries),
+    )
+
+
+# =====================================================
+# OTHER REPORTS (Attendance, Fees, Marks, Timetable)
 # =====================================================
 @principal_bp.route("/attendance")
 @role_required("principal")
@@ -132,9 +465,6 @@ def attendance():
     )
 
 
-# =====================================================
-# FEES REPORT
-# =====================================================
 @principal_bp.route("/fees")
 @role_required("principal")
 def fees():
@@ -204,9 +534,6 @@ def fees():
     )
 
 
-# =====================================================
-# MARKS REPORT
-# =====================================================
 @principal_bp.route("/marks")
 @role_required("principal")
 def marks():
@@ -217,8 +544,6 @@ def marks():
     class_id = request.args.get("class_id", "").strip()
     section_id = request.args.get("section_id", "").strip()
     exam_type = request.args.get("exam_type", "").strip()
-
-    submap = {s["id"]: s["name"] for s in subjects}
 
     rows = []
     stats = {"students": 0, "avg_percent": 0, "topper": None, "lowest": None}
@@ -264,7 +589,6 @@ def marks():
                         "total_possible": total_possible,
                         "percent": percent,
                         "grade": grade,
-                        "subjects_count": len(stu_marks),
                     })
 
                 rows.sort(key=lambda x: x["percent"], reverse=True)
@@ -290,68 +614,6 @@ def marks():
     )
 
 
-# =====================================================
-# TEACHERS LIST
-# =====================================================
-@principal_bp.route("/teachers")
-@role_required("principal")
-def teachers():
-    teachers_list = _safe_select("users", role="teacher")
-    teacher_profiles = _safe_select("teachers")
-    pmap = {t["user_id"]: t for t in teacher_profiles}
-
-    teachers_data = []
-    for t in teachers_list:
-        p = pmap.get(t["id"], {})
-        assigns = _safe_select("teacher_assignments", teacher_user_id=t["id"])
-        teachers_data.append({
-            "id": t["id"],
-            "name": t.get("name", "-"),
-            "roll_number": t.get("roll_number", "-"),
-            "phone": t.get("phone", "-"),
-            "email": t.get("email", "-"),
-            "qualification": p.get("qualification", "-"),
-            "assignments_count": len(assigns),
-        })
-
-    return render_template("principal/teachers.html", teachers=teachers_data)
-
-
-@principal_bp.route("/teachers/<int:teacher_id>/timetable")
-@role_required("principal")
-def teacher_timetable(teacher_id):
-    teacher_user = _get_one("users", teacher_id)
-    teacher_profile = _get_one("teachers", teacher_id, field="user_id")
-
-    classes = _safe_select("classes")
-    sections = _safe_select("sections")
-    subjects = _safe_select("subjects")
-    cmap = {c["id"]: c["name"] for c in classes}
-    smap = {s["id"]: s["name"] for s in sections}
-    submap = {s["id"]: s["name"] for s in subjects}
-
-    entries = _safe_select("timetable", teacher_user_id=teacher_id)
-    for e in entries:
-        e["class_name"] = cmap.get(e["class_id"], "-")
-        e["section_name"] = smap.get(e["section_id"], "-")
-        e["subject_name"] = submap.get(e["subject_id"], "-")
-
-    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-    grid = {d: [e for e in entries if e["day"] == d] for d in days}
-
-    return render_template(
-        "principal/teacher_timetable.html",
-        teacher=teacher_user,
-        teacher_profile=teacher_profile,
-        grid=grid,
-        days=days,
-        entries_count=len(entries),
-    )
-
-
-# =====================================================
-# TIMETABLE
-# =====================================================
 @principal_bp.route("/timetable")
 @role_required("principal")
 def timetable():
@@ -430,8 +692,7 @@ def notices():
         try:
             res = table("notice_reads").select("*").execute()
             reads = res.data or []
-        except Exception as e:
-            print(f"notice_reads fetch error: {e}")
+        except Exception:
             reads = []
 
         total_users_by_role = {
@@ -444,10 +705,7 @@ def notices():
         for n in rows:
             n["posted_by"] = umap.get(n.get("posted_by_user_id"), "-")
             n["can_edit"] = (n.get("posted_by_user_id") == session.get("user_id"))
-            try:
-                n_reads = [r for r in reads if r.get("notice_id") == n.get("id")]
-            except Exception:
-                n_reads = []
+            n_reads = [r for r in reads if r.get("notice_id") == n.get("id")]
             n["read_count"] = len(n_reads)
             target = n.get("target_role") or "all"
             n["total_target"] = total_users_by_role.get(target, 0)
@@ -457,7 +715,6 @@ def notices():
 
     except Exception as e:
         print(f"notices error: {e}")
-        flash(f"Could not load notices: {e}", "error")
         return render_template("principal/notices.html", notices=[])
 
 
@@ -469,13 +726,10 @@ def edit_notice(nid):
         if not existing or existing[0]["posted_by_user_id"] != session["user_id"]:
             flash("You can only edit your own notices.", "error")
             return redirect(url_for("principal.notices"))
-
         title = (request.form.get("title") or "").strip()
         body = (request.form.get("body") or "").strip()
         target = request.form.get("target_role") or "all"
-        if not title or not body:
-            flash("Title and body are required.", "error")
-        else:
+        if title and body:
             table("notices").update({"title": title, "body": body, "target_role": target}).eq("id", nid).execute()
             flash("Notice updated.", "success")
     except Exception as e:
@@ -498,13 +752,9 @@ def delete_notice(nid):
     return redirect(url_for("principal.notices"))
 
 
-# =====================================================
-# NOTICE READERS  ← YE ROUTE MISSING THA!
-# =====================================================
 @principal_bp.route("/notices/readers/<int:nid>")
 @role_required("principal")
 def notice_readers(nid):
-    """View who read a notice."""
     notice = _get_one("notices", nid)
     readers = []
     try:
@@ -523,7 +773,6 @@ def notice_readers(nid):
                 })
     except Exception as e:
         print(f"readers error: {e}")
-
     return render_template("principal/notice_readers.html", notice=notice, readers=readers)
 
 
