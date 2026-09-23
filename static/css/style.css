@@ -4616,3 +4616,23 @@ input::placeholder, textarea::placeholder { color: var(--ink-400); font-weight: 
   .notice-actions { justify-content: flex-start; }
   .notice-actions .btn { flex: 1; }
 }
+/* ============================================================
+   TEACHER ATTENDANCE — Status Pills (H, LV)
+   ============================================================ */
+.status-pill-h { color: var(--info); }
+.status-pill-h:hover { background: var(--info-soft); }
+.status-pill-h:has(input:checked) {
+  background: var(--info);
+  color: #fff;
+  border-color: var(--info);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35);
+}
+
+.status-pill-lv { color: var(--violet-600); }
+.status-pill-lv:hover { background: rgba(139, 92, 246, 0.1); }
+.status-pill-lv:has(input:checked) {
+  background: var(--violet-600);
+  color: #fff;
+  border-color: var(--violet-600);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35);
+}
