@@ -649,7 +649,81 @@ def id_card():
 
     return render_template("id_cards/teacher_card.html", user=user, teacher=teacher, academy=academy)
 
+# =====================================================
+# MY ATTENDANCE (Teacher sees own attendance)
+# =====================================================
+@teacher_bp.route("/my-attendance")
+@role_required("teacher")
+def my_attendance():
+    """Teacher views own attendance history."""
+    tid = session["user_id"]
 
+    # Filter by month
+    month = request.args.get("month") or date.today().strftime("%Y-%m")
+
+    try:
+        all_att = table("teacher_attendance").select("*").eq(
+            "teacher_user_id", tid
+        ).execute().data or []
+    except Exception:
+        all_att = []
+
+    month_att = [a for a in all_att if str(a.get("date", "")).startswith(month)]
+    month_att.sort(key=lambda x: x.get("date") or "", reverse=True)
+
+    # Counts
+    present = sum(1 for a in month_att if a["status"] == "P")
+    absent = sum(1 for a in month_att if a["status"] == "A")
+    late = sum(1 for a in month_att if a["status"] == "L")
+    half_day = sum(1 for a in month_att if a["status"] == "H")
+    leave = sum(1 for a in month_att if a["status"] == "LV")
+
+    total = present + absent + late + half_day + leave
+    att_percent = round((present + late) * 100 / total, 1) if total else 0
+
+    # Salary info
+    profile = _get_one("teachers", tid, field="user_id") if False else {}
+    try:
+        res = table("teachers").select("*").eq("user_id", tid).limit(1).execute()
+        profile = res.data[0] if res.data else {}
+    except Exception:
+        profile = {}
+
+    monthly_salary = float(profile.get("monthly_salary") or 0)
+
+    # Deduction calculation
+    FREE_LEAVES = 1
+    FREE_LATES = 4
+    LEAVE_DEDUCTION = 800
+    LATE_DEDUCTION = 400
+
+    extra_leaves = max(0, leave - FREE_LEAVES)
+    extra_lates = max(0, late - FREE_LATES)
+
+    leave_deduction = extra_leaves * LEAVE_DEDUCTION
+    late_deduction = extra_lates * LATE_DEDUCTION
+    total_deduction = leave_deduction + late_deduction
+    net_salary = max(0, monthly_salary - total_deduction)
+
+    return render_template(
+        "teacher/my_attendance.html",
+        month_att=month_att,
+        month=month,
+        counts={
+            "present": present, "absent": absent, "late": late,
+            "half_day": half_day, "leave": leave, "total": total,
+        },
+        att_percent=att_percent,
+        salary={
+            "monthly": monthly_salary,
+            "extra_leaves": extra_leaves,
+            "extra_lates": extra_lates,
+            "leave_deduction": leave_deduction,
+            "late_deduction": late_deduction,
+            "total_deduction": total_deduction,
+            "net_salary": net_salary,
+        },
+    )
 # =====================================================
 # HELPERS
 # =====================================================
