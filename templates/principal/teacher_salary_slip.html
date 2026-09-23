@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Salary Slip — {{ teacher.name }} — {{ month_name }}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #f5f6f8;
+      padding: 30px;
+      color: #1f2937;
+    }
+    .slip {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    .slip-header {
+      padding: 30px 40px;
+      background: linear-gradient(135deg, #1c3b70, #2f5aa3, #34889b);
+      color: #fff;
+    }
+    .slip-header h1 { font-size: 1.6rem; margin-bottom: 4px; }
+    .slip-header p { opacity: 0.85; font-size: 0.9rem; }
+    .slip-title {
+      text-align: center;
+      padding: 20px;
+      background: #f8fafc;
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #1c3b70;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    .slip-body { padding: 30px 40px; }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .info-item .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #6b7280;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .info-item .value {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #111827;
+    }
+    .table-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #1c3b70;
+      margin: 24px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    table td { padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+    table td:last-child { text-align: right; font-weight: 700; }
+    table tr:last-child td { border-bottom: none; }
+    .net-row {
+      background: linear-gradient(135deg, #eaf7f1, #d1fae5);
+      padding: 16px 20px !important;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+    .net-row td {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: #105c44;
+      border: none;
+      padding: 4px 0 !important;
+    }
+    .signature {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 60px;
+      padding-top: 30px;
+      border-top: 1px dashed #cbd5e1;
+    }
+    .sign-block {
+      text-align: center;
+      width: 200px;
+    }
+    .sign-line {
+      height: 1px;
+      background: #1f2937;
+      margin-bottom: 6px;
+    }
+    .sign-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+    }
+    .slip-footer {
+      padding: 20px 40px;
+      background: #f8fafc;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #6b7280;
+      border-top: 1px solid #e2e8f0;
+    }
+    .no-print { text-align: center; padding: 20px; }
+    .no-print button {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #2f5aa3, #34889b);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin: 0 6px;
+    }
+    @media print {
+      body { background: #fff; padding: 0; }
+      .slip { box-shadow: none; border-radius: 0; }
+      .no-print { display: none; }
+      @page { margin: 15mm; size: A4; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="no-print">
+  <button onclick="window.print()">🖨️ Print Salary Slip</button>
+  <button onclick="window.close()">Close</button>
+</div>
+
+<div class="slip">
+  <div class="slip-header">
+    <h1>🎓 Academy Management System</h1>
+    <p>Excellence in Education • 123 Education Street, City</p>
+    <p>📞 +92 300 0000000 • 🌐 academy-ms.app</p>
+  </div>
+
+  <div class="slip-title">Salary Slip — {{ month_name }}</div>
+
+  <div class="slip-body">
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="label">Teacher Name</div>
+        <div class="value">{{ teacher.name }}</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Roll Number</div>
+        <div class="value">{{ teacher.roll_number }}</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Designation</div>
+        <div class="value">{{ profile.designation or 'Teacher' }}</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Joining Date</div>
+        <div class="value">{{ profile.joining_date or '-' }}</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Phone</div>
+        <div class="value">{{ teacher.phone or '-' }}</div>
+      </div>
+      <div class="info-item">
+        <div class="label">Qualification</div>
+        <div class="value">{{ profile.qualification or '-' }}</div>
+      </div>
+    </div>
+
+    <div class="table-title">Attendance Summary</div>
+    <table>
+      <tr><td>Present Days</td><td>{{ counts.present }}</td></tr>
+      <tr><td>Absent Days</td><td>{{ counts.absent }}</td></tr>
+      <tr><td>Late Arrivals</td><td>{{ counts.late }}</td></tr>
+      <tr><td>Half Days</td><td>{{ counts.half_day }}</td></tr>
+      <tr><td>Casual Leaves</td><td>{{ counts.leave }}</td></tr>
+    </table>
+
+    <div class="table-title">Salary Calculation</div>
+    <table>
+      <tr><td>Monthly Salary</td><td>PKR {{ salary.monthly }}</td></tr>
+      <tr>
+        <td>Free Allowance</td>
+        <td>1 Leave + 4 Lates</td>
+      </tr>
+      <tr>
+        <td>Extra Leaves ({{ salary.extra_leaves }}) × PKR 800</td>
+        <td style="color:#b91c1c;">− PKR {{ salary.leave_deduction }}</td>
+      </tr>
+      <tr>
+        <td>Extra Lates ({{ salary.extra_lates }}) × PKR 400</td>
+        <td style="color:#b91c1c;">− PKR {{ salary.late_deduction }}</td>
+      </tr>
+      <tr>
+        <td><strong>Total Deduction</strong></td>
+        <td style="color:#b91c1c;">− PKR {{ salary.total_deduction }}</td>
+      </tr>
+      <tr class="net-row">
+        <td>NET PAYABLE</td>
+        <td>PKR {{ salary.net_salary }}</td>
+      </tr>
+    </table>
+
+    <div class="signature">
+      <div class="sign-block">
+        <div class="sign-line"></div>
+        <div class="sign-label">Teacher Signature</div>
+      </div>
+      <div class="sign-block">
+        <div class="sign-line"></div>
+        <div class="sign-label">Principal Signature</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slip-footer">
+    Generated on {{ today }} — Academy Management System
+  </div>
+</div>
+
+</body>
+</html>
