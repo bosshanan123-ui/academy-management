@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Teacher Attendance{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>👨‍🏫 Teacher Daily Attendance</h1>
+    <a href="{{ url_for('principal.dashboard') }}" class="btn btn-ghost">← Dashboard</a>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">📅 Select Date</h2>
+    <form method="GET" class="form-grid">
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" name="date" value="{{ selected_date }}" max="{{ today }}" />
+      </div>
+      <button type="submit" class="btn">Load</button>
+    </form>
+  </div>
+
+  <form method="POST">
+    <input type="hidden" name="date" value="{{ selected_date }}" />
+
+    <div class="card">
+      <div class="between mb-3">
+        <h2 class="section-title mb-0">Mark Attendance — {{ selected_date }}</h2>
+        <div class="actions">
+          <button type="button" class="btn btn-sm btn-success" onclick="markAll('P')">✅ All Present</button>
+        </div>
+      </div>
+
+      {% if teachers %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Roll No</th>
+              <th>Name</th>
+              <th>Salary</th>
+              <th>Status</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for t in teachers %}
+            <tr>
+              <td><span class="roll-badge">{{ t.roll_number }}</span></td>
+              <td>
+                <strong>{{ t.name }}</strong>
+                <div class="text-muted" style="font-size:.75rem;">{{ t.qualification }}</div>
+              </td>
+              <td>
+                {% if t.monthly_salary %}
+                  <strong>PKR {{ t.monthly_salary }}</strong>
+                {% else %}
+                  <span class="text-muted">Not set</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="status-pills">
+                  <label class="status-pill status-pill-p">
+                    <input type="radio" name="status_{{ t.id }}" value="P"
+                           {% if t.current_status == 'P' or not t.current_status %}checked{% endif %} />
+                    <span>P</span>
+                  </label>
+                  <label class="status-pill status-pill-a">
+                    <input type="radio" name="status_{{ t.id }}" value="A"
+                           {% if t.current_status == 'A' %}checked{% endif %} />
+                    <span>A</span>
+                  </label>
+                  <label class="status-pill status-pill-l">
+                    <input type="radio" name="status_{{ t.id }}" value="L"
+                           {% if t.current_status == 'L' %}checked{% endif %} />
+                    <span>Late</span>
+                  </label>
+                  <label class="status-pill status-pill-h">
+                    <input type="radio" name="status_{{ t.id }}" value="H"
+                           {% if t.current_status == 'H' %}checked{% endif %} />
+                    <span>Half</span>
+                  </label>
+                  <label class="status-pill status-pill-lv">
+                    <input type="radio" name="status_{{ t.id }}" value="LV"
+                           {% if t.current_status == 'LV' %}checked{% endif %} />
+                    <span>Leave</span>
+                  </label>
+                </div>
+              </td>
+              <td>
+                <input type="text" name="notes_{{ t.id }}" value="{{ t.current_notes }}" 
+                       placeholder="Optional" style="width:140px;" />
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-4">
+        <button type="submit" class="btn btn-lg">💾 Save Attendance</button>
+        <a href="{{ url_for('principal.teacher_attendance_history') }}" class="btn btn-ghost">📊 View History</a>
+      </div>
+      {% else %}
+      <p class="empty-state">No teachers found.</p>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<script>
+function markAll(status) {
+  document.querySelectorAll(`input[value="${status}"]`).forEach(r => r.checked = true);
+}
+</script>
+{% endblock %}
